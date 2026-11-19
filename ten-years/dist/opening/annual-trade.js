@@ -2,6 +2,6 @@ import '../data.js';
 import '../data/cites-fins-2015-2024.js';
 import '../data/cites-management-events.js';
 import '../motion.js?v=silk-1';
-import '../app.js?v=product-page';
+import '../app.js?v=product-year-scroll';
 import '../chapter-scroll.js?v=ocean-story-2';
-import '../story.js?v=product-page';
+import '../story.js?v=product-year-scroll';

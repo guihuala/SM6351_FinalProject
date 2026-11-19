@@ -7,7 +7,7 @@ for(const width of [260,343,800,1178]){
 const source=fs.readFileSync(path.join(__dirname,'../dist/app.js'),'utf8');
 const touch=source.slice(source.indexOf('  function touchstart('),source.indexOf('  function exportCSV('));
 const calls=[];const sandbox={clearTimeout(){},pause(){},settle(){calls.push('settle');},scrub:(...args)=>calls.push(args),root:{dispatchEvent:e=>calls.push(e.detail)},CustomEvent:class{constructor(_name,options){this.detail=options.detail;}}};
-vm.runInNewContext(`let touchStart=null,suppressProductClick=false,settleTimer=null,chapterView=null,chapterStart=0,chapterEnd=20,targetProgress=0,selected=2015,view='annual',linked=false,productTarget=null;const options={releaseAtBoundary:true};${touch};globalThis.test={touchstart,touchmove,touchend,suppressed:()=>suppressProductClick,chapter:(nextView,start,end,target)=>{chapterView=nextView;view=nextView;chapterStart=start;chapterEnd=end;targetProgress=target;selected=2015+target-start;},link:(withProducts=false)=>{chapterView=null;targetProgress=withProducts?chapterEnd:chapterStart;linked=true;productTarget=withProducts?{}:null;}};`,sandbox);
+vm.runInNewContext(`let touchStart=null,suppressProductClick=false,settleTimer=null,chapterView=null,chapterStart=0,chapterEnd=20,targetProgress=0,selected=2015,view='annual',linked=false,productTarget=null;const options={releaseAtBoundary:true};${touch};globalThis.test={touchstart,touchmove,touchend,suppressed:()=>suppressProductClick,chapter:(nextView,start,end,target)=>{chapterView=nextView;view=nextView;chapterStart=start;chapterEnd=end;targetProgress=target;selected=2015+target-start;},link:(withProducts=false)=>{chapterView=null;targetProgress=withProducts?chapterEnd:chapterStart;linked=true;productTarget=withProducts?{}:null;},progressiveAt:progress=>{options.progressiveColumns=true;targetProgress=progress;}};`,sandbox);
 const t=sandbox.test,target={closest:()=>({})},event=(x,y)=>({target,touches:[{clientX:x,clientY:y}],preventDefault(){calls.push('prevent');}});
 t.touchstart(event(100,100));t.touchmove(event(102,70));assert.equal(t.suppressed(),true);assert.equal(calls[0],'prevent');assert.ok(calls[1][0]>0);t.touchend();assert.equal(calls.at(-1),'settle');
 calls.length=0;t.touchstart(event(100,100));t.touchend();assert.equal(t.suppressed(),false,'a tap on a product remains an activation');
@@ -22,3 +22,20 @@ calls.length=0;t.touchstart(event(100,100));t.touchmove(event(100,165));t.touche
 console.log('PASS: the first year releases an upward swipe back to the introduction, and cancelled swipes stay put.');
 calls.length=0;t.link(true);t.touchstart(event(100,100));t.touchmove(event(100,35));t.touchend();assert.equal(calls.at(-1).direction,1);
 console.log('PASS: the last year releases a downward swipe to the product chapter.');
+
+calls.length=0;
+t.chapter('annual',0,9,8);
+t.link(true);
+t.progressiveAt(8);
+t.touchstart(event(100,250));
+t.touchmove(event(100,90));
+assert.deepEqual(calls[1],[1,'touch',false]);
+t.progressiveAt(9);
+t.touchmove(event(100,55));
+t.touchend();
+assert.equal(calls.at(-1),'settle','the swipe that reveals 2024 leaves the chart in view');
+calls.length=0;
+t.touchstart(event(100,150));
+t.touchmove(event(100,80));
+t.touchend();
+assert.equal(calls.at(-1).direction,1,'the next swipe can enter the product chapter');

@@ -6,7 +6,7 @@ const tradeIntro=document.getElementById('trade-intro');
 const productTarget=document.getElementById('product-forms');
 const reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
 const sharedFlow=!!window.MarineDecadeFlow;
-const api=MarineDecade.mount(root,{linked:true,year:2024,releaseAtBoundary:true,sharedFlow,intro:!!intro,headingTarget:tradeIntro?.querySelector('.dv-trade-intro-content'),imageBase:root.dataset?.imageBase,productTarget});
+const api=MarineDecade.mount(root,{linked:true,year:2015,progressiveColumns:true,progressiveForms:true,releaseAtBoundary:true,sharedFlow,intro:!!intro,headingTarget:tradeIntro?.querySelector('.dv-trade-intro-content'),imageBase:root.dataset?.imageBase,productTarget});
 const chapterScroll=window.MarineChapterScroll?.create();
 if(sharedFlow){
  const canvas=document.createElement('canvas');
@@ -19,7 +19,9 @@ if(sharedFlow){
 function followChapter(event,target){
  if(!target||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;
  event.preventDefault();
- if(chapterScroll)chapterScroll.to(target);
+ if(target===productTarget&&api.getState().year===2024)api.setYear(2015);
+ if(event.detail?.origin==='wheel')target.scrollIntoView({behavior:'instant'});
+ else if(chapterScroll)chapterScroll.to(target);
  else target.scrollIntoView({behavior:reduced.matches?'instant':'smooth'});
  target.focus({preventScroll:true});
  const hash='#'+target.id;
@@ -38,9 +40,13 @@ root.querySelector('a[href="#product-forms"]')?.addEventListener('click',event=>
 productTarget?.querySelector('a[href="#annual-trade"]')?.addEventListener('click',event=>followChapter(event,root));
 if(tradeIntro||intro||productTarget){
  root.addEventListener('decade:boundary',event=>{
-  if(event.detail.origin==='touch')followChapter(event,event.detail.direction<0?(tradeIntro||intro):productTarget);
+  const {origin,direction}=event.detail;
+  if(origin==='touch'||(origin==='wheel'&&direction>0))followChapter(event,direction<0?(tradeIntro||intro):productTarget);
  });
 }
+productTarget?.addEventListener('decade:boundary',event=>{
+ if(event.detail.origin==='wheel'&&event.detail.direction<0)followChapter(event,root);
+});
 function followProductLink(){
  if(location.hash!=='#product-forms')return;
  if(!productTarget)history.replaceState(null,'','#annual-trade');

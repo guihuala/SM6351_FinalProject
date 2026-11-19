@@ -1,9 +1,9 @@
 const assert=require('assert/strict'),fs=require('fs'),vm=require('vm'),path=require('path');
 const handlers=new Map();
-const root={querySelector:()=>null,addEventListener:(name,fn)=>handlers.set(name,fn),scrollIntoView(){this.scrolled=true;},focus(){this.focused=true;}};
+const root={id:'annual-trade',querySelector:()=>null,addEventListener:(name,fn)=>handlers.set(name,fn),scrollIntoView(){this.scrolled=true;},focus(){this.focused=true;}};
 const tradeIntro={id:'trade-intro',querySelector:()=>null,addEventListener(){},scrollIntoView(){this.scrolled=true;},focus(){this.focused=true;}};
-const products={id:'product-forms',querySelector:()=>null,scrollIntoView(){this.scrolled=true;},focus(){this.focused=true;}};
-const api={pause(){this.paused=true;}};
+const products={id:'product-forms',querySelector:()=>null,addEventListener:(name,fn)=>handlers.set('forms:'+name,fn),scrollIntoView(){this.scrolled=true;},focus(){this.focused=true;}};
+const api={year:2015,getState(){return {year:this.year};},setYear(year){this.year=year;},pause(){this.paused=true;}};
 let mountOptions,observed,visibility,productRoute;
 const sandbox={
  window:{matchMedia:()=>({matches:true}),addEventListener:(name,fn)=>handlers.set(name,fn)},
@@ -15,7 +15,8 @@ const sandbox={
 };
 vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../dist/story.js'),'utf8'),sandbox);
 assert.equal(mountOptions.linked,true);
-assert.equal(mountOptions.year,2024);
+assert.equal(mountOptions.year,2015);
+assert.equal(mountOptions.progressiveColumns,true);
 assert.equal(mountOptions.releaseAtBoundary,true);
 assert.equal(sandbox.window.decadeView,api);
 assert.equal(sandbox.window.decadeChapters.annual,sandbox.window.decadeChapters.forms);
@@ -33,12 +34,18 @@ productRoute=products;
 sandbox.location.hash='#product-forms';
 vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../dist/story.js'),'utf8'),sandbox);
 assert.equal(mountOptions.productTarget,products);
+assert.equal(mountOptions.year,2015);
+assert.equal(mountOptions.progressiveForms,true);
 assert.equal(sandbox.location.hash,'#product-forms');
 assert.equal(products.scrolled,true);
 assert.equal(products.focused,true);
 sandbox.location.hash='#annual-trade';
-handlers.get('decade:boundary')({detail:{origin:'touch',direction:1},preventDefault(){}});
+api.year=2024;
+handlers.get('decade:boundary')({detail:{origin:'wheel',direction:1},preventDefault(){}});
 assert.equal(sandbox.location.hash,'#product-forms');
+assert.equal(api.year,2015,'rolling off the final annual bar starts product playback at the first year');
+handlers.get('forms:decade:boundary')({detail:{origin:'wheel',direction:-1},preventDefault(){}});
+assert.equal(sandbox.location.hash,'#annual-trade');
 
 const app=fs.readFileSync(path.join(__dirname,'../dist/app.js'),'utf8');
 require('../dist/motion.js');
@@ -59,7 +66,7 @@ bounded.test.chooseYear(2021,'click');
 assert.equal(bounded.test.year(),2021,'direct selection commits the year immediately');
 bounded.test.scrub(99,'wheel');assert.equal(bounded.test.value(),9);
 bounded.test.scrub(-99,'wheel');assert.equal(bounded.test.value(),0);
-console.log('PASS: one shared timeline; 2024 opens by default; old product link opens the combined view; direct selection commits immediately; playback pauses outside the view.');
+console.log('PASS: both chapters start in 2015; finishing the annual chart starts product playback; direct year selection and chapter navigation work.');
 
 const presentation=app.slice(app.indexOf('  function cancelLinkedYearAnimation('),app.indexOf('  function update(animate)'));
 function node(){
@@ -89,21 +96,33 @@ const roles={'forms-year':heading,quantity,'quantity-unit':unit,'amount-label':l
 const annual=[10,35,null,0,40].map(value=>({value}));
 const reduced={matches:false};
 const productYear={};
+const futureColumns=[2016,2017,2018,2019].map(year=>{
+  const point=node();
+  point.dataset={year};
+  point.setAttribute('data-unrevealed','');
+  return point;
+});
 const stage={
   root:{dataset:{}}, reduced, productYear, chartX:index=>50+index*22,
-  q:name=>name==='forms-year'?null:roles[name]??{querySelector:selector=>selector==='.dv-year-indicator'?indicator:column},
+  q:name=>name==='forms-year'?null:roles[name]??{
+    querySelector:selector=>selector==='.dv-year-indicator'?indicator:column,
+    querySelectorAll:()=>futureColumns.filter(point=>'data-unrevealed' in point.attributes)
+  },
   D:{fmt:String}, data:annual, filters:()=>({term:'fins'}), productName:()=>'Unspecified fins (FIN)', formGeometry:[geometry,dried],
   formSeries:[{values:annual},{values:[40,40,10,10,null].map(value=>({value}))}]
 };
 vm.runInNewContext(`
-  const linked=true,productTarget={},linkedYearAnimations=[];
-  let selected=2015,linkedFormsCeiling=0;
+  const linked=true,progressiveColumns=true,productTarget={},linkedYearAnimations=[],options={};
+  let selected=2015,linkedFormsCeiling=0,revealedThrough=2015;
   ${presentation}
   globalThis.select=year=>{const previous=selected;selected=year;updateLinkedYear(previous);};
 `,stage);
 stage.select(2015);
 assert.equal(animations.length,0,'initial presentation is static');
+assert.equal(futureColumns.filter(point=>'data-unrevealed' in point.attributes).length,4);
 stage.select(2016);
+assert.equal('data-unrevealed' in futureColumns[0].attributes,false);
+assert.equal('data-unrevealed' in futureColumns[1].attributes,true);
 assert.equal(animations.length,1,'selection animates the annual amount');
 assert.equal(productYear.value,'2016');
 assert.equal(geometry.row.attributes['aria-pressed'],'true');
@@ -135,4 +154,6 @@ assert.equal(geometry.value.textContent,'40 kg');
 assert.equal(geometry.fill.classList.contains('dv-fill-moving'),false);
 assert.equal(animations.length,3);
 assert.equal(animations.at(-1).cancelled,true);
+stage.select(2015);
+assert.equal(futureColumns.some(point=>'data-unrevealed' in point.attributes),false,'revisiting a year keeps the explored bars visible');
 console.log('PASS: linked summary, shared product scale, immediate year selection, and separate missing and zero states.');

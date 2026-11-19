@@ -808,6 +808,8 @@ html:has(.decade-story-page){scroll-behavior:auto;scroll-snap-type:none}
 .dv-shell.dv-linked .dv-grid-line { stroke: var(--dv-trade-rule); stroke-opacity: 1; }
 .dv-shell.dv-linked .dv-baseline { stroke: var(--dv-measure-line); }
 .dv-shell.dv-linked .dv-column-slot { fill: transparent; }
+.dv-shell.dv-linked [data-unrevealed] .dv-column-mark { visibility: hidden; opacity: 0; transform: scaleY(.02); }
+.dv-shell.dv-linked .dv-column-mark { transform-box: fill-box; transform-origin: center bottom; }
 .dv-shell.dv-linked .dv-graph-point:focus-visible .dv-column-slot { stroke: var(--dv-accent); stroke-width: 2; }
 .dv-shell.dv-linked .dv-year-indicator {
   stroke: var(--dv-ink);
@@ -984,6 +986,7 @@ html:has(.decade-story-page){scroll-behavior:auto;scroll-snap-type:none}
   margin-top: 16px;
 }
 @media(prefers-reduced-motion:no-preference) {
+  .dv-shell.dv-linked .dv-column-mark { transition: opacity 220ms ease-out, transform 280ms cubic-bezier(.2,.7,.25,1); }
   .dv-shell.dv-linked .dv-year-indicator { transition: transform 220ms cubic-bezier(.2,.7,.25,1); }
   .dv-shell.dv-linked .dv-column-edge { transition: stroke 150ms ease-out, opacity 150ms ease-out; }
   .dv-shell.dv-linked .dv-scale-stable .dv-product-track { transition: opacity 200ms ease-out; }

@@ -63,7 +63,10 @@ function attachAtmosphere(root){
 function mount(root, options = {}) {
   if (!(root instanceof HTMLElement)) throw Error('Provide a chapter container element.');
   const linked = options.linked === true;
+  const progressiveColumns = linked && options.progressiveColumns === true;
+  let revealedThrough = 2015;
   const productTarget = linked && options.productTarget instanceof HTMLElement ? options.productTarget : null;
+  const productTimeline = productTarget && options.progressiveForms ? new AbortController() : null;
   const chapterView=options.chapterView??null;
   if(chapterView&&!['annual','forms'].includes(chapterView))throw Error('Chapter view must be annual or forms.');
   const chapterStart=!linked&&chapterView==='forms'?11:0,chapterEnd=linked||chapterView==='annual'?9:20;
@@ -387,6 +390,12 @@ function mount(root, options = {}) {
       }
     }
     const chart=q('chart');
+    if(progressiveColumns&&selected>revealedThrough){
+      revealedThrough=selected;
+      chart.querySelectorAll('.dv-graph-point[data-unrevealed]').forEach(point=>{
+        if(+point.dataset.year<=revealedThrough)point.removeAttribute('data-unrevealed');
+      });
+    }
     chart.querySelector('[aria-current="true"]')?.removeAttribute('aria-current');
     chart.querySelector(`[data-year="${selected}"]`)?.setAttribute('aria-current','true');
     chart.querySelector('.dv-year-indicator').style.transform=`translateX(${chartX(selected-2015)}px)`;
@@ -412,6 +421,10 @@ function mount(root, options = {}) {
         const maxLabel=`${D.fmt(ceiling)} kg`;
         q('forms-scale-max').textContent=maxLabel;
         bars.setAttribute('aria-label',`Separate product weights on a shared scale from 0 to ${maxLabel}`);
+        if(animate&&options.progressiveForms){
+          const animation=bars.animate?.([{opacity:.55},{opacity:1}],{duration:240,easing:'ease-out'});
+          if(animation)linkedYearAnimations.push(animation);
+        }
       }
       // Interpolate only between values that share the same axis.
       animate=animate&&!scaleChanged;
@@ -527,6 +540,7 @@ function mount(root, options = {}) {
       const column=event.target.closest('.dv-graph-point');
       if(column){
         const year=+column.dataset.year;
+        if(progressiveColumns&&year>revealedThrough)return hideInspect();
         if(year!==selected)chooseYear(year,'hover');
         return productTarget?hideInspect():inspectYear(year);
       }
@@ -541,7 +555,7 @@ function mount(root, options = {}) {
   }
   function previewFocus(event){
     const point=event.target.closest('.dv-graph-point,.dv-years [data-year]');
-    if(point)inspectYear(+point.dataset.year,true);
+    if(point&&(!progressiveColumns||+point.dataset.year<=revealedThrough))inspectYear(+point.dataset.year,true);
   }
   function inspectProduct(term,origin='activate'){
     if(!terms.includes(term))return;
@@ -605,7 +619,8 @@ function mount(root, options = {}) {
         :`<rect class="dv-column" fill="url(#${uid}-column-fill)" x="${left}" y="${y(value)}" width="${width}" height="${base-y(value)}"/>
           <line class="dv-column-edge" x1="${left}" x2="${left+width}" y1="${y(value)}" y2="${y(value)}" aria-hidden="true"/>`;
       const label=w<420?`’${String(entry.year).slice(-2)}`:entry.year;
-      return `<g class="dv-graph-point" data-year="${entry.year}" tabindex="0" role="button" aria-label="${entry.year}, ${value===null?'No records':D.fmt(value)+' kg'}"><rect class="dv-column-slot" x="${x-step/2}" y="3" width="${step}" height="${h-5}"/>${bar}<text x="${x}" y="${h-8}" text-anchor="middle">${label}</text></g>`;
+      const unrevealed=progressiveColumns&&entry.year>revealedThrough?' data-unrevealed':'';
+      return `<g class="dv-graph-point" data-year="${entry.year}"${unrevealed} tabindex="0" role="button" aria-label="${entry.year}, ${value===null?'No records':D.fmt(value)+' kg'}"><rect class="dv-column-slot" x="${x-step/2}" y="3" width="${step}" height="${h-5}"/><g class="dv-column-mark">${bar}</g><text x="${x}" y="${h-8}" text-anchor="middle">${label}</text></g>`;
     }).join('');
     host.innerHTML=`<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" role="group" aria-label="Annual reported trade, 2015–2024, in kilograms." aria-describedby="${uid}-amount-label ${uid}-series" style="--dv-selected-fill: url(#${uid}-selected-fill)">
       <defs>
@@ -727,12 +742,22 @@ function mount(root, options = {}) {
   }
   function wheel(event){
     if(destroyed||event.ctrlKey||event.metaKey||event.target.closest('dialog,select,input')||Math.abs(event.deltaX)>Math.abs(event.deltaY)||!event.deltaY)return;
-    if((linked||chapterView)&&Math.abs(root.getBoundingClientRect().top)>2)return;
-    const direction=Math.sign(event.deltaY);
-    const boundary=(targetProgress>=chapterEnd&&direction>0)||(targetProgress<=chapterStart&&direction<0);
-    if(boundary&&options.releaseAtBoundary){const released=root.dispatchEvent(new CustomEvent('decade:boundary',{bubbles:true,cancelable:!!chapterView,detail:{direction,year:selected,view,origin:'wheel'}}));if(!released)event.preventDefault();return;}
-    event.preventDefault();
     const delta=event.deltaY*(event.deltaMode===1?18:event.deltaMode===2?400:1);
+    const direction=Math.sign(event.deltaY);
+    const surface=event.currentTarget;
+    const isProduct=surface===productTarget;
+    const bounds=(linked||chapterView)?surface.getBoundingClientRect():null;
+    const alignEnd=isProduct&&bounds.height>global.innerHeight;
+    const offset=bounds?(alignEnd?bounds.bottom-global.innerHeight:bounds.top):0;
+    const needsAlignment=Math.abs(offset)>2;
+    if(needsAlignment&&(!(isProduct||progressiveColumns)||Math.abs(offset)>global.innerHeight/2||(offset-delta)*direction>0))return;
+    const boundary=(targetProgress>=chapterEnd&&direction>0)||(targetProgress<=chapterStart&&direction<0);
+    if(boundary&&options.releaseAtBoundary){
+      if((isProduct||progressiveColumns)&&selected!==(direction>0?2024:2015)){event.preventDefault();return;}
+      const released=surface.dispatchEvent(new CustomEvent('decade:boundary',{bubbles:true,cancelable:!!chapterView||!!productTimeline,detail:{direction,year:selected,view,origin:'wheel'}}));if(!released)event.preventDefault();return;
+    }
+    event.preventDefault();
+    if(needsAlignment)surface.scrollIntoView({behavior:'instant',block:alignEnd?'end':'start'});
     scrub(Math.sign(delta)*Math.min(Math.abs(delta),180)/(options.wheelPixelsPerYear??180),'wheel');
   }
   function keydown(event) {
@@ -779,7 +804,7 @@ function mount(root, options = {}) {
     const product=event.target.closest('[data-action="inspect-product"]');
     if(event.touches.length!==1||(!product&&event.target.closest('dialog,select,input,button,a'))){touchStart=null;return;}
     pause();clearTimeout(settleTimer);settleTimer=null;
-    touchStart={x:event.touches[0].clientX,y:event.touches[0].clientY,lastY:event.touches[0].clientY,product:!!product};
+    touchStart={x:event.touches[0].clientX,y:event.touches[0].clientY,lastY:event.touches[0].clientY,product:!!product,startProgress:targetProgress};
   }
   function touchmove(event){
     if(!touchStart||event.touches.length!==1)return;
@@ -791,7 +816,8 @@ function mount(root, options = {}) {
     const beforeFirstYear=direction<0&&targetProgress<=chapterStart;
     const afterLastYear=direction>0&&targetProgress>=chapterEnd;
     const adjacentChapter=(beforeFirstYear&&dy<0)||(productTarget&&afterLastYear&&dy>0);
-    if((chapterView&&(beforeFirstYear||afterLastYear))||(linked&&options.releaseAtBoundary&&adjacentChapter)){
+    const startedAtBoundary=!options.progressiveColumns||touchStart.startProgress===(direction<0?chapterStart:chapterEnd);
+    if((chapterView&&(beforeFirstYear||afterLastYear))||(linked&&options.releaseAtBoundary&&adjacentChapter&&startedAtBoundary)){
       touchStart.boundary=direction;touchStart.distance=Math.abs(touchStart.y-point.clientY);touchStart.lastY=point.clientY;return;
     }
     touchStart.boundary=null;
@@ -868,6 +894,10 @@ function mount(root, options = {}) {
   productTarget?.addEventListener('click',click);
   productTarget?.addEventListener('change',change);
   productTarget?.addEventListener('pointermove',previewMove,{passive:true});
+  if(productTimeline){
+    productTarget.addEventListener('wheel',wheel,{passive:false,signal:productTimeline.signal});
+    productTarget.addEventListener('keydown',keydown,{signal:productTimeline.signal});
+  }
   root.addEventListener('wheel',wheel,{passive:false});root.addEventListener('keydown',keydown);root.addEventListener('click',click);root.addEventListener('change',change);root.addEventListener('touchstart',touchstart,{passive:true});root.addEventListener('touchmove',touchmove,{passive:false});root.addEventListener('touchend',touchend,{passive:true});root.addEventListener('touchcancel',touchend,{passive:true});root.addEventListener('pointerdown',pointerdown);root.addEventListener('pointermove',previewMove,{passive:true});root.addEventListener('pointerleave',hideInspect);root.addEventListener('focusin',previewFocus);root.addEventListener('focusout',hideInspect);document.addEventListener('visibilitychange',visibility);resizeObserver.observe(root);resizeObserver.observe(q('chart'));
   const detachAtmosphere=options.sharedFlow?()=>{}:attachAtmosphere(root);
   const flowLayer=options.sharedFlow?null:global.MarineDecadeFlow?.attach(root);
@@ -875,7 +905,7 @@ function mount(root, options = {}) {
   const api={
     setYear:year=>chooseYear(year,'api'),setView:next=>setView(next,'api'),setData,setEvents,setFilters,play,pause:()=>{pause();settle();},
     getState:()=>({year:selected,view,position,targetPosition,progress,targetProgress,transitioning:!!switchMotion||(progress>9&&progress<11),demo,filters:filters(),playing:playing!==null}),
-    destroy(){if(destroyed)return;pause();destroyed=true;root.removeAttribute('aria-describedby');flowLayer?.destroy();detachAtmosphere();if(linked)reduced.removeEventListener('change',cancelLinkedYearAnimation);cancelLinkedYearAnimation();clearTimeout(settleTimer);if(motionFrame)cancelAnimationFrame(motionFrame);resizeObserver.disconnect();if(resizeFrame)cancelAnimationFrame(resizeFrame);root.querySelectorAll('dialog[open]').forEach(dialog=>dialog.close());root.removeEventListener('wheel',wheel);root.removeEventListener('keydown',keydown);root.removeEventListener('click',click);root.removeEventListener('change',change);root.removeEventListener('touchstart',touchstart);root.removeEventListener('touchmove',touchmove);root.removeEventListener('touchend',touchend);root.removeEventListener('touchcancel',touchend);root.removeEventListener('pointerdown',pointerdown);root.removeEventListener('pointermove',previewMove);root.removeEventListener('pointerleave',hideInspect);root.removeEventListener('focusin',previewFocus);root.removeEventListener('focusout',hideInspect);document.removeEventListener('visibilitychange',visibility);chapterHeading?.remove();productTarget?.removeEventListener('click',click);productTarget?.removeEventListener('change',change);productTarget?.removeEventListener('pointermove',previewMove);productChart?.remove();if(productYear)productYear.disabled=true;root.classList.remove('dv-trade-separated');root.innerHTML='';delete root._marineDecade;}
+    destroy(){if(destroyed)return;pause();destroyed=true;productTimeline?.abort();root.removeAttribute('aria-describedby');flowLayer?.destroy();detachAtmosphere();if(linked)reduced.removeEventListener('change',cancelLinkedYearAnimation);cancelLinkedYearAnimation();clearTimeout(settleTimer);if(motionFrame)cancelAnimationFrame(motionFrame);resizeObserver.disconnect();if(resizeFrame)cancelAnimationFrame(resizeFrame);root.querySelectorAll('dialog[open]').forEach(dialog=>dialog.close());root.removeEventListener('wheel',wheel);root.removeEventListener('keydown',keydown);root.removeEventListener('click',click);root.removeEventListener('change',change);root.removeEventListener('touchstart',touchstart);root.removeEventListener('touchmove',touchmove);root.removeEventListener('touchend',touchend);root.removeEventListener('touchcancel',touchend);root.removeEventListener('pointerdown',pointerdown);root.removeEventListener('pointermove',previewMove);root.removeEventListener('pointerleave',hideInspect);root.removeEventListener('focusin',previewFocus);root.removeEventListener('focusout',hideInspect);document.removeEventListener('visibilitychange',visibility);chapterHeading?.remove();productTarget?.removeEventListener('click',click);productTarget?.removeEventListener('change',change);productTarget?.removeEventListener('pointermove',previewMove);productChart?.remove();if(productYear)productYear.disabled=true;root.classList.remove('dv-trade-separated');root.innerHTML='';delete root._marineDecade;}
   };
   root._marineDecade=api;
   if(options.data)setData(options.data);else rebuild();
