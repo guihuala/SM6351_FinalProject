@@ -1,5 +1,5 @@
 import {autoUpdate, computePosition, flip, offset, shift} from '../vendor/floating-ui.dom.js';
-import {setupChapterMotion} from './motion.js?v=20261119-copy1';
+import {setupChapterMotion} from './motion.js?v=20261120-closing1';
 import {PRODUCT_CASES, productForRisk, productByID, validateProductCases, productStoryHTML, productConnectionsHTML, productPreviewHTML, productSourceCreditsHTML} from './product-stories.js?v=20261119-copy1';
 
 const $ = (selector, root = document) => root.querySelector(selector);

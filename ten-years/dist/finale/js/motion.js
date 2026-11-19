@@ -2,7 +2,7 @@
 export async function setupChapterMotion() {
   let effects;
   document.documentElement.dataset.readyEffects = 'loading';
-  try { effects = await import('./ready-effects.js?v=20261119-copy1'); }
+  try { effects = await import('./ready-effects.js?v=20261120-closing1'); }
   catch(error) { document.documentElement.dataset.readyEffects='fallback';console.warn('Decorative effects are unavailable:',error);return; }
   const {gsap,ScrollTrigger,mountReadyLight,mountReadyText,mountReadyHeadings} = effects;
   gsap.registerPlugin(ScrollTrigger);
