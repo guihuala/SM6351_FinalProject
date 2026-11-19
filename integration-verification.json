@@ -1,9 +1,10 @@
 {
   "baseCommit": "f4ec2b74bae03e5173bee6b399e4fa35e456f38d",
-  "checkedAt": "2026-11-20T00:45:18+08:00",
+  "checkedAt": "2026-11-20T01:04:17+08:00",
   "originalTrackedFilesVerified": 93,
   "originalFilesChanged": [
-    "ten-years/dist/index.html"
+    "ten-years/dist/index.html",
+    "ten-years/dist/opening/index.html"
   ],
   "allOriginalPagesPreserved": true,
   "entry": "ten-years/dist/index.html",
@@ -17,13 +18,22 @@
   "parentProtocolSimulation": "passed: validation, initial page position, active/inactive, wheel requests, anchors, previous chapter, resize",
   "childProtocolSimulation": "passed by delegated review: validation, deduplication, wheel/touch/key/anchor, native local controls, host activation",
   "browserVisualQA": {
-    "completed": false,
-    "limit": "Protocol, resource and structure checks are not a browser visual or physical touch test."
+    "completed": true,
+    "browser": "Isolated Chrome, 1440x900 and 390x844 viewports",
+    "checks": [
+      "Actual Product forms 2024 wheel transition into finale",
+      "Iframe remains at viewport top through chapter scrolling",
+      "All three risk sections and epilogue rendered and visually inspected",
+      "Actual child wheel, risk anchor navigation and pause on leaving",
+      "Old opening URLs preserve query strings and chapter fragments"
+    ],
+    "physicalPhoneTouchTest": false
   },
   "publication": "User-authorised default entry points to the complete project through the existing GitHub Pages pipeline.",
   "originalContentCheck": "Git blob hashes after repository text normalisation",
   "productKeyboardBoundary": "passed: 2024 forward keyboard boundary with focus in Product forms enters the finale; other focus, year, direction and wheel behaviour remain unchanged.",
   "integratedEntry": "ten-years/dist/opening/complete.html",
-  "defaultEntryChange": "Only the root redirect and its no-JavaScript fallback changed; query strings and fragments are preserved. Teammate content, scripts, styles and data are unchanged.",
-  "defaultEntryChecks": "passed: root, query parameters, legacy chapter fragments, finale fragment, no-JavaScript link; all legacy static chapter IDs exist in the complete entry."
+  "defaultEntryChange": "Root routes to the complete entry. The old opening routes have a guarded redirect only; removing that guard restores the original teammate page exactly.",
+  "defaultEntryChecks": "passed: root, query parameters, legacy chapter fragments, finale fragment, no-JavaScript link; all legacy static chapter IDs exist in the complete entry.",
+  "scrollViewportFix": "Reproduced on deployed version: iframe top moved to -400/-1200/-2500 while content scrolled. Fixed host-only viewport positioning; iframe top stays 0 at all sampled scroll offsets."
 }

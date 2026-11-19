@@ -2,8 +2,9 @@
 const CHANNEL='sm6351-finale';
 const host=document.getElementById('finale');
 const frame=document.getElementById('finale-frame');
+const pane=host?.querySelector('.finale-window');
 
-if(host&&frame){
+if(host&&frame&&pane){
   document.title='The Global Trade of Sphyrna lewini — Complete project';
   let loaded=false,started=false,active=false,frameHeight=innerHeight,pending=0,lastY=null,lastActive=null;
   const finite=value=>typeof value==='number'&&Number.isFinite(value);
@@ -15,8 +16,12 @@ if(host&&frame){
     pending=0;
     const rect=host.getBoundingClientRect();
     active=rect.top<innerHeight&&rect.bottom>0;
-    if(!loaded)return;
     const y=clamp(-rect.top,0,Math.max(0,frameHeight-innerHeight));
+    // The earlier page has overflow-x:hidden on body, which captures sticky
+    // positioning. Keep only this viewport aligned with the document scroll.
+    pane.style.height=`${innerHeight}px`;
+    pane.style.transform=`translate3d(0,${y}px,0)`;
+    if(!loaded)return;
     if(y===lastY&&active===lastActive)return;
     lastY=y;lastActive=active;
     emit({type:'viewport',y,active});

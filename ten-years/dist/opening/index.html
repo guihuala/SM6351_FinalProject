@@ -3,6 +3,11 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
+  <script>
+    if (/\/opening\/(?:index\.html)?$/.test(location.pathname)) {
+      location.replace('complete.html' + location.search + location.hash);
+    }
+  </script>
   <title>Spline underwater — Reference preview</title>
   <link rel="icon" type="image/png" sizes="64x64" href="../favicon.png">
   <link rel="stylesheet" href="scene.css">
