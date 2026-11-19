@@ -1,0 +1,108 @@
+/* Carry the overview's pale water light and its fin segment's teal into the charts. */
+.dv-shell.opening-trade-chapter {
+  --dv-ink: #edf7fb;
+  --dv-text: #edf7fb;
+  --dv-muted: #a8c3cc;
+  --dv-accent: #3ddcd0;
+  --trade-cue-ink: #cdefff;
+  --trade-cue-line: #83ceff;
+  --trade-cue-glow: color-mix(in srgb, var(--trade-cue-line) 32%, transparent);
+}
+
+.ocean-page #trade-intro.opening-trade-chapter::before {
+  background: radial-gradient(ellipse at 50% 48%, transparent 8%,
+    color-mix(in srgb, var(--dv-bg) 45%, transparent) 100%);
+}
+
+.dv-shell.opening-trade-chapter .dv-trade-intro-content {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  padding-inline: 16px;
+  text-align: center;
+}
+
+.dv-shell.opening-trade-chapter .dv-trade-period {
+  margin-bottom: clamp(8px, 1.5svh, 16px);
+  color: var(--dv-muted);
+  font: 500 clamp(var(--dv-caption), 2.4vw, 28px)/1.25 var(--dv-heading);
+  letter-spacing: .015em;
+}
+
+.dv-shell.opening-trade-chapter .dv-trade-intro-content h2 {
+  color: var(--dv-ink);
+  font: 500 clamp(var(--dv-h2), 8.5vw, var(--dv-h1))/1.05 var(--dv-heading);
+  letter-spacing: -.04em;
+}
+
+@media (forced-colors: none) {
+  .dv-shell.opening-trade-chapter .dv-trade-intro-content h2 {
+    background: linear-gradient(var(--dv-ink) 28%, var(--dv-muted));
+    background-clip: text;
+    color: transparent;
+  }
+}
+
+.dv-shell.opening-trade-chapter :is(.dv-trade-continue, .dv-chapter-link) {
+  color: var(--trade-cue-ink);
+  border: 1px solid var(--trade-cue-line);
+  border-radius: 50%;
+  box-shadow: 0 0 12px var(--trade-cue-glow), inset 0 0 8px var(--trade-cue-glow);
+}
+
+.dv-shell.opening-trade-chapter :is(.dv-trade-continue, .dv-chapter-link):hover {
+  color: var(--dv-ink);
+  background: color-mix(in srgb, var(--trade-cue-line) 14%, transparent);
+}
+
+.dv-shell.opening-trade-chapter .dv-trade-continue {
+  position: relative;
+  grid-row: 2;
+  justify-self: center;
+  width: 52px;
+  height: 52px;
+}
+
+.dv-shell.opening-trade-chapter .dv-trade-continue svg {
+  width: 24px;
+  height: 30px;
+}
+
+.ocean-page #annual-trade.opening-trade-chapter::before {
+  background: linear-gradient(180deg, transparent,
+    color-mix(in srgb, var(--dv-bg) 52%, transparent) 36%,
+    color-mix(in srgb, var(--dv-bg) 64%, transparent));
+}
+
+.dv-shell.opening-trade-chapter.dv-linked {
+  --dv-trade-rule: color-mix(in srgb, var(--dv-muted) 25%, transparent);
+  --dv-measure-line: color-mix(in srgb, var(--dv-muted) 53%, transparent);
+  --dv-measure-ink: color-mix(in srgb, var(--dv-accent) 72%, var(--dv-ink));
+}
+
+.dv-shell.opening-trade-chapter .dv-linked-summary .dv-quantity {
+  font-weight: 600;
+  letter-spacing: -.045em;
+}
+
+.dv-shell.opening-trade-chapter.dv-linked .dv-linked-forms {
+  border-inline-start: 0;
+  padding-inline-start: 0;
+}
+
+.dv-shell.opening-trade-chapter.dv-linked :is(.dv-column-selected-top, .dv-column-selected-bottom) {
+  stop-color: var(--dv-accent);
+}
+
+.dv-shell.opening-trade-chapter.dv-linked .dv-product-fill {
+  background: linear-gradient(90deg,
+    color-mix(in srgb, var(--dv-accent) 48%, var(--dv-secondary)), var(--dv-measure-ink));
+}
+
+@media (hover: hover) {
+  .dv-shell.opening-trade-chapter.dv-linked .dv-product:hover {
+    background: color-mix(in srgb, var(--dv-accent) 10%, transparent);
+  }
+}

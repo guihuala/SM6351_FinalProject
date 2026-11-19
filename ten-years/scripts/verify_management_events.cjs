@@ -22,5 +22,5 @@ assert.equal(byId('ac32-review-2023').geography.countries.length,8);
 assert.match(byId('ac32-review-2023').type,/not a ban/);
 assert.match(byId('id-quota-2020').scope,/fish, not kg/);
 assert.deepEqual([2015,2016,2021,2022].filter(y=>events.some(e=>e.years.includes(y))),[]);
-assert.match(read('index.html'),/cites-management-events.js/);
+assert.match(read('project.html'),/cites-management-events.js/);
 console.log('PASS: six sourced contextual records; JSON/JS parity; date precision; national scopes; review vs restriction; exact suspension/withdrawal dates; no fabricated empty-year events.');

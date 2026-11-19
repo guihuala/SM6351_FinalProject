@@ -605,7 +605,7 @@ function mount(root, options = {}) {
       linkedFormsCeiling=0;
       host.innerHTML=`<div class="dv-products" data-role="product-bars" role="group">${formSeries.map(({term})=>`
         <button type="button" class="dv-product" data-action="inspect-product" data-product="${D.esc(term)}">
-          <img class="dv-product-image" src="images/${productImages[term]}.webp" alt="" draggable="false">
+          <img class="dv-product-image" src="${D.esc(options.imageBase ?? 'images/')}${productImages[term]}.webp" alt="" draggable="false">
           <span class="dv-product-data">
             <span class="dv-product-heading"><span class="dv-bar-label">${D.esc(productName(term))}</span><strong class="dv-bar-value"></strong></span>
             <span class="dv-product-track" aria-hidden="true">

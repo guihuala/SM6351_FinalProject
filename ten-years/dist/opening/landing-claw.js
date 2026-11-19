@@ -63,12 +63,14 @@ export function createLandingClaw() {
   }
 
   const canvas = document.querySelector('#landing-claw');
-  const renderer = new THREE.WebGLRenderer({canvas, alpha:true, antialias:true, powerPreference:'low-power'});
-  renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
+  const renderer = new THREE.WebGLRenderer({canvas, alpha:true, powerPreference:'low-power'});
   renderer.setClearColor(0, 0);
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.45;
-  function resize() { renderer.setSize(innerWidth, innerHeight, false); }
+  function resize() {
+    const ratio = Math.min(devicePixelRatio, 1, Math.sqrt(700000 / (innerWidth * innerHeight)));
+    renderer.setDrawingBufferSize(innerWidth, innerHeight, ratio);
+  }
   resize();
   addEventListener('resize', resize);
 

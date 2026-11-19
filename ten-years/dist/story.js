@@ -5,7 +5,7 @@ const intro=document.getElementById('ocean-intro');
 const tradeIntro=document.getElementById('trade-intro');
 const reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
 const sharedFlow=!!window.MarineDecadeFlow;
-const api=MarineDecade.mount(root,{linked:true,year:2024,releaseAtBoundary:true,sharedFlow,intro:!!intro,headingTarget:tradeIntro?.querySelector('.dv-trade-intro-content')});
+const api=MarineDecade.mount(root,{linked:true,year:2024,releaseAtBoundary:true,sharedFlow,intro:!!intro,headingTarget:tradeIntro?.querySelector('.dv-trade-intro-content'),imageBase:root.dataset?.imageBase});
 const chapterScroll=window.MarineChapterScroll?.create();
 if(sharedFlow){
  const canvas=document.createElement('canvas');

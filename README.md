@@ -13,7 +13,7 @@
 python3 -m http.server 8765 --directory ten-years/dist
 ```
 
-首頁會依序呈現水下開場、雙髻鯊介紹及 2015–2024 年 CITES 魚鰭貿易圖表。海水背景、3D 模型與字體均隨網站提供。
+首頁會依序呈現水下開場、雙髻鯊介紹、保育等級歷程、貿易概覽和 2015–2024 年 CITES 魚鰭貿易互動圖表。貿易概覽後繼續向下捲動即可進入圖表，也可選擇 **Explore annual trade data** 直接跳到圖表。
 
 ## GitHub Pages 部署
 

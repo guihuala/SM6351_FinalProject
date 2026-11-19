@@ -3,6 +3,7 @@ const layer=document.createElement('div');
 layer.id='bubbles';layer.setAttribute('aria-hidden','true');document.body.append(layer);
 const reduced=matchMedia('(prefers-reduced-motion: reduce)');
 const pool=[];
+let active=false;
 function cycle(item,initial=false){
  const size=38+Math.random()*50;
  const x=4+Math.random()*92;
@@ -20,8 +21,16 @@ function cycle(item,initial=false){
  ],{duration,easing:'linear',fill:'both'});
  item.animation.onfinish=()=>cycle(item);
  if(initial)item.animation.currentTime=duration*Math.random();
- if(document.hidden||reduced.matches)item.animation.pause();
+ if(!active)item.animation.pause();
 }
-for(let i=0;i<8;i++){const el=document.createElement('img');el.src='./assets/bubble.png';el.alt='';el.draggable=false;layer.append(el);const item={el};pool.push(item);cycle(item,true)}
-function sync(){layer.hidden=reduced.matches;for(const item of pool){if(document.hidden||reduced.matches)item.animation.pause();else item.animation.play()}}
+for(let i=0;i<8;i++){const el=document.createElement('img');el.src='../ocean/assets/bubble.webp';el.alt='';el.draggable=false;layer.append(el);const item={el};pool.push(item);cycle(item,true)}
+function sync(){
+ const visible=(window.oceanStory?.exit ?? 0)<1 && !reduced.matches;
+ if(layer.hidden===visible)layer.hidden=!visible;
+ const next=visible&&!document.hidden;
+ if(active===next)return;
+ active=next;
+ for(const item of pool){if(active)item.animation.play();else item.animation.pause()}
+}
+addEventListener('opening:progress',sync);
 document.addEventListener('visibilitychange',sync);reduced.addEventListener('change',sync);sync();

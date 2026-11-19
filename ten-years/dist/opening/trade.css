@@ -1,6 +1,7 @@
 #trade-total{height:300vh}#trade-products{height:200vh}
 #trade-stage{position:fixed;inset:0;z-index:6;color:#edf7fb;pointer-events:none}
 #trade-stage[hidden]{display:none}
+#scene[hidden],#fish[hidden]{display:none}
 .trade-summary,.trade-number,.trade-model,.trade-detail{position:absolute}
 .trade-summary{inset:0;text-align:center}
 .trade-summary p,.trade-summary h2{position:absolute;left:10%;width:80%;margin:0}
@@ -56,4 +57,71 @@
 .minor-bar{position:relative;height:6px;margin:12px 4px;background:linear-gradient(to right,#FFC14D var(--powder-share),#A8E86B var(--powder-share))}
 .minor-bar::after{content:'';position:absolute;right:-3px;top:50%;transform:translateY(-50%);width:8px;height:8px;border-radius:50%;background:#A8E86B}
 @media(max-width:650px){.minor-comparison{top:100%;right:50%;transform:translateX(50%)}}
+
+.story-depth {
+  position: relative;
+}
+
+/* The introduction text reveals over the first screen of this section. */
+#meet-the-shark {
+  position: absolute;
+  top: 100vh;
+}
+
+a.scroll-cue {
+  pointer-events: auto;
+}
+
+a.scroll-cue:focus-visible {
+  animation: none;
+  outline: 2px solid currentColor;
+  outline-offset: 4px;
+}
+
+.dv-shell.opening-navigation {
+  position: fixed;
+  inset: max(12px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) auto auto;
+  z-index: 7;
+  height: auto;
+  padding: 4px;
+  background: transparent;
+  overflow: visible;
+}
+
+.opening-navigation a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid var(--dv-line);
+  border-radius: 6px;
+  background: var(--dv-bg);
+  font: 500 var(--dv-button)/1.25 var(--dv-body);
+  letter-spacing: .01em;
+}
+
+.opening-navigation .opening-next,
+body:has(#trade-stage.interactive) .opening-skip {
+  display: none;
+}
+
+body:has(#trade-stage.interactive) .opening-next {
+  display: flex;
+}
+
+body.opening-handoff .opening-navigation {
+  display: none;
+}
+
+.opening-chapters {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+}
+
+.opening-chapters .opening-trade-status {
+  margin: clamp(16px, 4vw, 56px);
+}
 

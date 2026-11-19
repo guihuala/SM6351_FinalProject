@@ -10,6 +10,8 @@ const stage=document.querySelector('#trade-stage');
 const el=s=>stage.querySelector(s);
 const summary=el('.trade-summary'), number=el('.trade-number'), ring=el('.trade-ring'), list=el('.trade-list'), model=el('.trade-model');
 const oldCopy=document.querySelector('.scene-three-copy'), oldTimeline=document.querySelector('.rating-timeline');
+const totalsSection = document.querySelector('#trade-total');
+const productsSection = document.querySelector('#trade-products');
 let selected=-1, hover=-1, enabled=false, requested=false, drawModel, ringProgress=0;
 const pieces=[];
 const year = summary.querySelector('p');
@@ -83,8 +85,14 @@ comparison.querySelector('header button').onclick=()=>{
 comparison.addEventListener('keydown',event=>{
   if(event.key==='Escape') comparison.querySelector('header button').click();
 });
-function paint(){
+let paintedActive, paintedSelected, paintedEnabled, paintedSequence;
+function paint(force=false){
   const active=enabled?(hover>=0?hover:selected):-1;
+  if(!force&&active===paintedActive&&selected===paintedSelected&&enabled===paintedEnabled&&sequence===paintedSequence)return;
+  paintedActive=active;
+  paintedSelected=selected;
+  paintedEnabled=enabled;
+  paintedSequence=sequence;
   const p=products[active];
   number.children[0].textContent=p?.[0]||'';
   if (sequence !== 'playing') counter.textContent=kg(p?p[1]:total)+' kg';
@@ -151,28 +159,43 @@ products.forEach(([name,weight,color],i)=>{
 });
 const clamp=x=>Math.max(0,Math.min(1,x));
 function ramp(x){x=clamp(x);return x*x*(3-2*x)}
+let updateFrame, ringRect;
+function requestUpdate(){
+  if(updateFrame!==undefined)return;
+  updateFrame=requestAnimationFrame(()=>{
+    updateFrame=undefined;
+    update();
+  });
+}
+function refreshGeometry(){
+  ringRect=undefined;
+  requestUpdate();
+}
 function update(){
-  const totalsSection = document.querySelector('#trade-total');
   const distance = scrollY + innerHeight - totalsSection.offsetTop;
+  const productsHeight = productsSection.offsetHeight;
+  const handoff = ramp((distance - totalsSection.offsetHeight - productsHeight) / (innerHeight * .65));
   // The summary occupies one animation unit over its full section height.
   // Map the product section's scroll distance to the two existing animation units.
   const t = distance <= totalsSection.offsetHeight
     ? distance / totalsSection.offsetHeight
-    : 1 + 2 * (distance - totalsSection.offsetHeight) / document.querySelector('#trade-products').offsetHeight;
-  const visible=t>0;
+    : 1 + 2 * (distance - totalsSection.offsetHeight) / productsHeight;
+  const visible=t>0 && handoff<1;
   updateSequence(t);
   stage.hidden=!visible;
-  oldCopy.style.opacity=oldTimeline.style.opacity=visible?String(1-ramp(t/.36)):'';
+  document.body.classList.toggle('opening-handoff',handoff>0);
+  oldCopy.style.opacity=oldTimeline.style.opacity=t>0?String(1-ramp(t/.36)):'';
   if(!visible){
     if(enabled){enabled=false;selected=hover=-1;stage.classList.remove('interactive');list.inert=true;paint()}
     return;
   }
   const travel=ramp((t-1.5)/.5);
   const showList=ramp((t-2.6)/.4);
-  stage.style.opacity=ramp(t/.25);
+  stage.style.opacity=ramp(t/.25)*(1-handoff);
   summary.style.opacity=1-travel;
   number.style.opacity = sequence === 'waiting' ? 0 : ramp(t / 0.25);
-  const rect=ring.getBoundingClientRect();
+  ringRect ??= ring.getBoundingClientRect();
+  const rect=ringRect;
   number.style.left=innerWidth/2+(rect.left+rect.width/2-innerWidth/2)*travel+'px';
   number.style.top=innerHeight/2+(rect.top+rect.height/2-innerHeight/2)*travel+'px';
   const big=Number(stage.dataset.editorSize)||Math.min(innerWidth*.11,128),small=Math.min(rect.width,rect.height)*.104;
@@ -186,15 +209,18 @@ function update(){
     circle.style.visibility=length?'visible':'hidden';
     circle.setAttribute('stroke-dasharray',length+' '+(1-length));
   });
-  enabled=t>=2.995;stage.classList.toggle('interactive',enabled);list.inert=!enabled;
+  enabled=t>=2.995&&handoff===0;stage.classList.toggle('interactive',enabled);list.inert=!enabled;
   if(!enabled){selected=hover=-1}
   paint();
   if(travel>0&&!requested){
     requested=true;
-    import('./trade-model.js?v=palette-1').then(m=>m.loadModel(model.querySelector('canvas'))).then(draw=>{drawModel=draw;paint()}).catch(console.error);
+    import('./trade-model.js?v=palette-1').then(m=>m.loadModel(model.querySelector('canvas'))).then(draw=>{drawModel=draw;paint(true)}).catch(console.error);
   }
 }
-addEventListener('scroll',update,{passive:true});addEventListener('resize',update);document.fonts.ready.then(update);update();
+addEventListener('scroll',requestUpdate,{passive:true});
+addEventListener('resize',refreshGeometry);
+document.fonts.ready.then(refreshGeometry);
+update();
 
 if(new URLSearchParams(location.search).get('tradeEditor') === '1'){
   import('./trade-editor.js?v=single-line').then(({openTradeEditor})=>{

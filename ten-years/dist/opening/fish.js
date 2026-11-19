@@ -1,15 +1,14 @@
 import * as THREE from './vendor/three.module.js';
 import {clone as cloneSkeleton} from './vendor/SkeletonUtils.js';
 import {GLTFLoader} from './vendor/GLTFLoader.js';
-import {createLandingClaw} from './landing-claw.js?v=depth-30-60-layer';
-const renderer=new THREE.WebGLRenderer({canvas:document.querySelector('#fish'),alpha:true,antialias:true,powerPreference:'low-power'});
-renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setClearColor(0,0);renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.45;
+const renderer=new THREE.WebGLRenderer({canvas:document.querySelector('#fish'),alpha:true,powerPreference:'low-power'});
+renderer.setClearColor(0,0);renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.45;
 const scene=new THREE.Scene(),camera=new THREE.OrthographicCamera(-10,10,6,-6,.1,100);camera.position.set(0,-16,25);camera.lookAt(0,0,0);
 renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
 renderer.autoClear=false;
 scene.add(new THREE.HemisphereLight(0x84bbcf,0x102534,1.2));
 const light=new THREE.DirectionalLight(0xc7efff,3.6);scene.add(light,light.target);
-light.castShadow=true;light.shadow.mapSize.set(1024,1024);Object.assign(light.shadow.camera,{left:-18,right:18,top:18,bottom:-18,near:.5,far:90});light.shadow.bias=-.0003;light.shadow.normalBias=.035;
+light.castShadow=true;light.shadow.mapSize.set(512,512);Object.assign(light.shadow.camera,{left:-18,right:18,top:18,bottom:-18,near:.5,far:90});light.shadow.bias=-.0003;light.shadow.normalBias=.035;
 const fill=new THREE.DirectionalLight(0x54889d,.55);scene.add(fill);
 const rayScene=new THREE.Scene(),rayCamera=new THREE.OrthographicCamera(-1,1,1,-1,0,1);
 const rayTime={value:0};const lightSample=new THREE.Vector3();
@@ -41,22 +40,62 @@ function buildPath(){
  ],false,'centripetal');
  path.arcLengthDivisions=400;path.updateArcLengths();
 }
-function resize(){h=12;w=h*innerWidth/innerHeight;camera.left=-w/2;camera.right=w/2;camera.top=h/2;camera.bottom=-h/2;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);length=Math.min(9,w*.84)*.8*1.05;fish.scale.setScalar(length);fish2.scale.setScalar(length);buildPath();}
+function resize(){
+ h=12;w=h*innerWidth/innerHeight;
+ camera.left=-w/2;camera.right=w/2;camera.top=h/2;camera.bottom=-h/2;
+ camera.updateProjectionMatrix();
+ const ratio=Math.min(devicePixelRatio,1,Math.sqrt(1000000/(innerWidth*innerHeight)));
+ renderer.setDrawingBufferSize(innerWidth,innerHeight,ratio);
+ length=Math.min(9,w*.84)*.8*1.05;
+ fish.scale.setScalar(length);
+ fish2.scale.setScalar(length);
+ buildPath();
+}
 new GLTFLoader().load('./assets/scalloped_hammerhead_juvenile_low_poly.glb',g=>{
  const box=new THREE.Box3().setFromObject(g.scene),size=box.getSize(new THREE.Vector3());const normalized=new THREE.Group();g.scene.position.sub(box.getCenter(new THREE.Vector3()));normalized.add(g.scene);normalized.scale.setScalar(1/Math.max(size.x,size.y,size.z));fish.add(normalized);
  g.scene.traverse(o=>{if(o.isMesh){o.frustumCulled=false;o.material=o.material.clone();o.material.roughness=.45;o.material.metalness=0;o.castShadow=true;o.receiveShadow=true;}});
  mixer=new THREE.AnimationMixer(g.scene);g.animations.forEach((clip,i)=>{if(i===0)mixer.clipAction(clip).play();});const second=cloneSkeleton(normalized);fish2.add(second);mixer2=new THREE.AnimationMixer(second);if(g.animations.length){mixer2.clipAction(g.animations[0]).play();mixer2.update(.8);}ready=true;window.fishPreview={ready:true,animations:g.animations.map(x=>x.name),size:size.toArray()};
+ syncRendering();
 },undefined,e=>{console.error(e);window.fishPreview={ready:false,error:String(e)};});
-const drawLandingClaw=createLandingClaw();
+let drawLandingClaw, clawRequested = false, clawTimer;
 resize();addEventListener('resize',resize);
-let last=performance.now(),elapsed=0;
-function frame(now){requestAnimationFrame(frame);if(document.hidden){last=now;return;}if(now-last<1000/30)return;const frameSeconds=(now-last)/1000;const dt=Math.min(frameSeconds,.06);last=now;elapsed+=dt;
-const story=window.oceanStory||{intro:0,entrance:0};
+const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+const fallbackStory = {intro:0, entrance:0, exit:0};
+let frameId, last, elapsed=0;
+function syncRendering() {
+ const {intro, entrance, exit} = window.oceanStory || fallbackStory;
+ const active = ready && !document.hidden && !reduced.matches && exit < 1 && (intro < 1 || entrance > 0);
+ if (renderer.domElement.hidden === active) renderer.domElement.hidden = !active;
+ if (active && frameId === undefined) frameId = requestAnimationFrame(frame);
+ if (!active && frameId !== undefined) {
+  cancelAnimationFrame(frameId);
+  frameId = last = undefined;
+  inspectionArea.hidden = true;
+  if (activePointer !== null) finishInspection();
+  drawLandingClaw?.(0, false, 0);
+ }
+ // Give the opening a chance to paint before importing the large claw model.
+ if (!active || intro > .03 || scrollY > innerHeight * .05) {
+  clearTimeout(clawTimer);
+  clawTimer = undefined;
+ } else if (!clawRequested && clawTimer === undefined) {
+  clawTimer = setTimeout(() => {
+   clawRequested = true;
+   import('./landing-claw.js?v=bounded-render').then(({createLandingClaw}) => {
+    if (!document.hidden && !reduced.matches && scrollY <= innerHeight * .05) drawLandingClaw = createLandingClaw();
+    else clawRequested = false;
+   }).catch(console.error);
+  }, 5000);
+ }
+}
+function frame(now){
+frameId=requestAnimationFrame(frame);
+const frameSeconds=last===undefined ? 1/30 : (now-last)/1000;
+if(frameSeconds<.032)return;
+const dt=Math.min(frameSeconds,.06);last=now;elapsed+=dt;
+const story=window.oceanStory||fallbackStory;
 applyView(story.entrance>0);
 const exitProgress=story.exit||0;
-const secondCopy=document.querySelector('.scene-two-copy');
-secondCopy.style.transform=`translateY(calc(-50% - ${exitProgress*innerHeight*2}px))`;
-secondCopy.style.visibility=exitProgress>=.999?'hidden':'visible';
 const canInspect=story.entrance>=.995&&exitProgress<.001;
 inspectionArea.hidden=!canInspect;
 if(!canInspect&&activePointer!==null){finishInspection();}
@@ -113,7 +152,7 @@ if(story.entrance<=0){
  window.fishPreview.fishCount=fish.visible?1:0;
  window.fishPreview.exitProgress=exitProgress;
 }
- if(!swimPaused){mixer.update(dt*1.5);mixer2.update(dt*1.5);}
+ if(!swimPaused){mixer.update(dt*1.5);if(fish2.visible)mixer2.update(dt*1.5);}
 }
 rayTime.value=elapsed;alignLight();lightSample.copy(fish.position).project(camera);const depth=THREE.MathUtils.clamp((1-lightSample.y)*.5,0,1);light.intensity=4.2*Math.exp(-depth*.8)*(.96+.04*Math.sin(elapsed*.7));renderer.clear();if(story.entrance<=0)renderer.render(rayScene,rayCamera);renderer.clearDepth();renderer.render(scene,camera);
 // Update visibility only after this frame has rendered the correct fish and camera.
@@ -121,9 +160,8 @@ const layerOpacity=story.entrance>0
  ? THREE.MathUtils.smoothstep(story.entrance,0,.08)
  : Math.pow(1-THREE.MathUtils.clamp(story.intro,0,1),Math.log2(5));
 renderer.domElement.style.opacity=String(layerOpacity);
-drawLandingClaw(frameSeconds,story.entrance<=0 && story.intro<1,layerOpacity);
+drawLandingClaw?.(dt,story.entrance<=0 && story.intro<1,layerOpacity);
 }
-requestAnimationFrame(frame);
 
 // Authoring tools are opt-in and never appear on the normal website.
 const cameraEditor=new URLSearchParams(location.search).get('cameraEditor')==='1';
@@ -208,3 +246,7 @@ inspectionArea.addEventListener('keydown',event=>{
  if(keys[event.key]){event.preventDefault();rotateInCameraSpace(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(...keys[event.key]),Math.PI/18));}
 });
 inspectionArea.addEventListener('dblclick',()=>inspectionOrientation.identity());
+addEventListener('opening:progress', syncRendering);
+document.addEventListener('visibilitychange', syncRendering);
+reduced.addEventListener('change', syncRendering);
+syncRendering();

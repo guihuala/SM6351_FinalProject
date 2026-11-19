@@ -10,6 +10,7 @@ function apply(){
  title.style.opacity=String(1-Math.min(1,state.intro*2));
  title.style.transform=`translateY(calc(-50% - ${state.intro*80}px))`;
  cue.style.visibility=state.intro>.03?'hidden':'visible';
+ window.dispatchEvent(new Event('opening:progress'));
 }
 gsap.to(state,{intro:1,ease:'none',onUpdate:apply,scrollTrigger:{start:0,end:()=>innerHeight*2,scrub:.5,invalidateOnRefresh:true}});
 function revealCopy(selector, startScreen, trigger) {
@@ -17,22 +18,20 @@ function revealCopy(selector, startScreen, trigger) {
   const originalText=paragraph.textContent;
   paragraph.setAttribute('aria-label',originalText);
   paragraph.replaceChildren();
-  const characters=[];
+  const words=[];
   originalText.trim().split(/\s+/).forEach((word,index)=>{
    if(index)paragraph.append(document.createTextNode(' '));
    const wrapper=document.createElement('span');wrapper.style.display='inline-block';wrapper.setAttribute('aria-hidden','true');
-   for(const letter of word){
-    const character=document.createElement('span');character.textContent=letter;
-    character.style.display='inline-block';wrapper.append(character);characters.push(character);
-   }
+   wrapper.textContent=word;
+   words.push(wrapper);
    paragraph.append(wrapper);
   });
   gsap.set(paragraph,{autoAlpha:1,y:0});
   return gsap.timeline({scrollTrigger:{
     trigger, start:trigger ? 'top top' : ()=>innerHeight*startScreen, end:()=>'+='+innerHeight,
     scrub:1.5, invalidateOnRefresh:true
-  }}).fromTo(characters,{opacity:0,filter:'blur(6px)'},{
-    opacity:1,filter:'blur(0px)',ease:'sine.out',duration:.8/1.8,stagger:{amount:1/1.8}
+  }}).fromTo(words,{opacity:0,y:5},{
+    opacity:1,y:0,ease:'sine.out',duration:.8/1.8,stagger:{amount:1/1.8}
   },0);
 }
 revealCopy('.scene-two-copy p', 2)
@@ -68,6 +67,7 @@ gsap.to(state,{exit:1,ease:'none',scrollTrigger:{start:()=>innerHeight*4,end:()=
  const copy=document.querySelector('.scene-two-copy');
  copy.style.transform=`translateY(calc(-50% - ${state.exit*innerHeight*2}px))`;
  copy.style.visibility=state.exit>=1?'hidden':'visible';
+ window.dispatchEvent(new Event('opening:progress'));
 }});
 await document.fonts.ready;
 ScrollTrigger.refresh();
