@@ -1,0 +1,14 @@
+{
+  "left": {
+    "x": -24,
+    "y": 15,
+    "angle": -13,
+    "intensity": 1.2
+  },
+  "right": {
+    "x": 38,
+    "y": 38,
+    "angle": 41,
+    "intensity": 2.5
+  }
+}

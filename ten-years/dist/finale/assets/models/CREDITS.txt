@@ -1,0 +1,10 @@
+Scalloped Hammerhead Juvenile (LOW POLY)
+Author: sharkingaround — https://sketchfab.com/sharkingaround
+Source: https://sketchfab.com/3d-models/scalloped-hammerhead-juvenile-low-poly-f5adc17c922b48feae76aaea98552dd4
+License: Creative Commons Attribution 4.0 International (CC BY 4.0)
+https://creativecommons.org/licenses/by/4.0/
+
+The title, author, license, and source above are embedded in the supplied GLB's asset.extras metadata.
+The original GLB is retained without modification. The website adjusts its lighting, scale, orientation, and animation playback.
+
+Three.js and the bundled loader utilities retain their MIT license in ../../vendor/THREE-LICENSE.txt.

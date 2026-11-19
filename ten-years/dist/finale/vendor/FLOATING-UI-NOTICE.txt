@@ -1,0 +1,24 @@
+Floating UI — local popover positioning
+
+Runtime bundle: floating-ui.dom.js
+Source packages from the official npm registry:
+  @floating-ui/dom   1.8.0
+  @floating-ui/core  1.8.0
+  @floating-ui/utils 0.2.12
+
+Author: Floating UI contributors
+License: MIT (full text in FLOATING-UI-LICENSE.txt)
+Repository: https://github.com/floating-ui/floating-ui
+Documentation: https://floating-ui.com/docs/computeposition
+
+This local ESM bundle exports only autoUpdate, computePosition, flip, offset
+and shift, with their dependencies. It was bundled with esbuild 0.28.2 for
+ES2020 browsers. Runtime loading uses local files; no CDN or remote service
+is required. The upstream implementation is unchanged; unused exports were
+removed by the bundler.
+
+Local chapter integration:
+  - Anchored desktop panels use flip and shift to remain inside the viewport.
+  - autoUpdate runs only while a panel is open and is cleaned up on close.
+  - Mobile uses the chapter's compact bottom panel layout.
+  - The chapter owns disclosure, keyboard focus, Escape and click-away logic.

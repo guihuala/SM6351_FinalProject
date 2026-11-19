@@ -1,0 +1,40 @@
+/* Official React Bits components; composition only. Keep the central sea open. */
+.ocean-light{opacity:.12;animation:none}
+.ready-light{position:absolute;inset:0;pointer-events:none;overflow:hidden;mix-blend-mode:screen}
+.risk-zone .zone-title{color:var(--risk);text-shadow:0 0 28px color-mix(in srgb,var(--risk) 10%,transparent)}
+
+/* The upstream Blur Text renders paragraphs inside an accessible heading. */
+.closing.closing-epilogue #closing-title{
+  margin:0 auto 21px;
+  max-width:570px;
+  font-family:Manrope,Arial,sans-serif;
+  font-size:clamp(34px,3.4vw,46px);
+  font-weight:500;
+  line-height:1.14;
+  letter-spacing:-.04em;
+  color:#e1edf4;
+}
+.ready-blur-copy{width:100%}
+.ready-blur-line{display:flex;flex-wrap:wrap;justify-content:center;margin:0;line-height:inherit}
+.ready-blur-serif{margin-top:.08em;color:#b1cddc;font-family:Georgia,'Times New Roman',serif;font-style:italic;font-weight:400;letter-spacing:-.035em}
+#closing-title .epilogue-title-line{display:block}
+#closing-title .epilogue-title-serif{display:block;margin-top:.08em;color:#b1cddc;font-family:Georgia,'Times New Roman',serif;font-style:italic;font-weight:400;letter-spacing:-.035em}
+@media(max-width:700px){.closing.closing-epilogue #closing-title{font-size:clamp(30px,7.8vw,36px);max-width:100%;margin-bottom:22px}}
+
+.ready-heading-copy,.ready-heading-line{font:inherit;color:inherit;letter-spacing:inherit;line-height:inherit}
+.ready-heading-copy{display:block}
+.ready-heading-line{display:inline-flex!important;flex-wrap:wrap;vertical-align:top;max-width:100%;margin:0;padding-bottom:.08em;margin-bottom:-.08em}
+
+/* The risk preview emerges as the opening view widens, rather than at load. */
+.hero .risk-strip{
+  opacity:var(--risk-preview,0);
+  filter:blur(calc((1 - var(--risk-preview,0)) * 12px));
+  transform:translateY(calc((1 - var(--risk-preview,0)) * 16px));
+  visibility:hidden;
+  pointer-events:none;
+  transition:opacity .18s linear,filter .24s ease-out,transform .24s ease-out;
+  will-change:opacity,filter,transform;
+}
+.hero .risk-strip.is-revealed{visibility:visible;pointer-events:auto}
+.motion-off .hero .risk-strip{filter:none;transform:none;transition:none}
+@media(prefers-reduced-motion:reduce){.hero .risk-strip{filter:none;transform:none}}

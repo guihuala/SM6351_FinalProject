@@ -1,0 +1,24 @@
+[
+  {
+    "slug": "north-pacific-right-whale",
+    "sourceUrl": "https://www.fisheries.noaa.gov/species/north-pacific-right-whale",
+    "imageUrl": "https://www.fisheries.noaa.gov/s3/styles/original/s3/dam-migration/640x427-north-pacific-right-whale.png?itok=12v-RvTr",
+    "alt": "Illustration of a North Pacific right whale showing a stocky black body, massive head with callosities, and broad paddle-shaped flippers.",
+    "alphaMin": 0,
+    "transparentFraction": 0.7943539325842697,
+    "width": 800,
+    "height": 534,
+    "file": "beyond-one-species\\dist\\assets\\species\\extra\\north-pacific-right-whale.png"
+  },
+  {
+    "slug": "hectors-dolphin",
+    "sourceUrl": "https://www.fisheries.noaa.gov/species/hectors-dolphin",
+    "imageUrl": "https://www.fisheries.noaa.gov/s3/styles/original/s3/dam-migration/640x427-hectors-dolphin.png?itok=QCUJYxNB",
+    "alt": "Side-profile illustration of a Hector's dolphin showing a gray body, white belly, rounded dorsal fin, and dark facial mask.",
+    "alphaMin": 0,
+    "transparentFraction": 0.7977972846441947,
+    "width": 800,
+    "height": 534,
+    "file": "beyond-one-species\\dist\\assets\\species\\extra\\hectors-dolphin.png"
+  }
+]

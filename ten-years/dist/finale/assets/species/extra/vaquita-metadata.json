@@ -1,0 +1,11 @@
+{
+  "scientificName": "Phocoena sinus",
+  "commonName": "Vaquita",
+  "sourceUrl": "https://www.fisheries.noaa.gov/species/vaquita",
+  "imageUrl": "https://www.fisheries.noaa.gov/s3/styles/original/s3/dam-migration/640x427-vaquita.png?itok=uQCc9L4g",
+  "alt": "Illustration of a vaquita with a small stock body, dark gray back, triangular dorsal fin, and black rings around eyes and lip.",
+  "transparentFraction": 0.7882139513108615,
+  "width": 800,
+  "height": 534,
+  "file": "beyond-one-species\\dist\\assets\\species\\extra\\vaquita.png"
+}

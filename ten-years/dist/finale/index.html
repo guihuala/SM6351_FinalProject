@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="local-project" content="beyond-one-species-trade-v2">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#041421">
+  <meta name="description" content="Perfume, prepared food and jewellery: three material connections to threatened marine species, alongside a study of reported CITES trade.">
+  <title>Beyond one species — Products &amp; trade</title>
+  <meta name="local-version" content="20261119-copy1">
+  <link rel="stylesheet" href="./css/style.css">
+  <link rel="stylesheet" href="./css/refinement.css">
+  <link rel="stylesheet" href="./css/closing.css">
+  <link rel="stylesheet" href="./css/chart-density.css">
+  <link rel="stylesheet" href="./js/ready-effects.css?v=20261119-copy1">
+  <link rel="stylesheet" href="./css/ready-effects.css?v=20261118-ready7">
+  <link rel="stylesheet" href="./css/popover-glass.css?v=20261118-glass3">
+  <link rel="stylesheet" href="./css/trade-v2.css?v=20261119-trade1">
+  <link rel="stylesheet" href="./css/product-stories.css?v=20261119-copy1">
+  <link rel="stylesheet" href="./css/integration.css">
+  <script type="module" src="./js/integration.js"></script>
+  <script type="module" src="./js/app.js?v=20261119-copy1"></script>
+</head>
+<body>
+  <a class="skip-link" href="#wider-story">Skip the introduction</a>
+  <div class="ocean" aria-hidden="true">
+    <div class="ocean-texture"></div>
+    <div class="ocean-light"></div>
+    <div class="ocean-depth"></div>
+    <div id="ready-light" class="ready-light"></div>
+  </div>
+  <header class="site-header">
+    <a class="wordmark" href="#surface" aria-label="Beyond one species, back to the beginning">BEYOND <span>ONE SPECIES</span></a>
+    <div class="header-actions"><button id="motion-toggle" class="quiet-button" aria-pressed="true" title="Pause background and specimen motion"><span class="motion-symbol" aria-hidden="true">≈</span><span class="motion-label">Motion on</span></button><button class="quiet-button" data-open="sources-dialog">Data &amp; sources <span aria-hidden="true">↗</span></button></div>
+  </header>
+  <nav class="risk-nav" aria-label="Risk groups" hidden>
+    <span class="risk-nav-caption">EXTINCTION RISK</span>
+    <a href="#vulnerable" data-risk="VU"><i></i><span>Vulnerable<small>High risk</small></span></a>
+    <a href="#endangered" data-risk="EN"><i></i><span>Endangered<small>Very high risk</small></span></a>
+    <a href="#critically-endangered" data-risk="CR"><i></i><span>Critically<br>Endangered<small>Extremely high risk</small></span></a>
+    <a href="#trade-reveal" class="trade-nav-link">Trade records <span aria-hidden="true">↓</span></a>
+  </nav>
+  <main>
+    <section class="hero" id="surface" aria-labelledby="hero-title">
+      <div class="hero-sticky">
+        <canvas id="shark-canvas" aria-label="A scalloped hammerhead joins a wider group of marine lives"></canvas>
+        <div class="hero-copy"><p class="eyebrow">FINAL CHAPTER</p><h1 id="hero-title">Beyond<br>one species.</h1><p class="hero-lead">The hammerhead is one example.</p></div>
+        <div id="hero-companions" class="hero-companions" aria-hidden="true"></div>
+        <div class="hero-bottom"><a class="scroll-cue" href="#wider-story" aria-label="Scroll to the product examples">↓</a><p class="scroll-note">EXPLORE THE SPECIES AND MATERIALS</p><div class="risk-strip" inert aria-hidden="true"><span class="risk-strip-label">Increasing extinction risk <span aria-hidden="true">→</span></span><a href="#vulnerable">Vulnerable<small>High risk</small></a><a href="#endangered">Endangered<small>Very high risk</small></a><a href="#critically-endangered">Critically Endangered<small>Extremely high risk</small></a><div class="risk-line"></div></div></div>
+      </div>
+    </section>
+    <section class="wider-story page-width" id="wider-story" aria-labelledby="wider-title">
+      <p class="eyebrow">MATERIALS FROM MARINE SPECIES</p><h2 id="wider-title">Perfume, food<br>and jewellery.</h2>
+      <p class="intro-text">Ambergris in perfume, eel in prepared food, shell in jewellery. These three examples trace materials to threatened marine species. The charts compare our study list with reported CITES trade.</p>
+      <div class="scope-total"><strong id="pool-total">1,608</strong><span>entries in our study list<br><small>IUCN 2026-1 · marine identity checked with WoRMS</small></span></div>
+      <p class="scope-note">This study list is not a global total. The charts cover CITES Appendix I–III reports from 2015–2024, including commercial and non-commercial purposes. The preceding chapter measures reported fin weight; this chapter counts entries with CITES records. Scrolling follows risk categories, not habitat depth.</p>
+      <a class="text-link" href="#vulnerable">Explore Vulnerable species <span aria-hidden="true">↓</span></a>
+    </section>
+    <div id="risk-zones" aria-label="Explore the risk groups"><p class="loading-copy">Loading the study list…</p></div>
+    <section class="product-connections" id="product-connections" aria-labelledby="product-connections-title">
+      <p class="eyebrow">PRODUCTS · MATERIALS · SPECIES</p>
+      <h2 id="product-connections-title">Materials and source species.</h2>
+      <p class="product-connections-intro">Compare the three material connections. The CITES figures use a separate dataset of reported international trade.</p>
+      <div class="product-connections-head" aria-hidden="true"><span>PRODUCT</span><span>MATERIAL</span><span>SOURCE SPECIES</span></div>
+      <div id="product-connections-content"></div>
+    </section>
+    <section class="comparison-stop page-width" id="compare-groups" aria-labelledby="comparison-title">
+      <div class="comparison-copy"><p class="eyebrow">CITES RECORDS BY ANIMAL GROUP</p><h2 id="comparison-title">Which groups appear<br>in CITES reports?</h2><p class="intro-text">Each square counts entries in our study list with at least one CITES record. Select a square to see the matching entries.</p></div>
+      <div class="comparison-viz"><div id="risk-comparison"></div><div class="heatmap-key"><span>Fewer entries</span><div class="scale-swatches" data-scale="180" aria-hidden="true"></div><span>More entries</span><span class="scale-range">0 &mdash; 180</span></div><p class="chart-note">Each study entry is counted once per square. CITES Appendix I–III · 2015–2024 · commercial and non-commercial purposes. This chart counts entries, not animals or trade volume.</p></div>
+    </section>
+    <section class="trade-reveal page-width" id="trade-reveal" aria-labelledby="trade-title">
+      <p class="eyebrow">SPECIES IN THE CITES REPORTS</p><h2 id="trade-title">Which of these species<br>have CITES records?</h2>
+      <p class="intro-text">Highlight the species in this selection with a matched CITES record. A missing match does not establish an absence of trade.</p>
+      <div class="reveal-actions"><button id="reveal-trade" class="primary-button" aria-pressed="false"><span class="reveal-icon" aria-hidden="true">◐</span><span>Highlight species with records</span></button><span class="reveal-status" id="reveal-status" role="status">Showing all selected species</span></div>
+      <div id="reveal-community" class="reveal-community" aria-label="A selection from the three risk groups"></div>
+      <div class="coverage-heading"><div><strong id="trade-total">387</strong><p>study entries with CITES records<br><small>2015–2024 · CITES Appendix I–III</small></p></div><button class="text-link" id="explore-recorded">View entries with records <span aria-hidden="true">↗</span></button></div>
+      <div class="annual-chart"><div class="chart-heading"><h3>Entries recorded each year</h3><p>Each square counts study entries with a CITES record in that year. All years use IUCN 2026-1 risk groups; the chart does not show changes in conservation status.</p></div><div id="annual-heatmap" class="annual-glass"></div><div class="heatmap-key"><span>Fewer entries</span><div class="scale-swatches" aria-hidden="true"></div><span>More entries</span><span class="scale-range">0 — 160</span></div><p class="chart-note">An entry may appear in more than one year. Select a square to see its entries. The counts do not measure trade volume.</p></div>
+    </section>
+    <section class="closing closing-epilogue page-width" id="epilogue" aria-labelledby="closing-title">
+      <div class="epilogue-copy">
+        <p class="eyebrow">STUDY LIST &amp; SOURCES</p>
+        <p class="epilogue-lead">1,608 study entries. 387 with CITES records.</p>
+        <div id="closing-title" class="epilogue-title" role="heading" aria-level="2" aria-label="Explore the study list. Check the sources."><span class="epilogue-title-line">Explore the study list.</span><span class="epilogue-title-line epilogue-title-serif">Check the sources.</span></div>
+        <p class="epilogue-note">Browse the entries and the evidence behind each match.</p>
+        <span class="epilogue-trace" aria-hidden="true"></span>
+        <div class="epilogue-actions">
+          <button id="open-catalogue" class="epilogue-primary">Browse the study list <span aria-hidden="true">&#8599;</span></button>
+          <div class="epilogue-secondary"><button data-open="sources-dialog">Scope &amp; sources</button><a href="./data/candidates.csv" download>Download the list</a></div>
+        </div>
+      </div>
+      <div class="epilogue-lives" aria-hidden="true">
+        <img class="epilogue-life" src="./assets/species/sphyrna-lewini-noaa.png" alt="" loading="lazy" decoding="async">
+        <img class="epilogue-life" src="./assets/species/eretmochelys-imbricata-noaa.png" alt="" loading="lazy" decoding="async">
+        <img class="epilogue-life" src="./assets/species/balaenoptera-borealis-noaa.png" alt="" loading="lazy" decoding="async">
+        <img class="epilogue-life" src="./assets/species/callorhinus-ursinus-noaa.png" alt="" loading="lazy" decoding="async">
+      </div>
+    </section>
+  </main>
+  <footer class="site-footer"><span>BEYOND ONE SPECIES</span><p>IUCN 2026-1 / WoRMS · CITES full database 2026.1</p><a href="#surface">Back to chapter start</a></footer>
+  <div class="page-progress" aria-hidden="true"></div>
+  <dialog id="species-dialog" class="detail-dialog"><div class="dialog-top"><span class="eyebrow">SPECIES DETAILS</span><button class="close-button" data-close aria-label="Close species details">×</button></div><div id="species-detail"></div></dialog>
+  <dialog id="catalogue-dialog" class="catalogue-dialog"><div class="dialog-top"><div><p class="eyebrow">THE STUDY LIST</p><h2>Browse the entries</h2></div><button class="close-button" data-close aria-label="Close the candidate list">×</button></div><p class="dialog-description">Each entry follows an IUCN assessment name. Some names map to the same accepted WoRMS taxon, so entry counts and unique taxon counts differ.</p><div class="catalogue-filters"><label>Search<input id="catalogue-search" type="search" placeholder="Scientific name, family or class"></label><label>Risk group<select id="catalogue-risk"><option value="">All groups</option><option value="VU">Vulnerable</option><option value="EN">Endangered</option><option value="CR">Critically Endangered</option></select></label><label>Record coverage<select id="catalogue-trade"><option value="">All study entries</option><option value="identified">With CITES records</option><option value="other">Without a confirmed match</option></select></label></div><div id="catalogue-context" class="catalogue-context"></div><p id="catalogue-count" class="list-count" role="status"></p><div id="catalogue-results" class="catalogue-results"></div><p class="chart-note">CITES full database 2026.1 · Appendix I–III · 2015–2024. Entries without a confirmed match include candidates with no identified record and candidates whose taxonomic match needs review. This does not establish an absence of trade.</p></dialog>
+  <dialog id="sources-dialog" class="sources-dialog"><div class="dialog-top"><div><p class="eyebrow">HOW TO READ THIS CHAPTER</p><h2>Scope, sources &amp; credits</h2></div><button class="close-button" data-close aria-label="Close data and sources">×</button></div><div class="source-prose"><h3>The study list</h3>
+<p>We selected globally assessed Animalia entries classified as Vulnerable, Endangered or Critically Endangered in IUCN 2026-1, then checked marine identity and accepted names against WoRMS. The list contains 1,608 IUCN entries, corresponding to 1,601 accepted WoRMS taxon IDs. It is a project study list, not a complete global census.</p>
+<p>Twelve entries have ambiguous taxonomic links. After excluding them, 1,596 entries remained eligible for matching to CITES data. We found at least one record for 387 entries in the study period.</p>
+<h3>Reading the charts</h3>
+<p>Gold, copper and coral mark Vulnerable, Endangered and Critically Endangered. In the square charts, lighter shades mean more study entries. Each chart uses one count scale across its risk groups.</p>
+<p>The class charts compare all study entries with the subset having CITES records, on a shared 0–250 scale. The overview counts entries with records on a 0–180 scale. A study entry is counted once in each relevant group.</p>
+<p>The small coverage bars show entries with records divided by all entries in that risk group. These ratios describe the dataset match, not trade intensity or the share of wild populations being traded.</p>
+<h3>CITES scope and matching</h3>
+<p>We use the full CITES Trade Database, version 2026.1, for 2015–2024 and Appendix I–III. Commercial and non-commercial purposes are included, such as research and personal use. A confirmed match requires an unambiguous species identity and at least one positive-quantity source record. Importer and exporter reports are checked; quantities from the two sides are not added.</p>
+<p>We found records for 387 study entries. Two further candidates appear only in N-coded records and are outside the Appendix I–III subset. A missing match does not prove no trade. A record alone does not show illegality or establish why a species is threatened.</p>
+<h3>Annual counts</h3>
+<p>Each annual square counts distinct study entries with a matched record that year. An entry can occur in several years, so adding annual cells does not give a unique ten-year total. Risk groups use IUCN 2026-1 throughout; they do not reconstruct historical risk assessments.</p>
+<p>Counts describe entries, not animals, shipments or trade volume. The full-database snapshot can differ from live queries used in the preceding chapter. The two sources should not be combined as one quantity series.</p>
+<h3>Product and material examples</h3>
+<p>The product examples use brand ingredient statements and museum documentation. They identify materials and source species; they are not individual transactions matched in the CITES data. Product information was checked in November 2026 and does not establish sales during 2015–2024.</p>
+<p>Bariberry states that its ambergris is beach-cast. CITES Resolution Conf. 9.6 excludes naturally excreted ambergris from the Convention’s provisions. The perfume example therefore does not demonstrate a CITES-controlled transaction.</p>
+<p>Yutaka names Japanese eel as 70% of its kabayaki and states that it is farmed and processed in China. The source of its juvenile stock is not given. Japanese eel migrates between freshwater and the sea; no record was matched to it in this study’s CITES extract.</p>
+<div id="product-source-credits"></div>
+<h3>Product images</h3>
+<p>Yutaka packaging uses the unmodified official transparent image. The perfume bottle was isolated and redrawn from a brand image using an image-generation tool. The earrings are a generated illustration of the material category, not a photograph of a documented object. Third-party product images are used for identification and commentary; rights remain with their owners. No open licence is claimed.</p>
+<p><a href="./assets/products/credits.json" target="_blank">Product image sources and notes</a></p>
+<h3>Decorative elements</h3>
+<p>The background light follows risk groups, not habitat depth. Animal image sizes and positions are for layout and do not encode abundance.</p>
+<h3>Primary sources</h3><ul><li><a href="https://www.gbif.org/dataset/19491596-35ae-4a91-9a98-85cf505f1bd3" target="_blank" rel="noopener">IUCN Red List official checklist via GBIF · 2026-1</a></li><li><a href="https://www.marinespecies.org/" target="_blank" rel="noopener">World Register of Marine Species</a></li><li><a href="https://trade.cites.org/en/cites_trade/download_db" target="_blank" rel="noopener">CITES full trade database · 2026.1</a></li><li><a href="https://trade.cites.org/cites_trade_guidelines/en-CITES_Trade_Database_Guide.pdf" target="_blank" rel="noopener">CITES Trade Database interpretation guide</a></li><li><a href="./data/provenance.json" target="_blank">Download chapter provenance</a> · <a href="./data/candidates.csv" download>Candidate CSV</a></li></ul><h3>Shared visual foundations</h3><p>The underwater background and scalloped hammerhead model come from the team’s supplied opening chapter. The background is extended here with local gradients and restrained light. The model by sharkingaround is used under CC BY 4.0.</p><p><a href="https://sketchfab.com/3d-models/scalloped-hammerhead-juvenile-low-poly-f5adc17c922b48feae76aaea98552dd4" target="_blank" rel="noopener">Scalloped hammerhead model &amp; creator</a> · <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a></p><h3>Local interaction libraries</h3><p>Chapter motion and text components share one locally bundled GSAP / ScrollTrigger 3.15.1 core, continuing the team’s GSAP-based motion. Context panels use Floating UI for positioning. Decorative side light uses <a href="https://reactbits.dev/backgrounds/side-rays" target="_blank" rel="noopener">React Bits Side Rays</a>; chapter headings and the closing title use <a href="https://reactbits.dev/text-animations/blur-text" target="_blank" rel="noopener">React Bits Blur Text</a>. These components are used under MIT + Commons Clause; React and Motion use MIT licenses; GSAP uses its Standard License. Libraries and notices are bundled locally. The side-light shader is unchanged; a small lifecycle adaptation pauses hidden or inactive canvases.</p><h3>Specimen image credits</h3><div id="image-credits"><p>Image credits are loading.</p></div><p class="chart-note">Locally bundled Manrope and Inter fonts are used under their SIL Open Font Licenses. Specimen views use transparent scientific illustrations from NOAA Fisheries and DBCLS / TogoTV; individual credits and licences are listed above.</p></div></dialog>
+  <aside id="context-popover" class="context-popover" role="dialog" aria-modal="false" aria-labelledby="popover-title" tabindex="-1" hidden></aside>
+  <div id="app-status" class="app-status" role="status" aria-live="polite"></div>
+</body>
+</html>

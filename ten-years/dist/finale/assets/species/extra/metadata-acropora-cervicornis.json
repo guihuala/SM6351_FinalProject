@@ -1,0 +1,21 @@
+{
+  "scientificName": "Acropora cervicornis",
+  "commonName": "Staghorn coral",
+  "risk": "CR",
+  "file": "assets/species/extra/acropora-cervicornis-noaa.png",
+  "displayMode": "white-background-illustration",
+  "width": 800,
+  "height": 534,
+  "imageType": "scientific illustration",
+  "license": "Public domain — NOAA",
+  "licenseUrl": "https://commons.wikimedia.org/wiki/File:640x427-Coral-Staghorn-markedDW.png#Licensing",
+  "attribution": "Dawn Witherington / NOAA Fisheries",
+  "sourceUrl": "https://www.fisheries.noaa.gov/species/staghorn-coral",
+  "imageUrl": "https://www.fisheries.noaa.gov/s3/styles/original/s3/2023-03/640x427-Coral-Staghorn-markedDW.png?itok=LjbKwqck",
+  "supportingSourceUrl": "https://commons.wikimedia.org/wiki/File:640x427-Coral-Staghorn-markedDW.png",
+  "description": "NOAA species-page illustration explicitly identifies Acropora cervicornis (staghorn coral).",
+  "changes": "None. Unmodified source PNG.",
+  "sha256": "24acbb0afd6330dd571fb5bba315e0d24e1485190d6f29733766575a6a9b1447",
+  "bytes": 441973,
+  "alphaNote": "RGBA source has alpha 243–255, not a usable transparent cutout. White background retained."
+}

@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Spline underwater — Reference preview</title>
+  <link rel="icon" type="image/png" sizes="64x64" href="../favicon.png">
+  <link rel="stylesheet" href="scene.css">
+  <link rel="stylesheet" href="./timeline.css?v=reversible-scroll">
+  <script type="importmap">{"imports":{"three":"../ocean/vendor/three.module.js"}}</script>
+  <link rel="stylesheet" href="../style.css?v=yearly-columns">
+  <link rel="stylesheet" href="../ocean/story.css?v=trade-scroll">
+  <link rel="stylesheet" href="trade.css?v=continuous-trade">
+  <link rel="stylesheet" href="trade-chapters.css?v=chapter-shark">
+  <link rel="stylesheet" href="finale-host.css?v=20261119-integrated1">
+</head>
+<body>
+<nav class="dv-shell opening-navigation" aria-label="Trade chapters">
+  <a class="opening-skip" href="#annual-trade">Explore annual trade data <span aria-hidden="true">→</span></a>
+  <a class="opening-next" href="#trade-intro">Continue to annual trade data <span aria-hidden="true">→</span></a>
+</nav>
+<main>
+  <section class="story-intro" id="ocean-intro" aria-label="Introduction" tabindex="-1"></section>
+  <section class="story-depth" id="page-two" aria-label="Deeper ocean"><span id="meet-the-shark" aria-hidden="true"></span></section>
+  <section class="story-third" id="page-three" aria-label="Third scene">
+    <ol class="rating-timeline" aria-label="Conservation status history">
+      <li><span class="rating-line" aria-hidden="true"></span><span class="rating-dot" aria-hidden="true"></span>
+        <span class="rating-badge" aria-hidden="true">NT</span><span class="rating-label">Near Threatened</span><time class="rating-year" datetime="2000">2000</time></li>
+      <li><span class="rating-line" aria-hidden="true"></span><span class="rating-dot" aria-hidden="true"></span>
+        <span class="rating-badge" aria-hidden="true">EN</span><span class="rating-label">Endangered</span><time class="rating-year" datetime="2009">2009</time></li>
+      <li><span class="rating-line" aria-hidden="true"></span><span class="rating-dot" aria-hidden="true"></span>
+        <span class="rating-badge" aria-hidden="true">CR</span><span class="rating-label">Critically Endangered</span><time class="rating-year" datetime="2019">2019</time></li>
+    </ol>
+  </section>
+  <section id="trade-total" aria-label="Reported trade weight"></section>
+  <section id="trade-products" aria-label="Trade by product"></section>
+  <div class="opening-chapters decade-story-page ocean-page">
+    <section id="trade-intro" class="dv-shell dv-trade-intro opening-trade-chapter" tabindex="-1" aria-label="Fin trade introduction">
+      <div class="dv-trade-intro-layout">
+        <div class="dv-trade-intro-content">
+          <p class="dv-trade-period">2015–2024</p>
+          <h2>Fin trade</h2>
+          <p class="dv-trade-intro-copy">CITES records trace how much fin trade was reported each year and in what form.</p>
+        </div>
+        <canvas class="dv-trade-shark" aria-hidden="true" hidden></canvas>
+        <a class="dv-trade-continue" href="#annual-trade" aria-label="Explore annual trade data"><svg viewBox="0 0 28 36" fill="none" aria-hidden="true"><path d="M14 5v24M5 20l9 9 9-9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+      </div>
+    </section>
+    <section id="annual-trade" class="dv-shell opening-trade-chapter" tabindex="0" aria-label="Annual fin trade, 2015–2024" data-image-base="../images/">
+      <p class="opening-trade-status" role="status">Loading annual trade charts…</p>
+      <noscript><p class="opening-trade-status">Enable JavaScript to explore the trade charts.</p></noscript>
+    </section>
+    <section id="product-forms" class="dv-shell dv-linked opening-trade-chapter dv-product-scene" tabindex="-1" aria-labelledby="product-forms-title">
+      <div class="dv-product-scene-layout">
+        <header class="dv-product-scene-header">
+          <h2 id="product-forms-title">Product forms</h2>
+          <label class="dv-product-year">Year <select data-role="product-year" disabled></select></label>
+        </header>
+        <div data-role="product-panel"><p role="status">Loading product forms…</p></div>
+        <div class="dv-product-scene-footer">
+          <p data-role="product-caption"></p>
+          <a class="dv-product-link" href="#annual-trade">Annual trade <span aria-hidden="true">↑</span></a>
+        </div>
+        <noscript><p>Enable JavaScript to view product weights.</p></noscript>
+      </div>
+    </section>
+  </div>
+
+  <!-- Final chapter: isolated styles and scripts; earlier chapter markup is retained. -->
+  <section id="finale" class="finale-host" aria-label="Final chapter: beyond one species">
+    <div class="finale-window">
+      <iframe id="finale-frame" class="finale-frame" data-src="../finale/index.html?integrated=1" title="Final chapter: threatened marine species, products and CITES records" scrolling="no"></iframe>
+      <div class="finale-loading" role="status"><p>Loading the final chapter…</p><a href="../finale/index.html">Open the chapter separately</a></div>
+    </div>
+    <noscript><a class="finale-noscript" href="../finale/index.html">Open the final chapter</a></noscript>
+  </section>
+</main>
+
+<div class="deep-background" aria-hidden="true"></div>
+<div class="scene-copy scene-two-copy"><p>Sphyrna lewini is a migratory shark of warm coastal and semi-oceanic waters around the world. It is recognizable by its wide, flattened head, and it can grow to about 4 meters.</p></div>
+<div class="scene-copy scene-three-copy"><p>It matures late and produces few young, and many pups depend on shallow coastal nurseries, which makes the species slow to recover from overfishing.</p></div>
+<header class="ocean-title"><h1><span>The Global Trade of</span><span>Sphyrna lewini</span></h1></header>
+<canvas id="scene"></canvas>
+<canvas id="landing-claw" hidden aria-hidden="true" style="position:fixed;inset:0;width:100%;height:100%;z-index:3;pointer-events:none"></canvas>
+<canvas id="fish" aria-label="Animated scalloped hammerhead shark swimming freely underwater"></canvas>
+<script type="module" src="scene-loader.js"></script>
+<script type="module" src="bubbles.js?v=preview-motion"></script>
+<a class="scroll-cue" href="#meet-the-shark" aria-label="Meet the scalloped hammerhead"><svg viewBox="0 0 28 36" fill="none" aria-hidden="true"><path d="M14 5v24M5 20l9 9 9-9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+<script src="../ocean/vendor/gsap.min.js"></script>
+<script type="module" src="depth-transition.js?v=reversible-scroll"></script>
+
+<section id="trade-stage" hidden aria-label="Scalloped hammerhead trade">
+  <div class="trade-summary"><p>2015–2024</p><h2>Total weight of scalloped hammerhead products reported by importers</h2></div>
+  <div class="trade-model"><canvas aria-label="Scalloped hammerhead"></canvas></div>
+  <div class="trade-detail">
+    <div class="trade-ring"><svg viewBox="0 0 200 200" aria-label="Share of reported weight"></svg></div>
+    <div class="trade-list">
+      <div class="trade-columns"><span>Product</span><span>Weight (kg)</span><span>Share</span></div>
+      <div class="trade-rows"></div>
+      <small>Source: CITES Trade Database · 2015–2024<br>Importer-reported quantities in kg and g, converted to kg.</small>
+    </div>
+  </div>
+  <div class="trade-number"><span></span><strong>221,294.79 kg</strong><small></small></div>
+</section>
+<script type="module" src="trade.js?v=shared-assets"></script>
+<script type="module" src="annual-trade-loader.js?v=product-year-scroll"></script>
+<script type="module" src="chapter-motion.js?v=chapter-shark"></script>
+<script type="module" src="finale-host.js?v=20261119-integrated1"></script>
+</body>
+</html>

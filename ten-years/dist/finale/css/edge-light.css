@@ -1,0 +1,24 @@
+/* A bright, narrow rim with a soft halo, leaving the centre of the sea clear. */
+.ocean-light{opacity:.12}
+.ocean-rays{opacity:.18}
+.ocean-ambient{background:none!important;animation:none;transform:none}
+.ambient-vulnerable{--edge-colour:#d5b877;--edge-hot:#fff2cf}
+.ambient-endangered{--edge-colour:#c98963;--edge-hot:#ffe5d1}
+.ambient-critical{--edge-colour:#d9746b;--edge-hot:#ffe0d9}
+.edge-ribbon{display:none;position:absolute;inset:-2% 0;width:100%;height:104%;overflow:visible}
+.edge-ribbon use{fill:none;stroke-linecap:round}
+.ribbon-halo{stroke:#367cc5;stroke-width:94;filter:blur(26px);opacity:.21}
+.ribbon-colour{stroke:var(--edge-colour);stroke-width:36;filter:blur(10px);opacity:.44}
+.ribbon-core{stroke:var(--edge-hot);stroke-width:2.2;filter:blur(.9px);opacity:.48}
+.ribbon-glint{stroke:var(--edge-hot);stroke-width:3.2;filter:blur(1.4px);stroke-dasharray:90 910;stroke-dashoffset:1000;opacity:.7;animation:edge-current 21s linear infinite}
+.edge-flow-right .ribbon-glint{animation-delay:-10s}
+.edge-flow{transform-box:view-box;transform-origin:50% 50%;will-change:transform;animation:edge-flow 22s ease-in-out infinite alternate}
+.edge-flow-right{animation-duration:26s;animation-delay:-13s}
+.ribbon-core{animation:edge-shimmer 11s ease-in-out infinite alternate}
+@keyframes edge-flow{from{transform:translateY(-12px) scaleX(.994)}to{transform:translateY(12px) scaleX(1.008)}}
+@keyframes edge-shimmer{from{opacity:.28}to{opacity:.52}}
+@keyframes edge-current{to{stroke-dashoffset:0}}
+.motion-off .edge-flow,.motion-off .ribbon-core,.motion-off .ribbon-glint{animation-play-state:paused}
+.risk-zone .zone-title{color:var(--risk);text-shadow:0 0 28px color-mix(in srgb,var(--risk) 10%,transparent)}
+@media(max-width:700px){.ribbon-halo{stroke-width:78;opacity:.18}.ribbon-colour{stroke-width:25;opacity:.38}.ribbon-core{stroke-width:2;opacity:.65}}
+@media(prefers-reduced-motion:reduce){.edge-flow,.ribbon-core,.ribbon-glint{animation:none}}

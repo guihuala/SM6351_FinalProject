@@ -1,0 +1,84 @@
+{
+  "version": 1,
+  "created": "2026-11-19",
+  "scope": "Student data-visualisation final chapter for SM6351_FinalProject. Product disclosure examples are separate from CITES trade-record counts.",
+  "rightsNote": "Third-party product images are used for identification and commentary; rights remain with their owners. No open licence is claimed. Generated imagery is illustrative, not an authenticated museum photograph or evidence of a specific trade transaction.",
+  "assets": [
+    {
+      "file": "love-lotus-bottle.png",
+      "title": "Love Lotus perfume bottle",
+      "type": "AI-assisted background extraction of an official product photograph",
+      "credit": "Source product photograph: BARIBERRY. Background-extraction edit: OpenAI image generation.",
+      "sourcePage": "https://www.bariberry.com/view/item/000000000368",
+      "ingredientDisclosurePage": "https://www.bariberry.jp/en/ambergris-perfume/",
+      "sourceImage": "https://makeshop-multi-images.akamaized.net/bariberry/shopimages/68/03/4_000000000368.png?1788321369",
+      "localReference": "work/nonmedical-concept-references-20261119/love-lotus-official-product4-original.png",
+      "speciesContext": "Sperm whale — Physeter macrocephalus",
+      "ingredientContext": "The brand declares natural white, beach-cast ambergris in Love Lotus. This is a brand disclosure, not a claim that a particular whale was hunted or that this retail product appears in a particular CITES record.",
+      "imageNote": "Generated transparent cutout preserves the source bottle form and appearance; this is an edited illustration of the real product, not the untouched source photograph.",
+      "generation": {
+        "tool": "built-in image_gen.imagegen",
+        "transparent_background": true,
+        "prompt": "Use case: background-extraction. Asset type: transparent product cutout for a local student editorial webpage. Input image 1 is the exact EDIT TARGET and official Love Lotus perfume product photograph. Extract ONLY the single full perfume bottle centered in the photograph. Preserve its exact tall narrow transparent rectangular glass body, copper gold cylindrical cap, amber yellow liquid shape, small white EAU DE PARFUM text, and the ornamental translucent lotus-shaped object inside the bottom of the bottle. Preserve bottle front perspective, proportions, cap reflections, glass highlights and edges; do not redesign or add a brand label. Remove the entire lotus flower outside the bottle, green leaf, tabletop, pale wall, exterior cast shadow and all scene background. True transparent RGBA background all around the bottle, with neat anti-aliased edges and transparent glass retaining realistic tint. One complete intact bottle upright, centered with approximately 8% clean padding; product occupies most of the image height. Do not paint a checkerboard, no new objects, no floor, no platform, no text outside product."
+      },
+      "validation": {
+        "mode": "RGBA",
+        "width": 1200,
+        "height": 1310,
+        "bytes": 566517,
+        "alphaMin": 0,
+        "alphaMax": 255,
+        "fullyTransparentFraction": 0.785
+      }
+    },
+    {
+      "file": "unagi-kabayaki.webp",
+      "title": "Yutaka Frozen Unagi Kabayaki 250g",
+      "type": "Unmodified official transparent product photograph",
+      "credit": "Yutaka / Tazaki Foods Ltd. Official product photograph.",
+      "sourcePage": "https://yutaka.london/products/frozen/frozen-unagi-kabayaki-250g/",
+      "additionalSourcePage": "https://shop.yutaka.london/products/yutaka-unagi-grilled-eel-250g",
+      "sourceImage": "https://yutaka.london/_img/2021/11/800/unagi-kabayaki-250g-416.webp?133867732200000000",
+      "localReference": "work/nonmedical-concept-references-20261119/yutaka-unagi-kabayaki-official-original.webp",
+      "speciesContext": "Japanese eel — Anguilla japonica",
+      "ingredientContext": "The official page declares eel (Anguilla japonica) 70%, farmed and processed in China. The species extinction-risk category concerns wild populations; this package is not evidence of wild capture, an illegal product, or a particular CITES transaction.",
+      "validation": {
+        "mode": "RGBA",
+        "width": 800,
+        "height": 800,
+        "bytes": 52246,
+        "alphaMin": 0,
+        "alphaMax": 255,
+        "fullyTransparentFraction": 0.691,
+        "unmodifiedSha256": "9010d34f23162a9cc729faa8450caa5709d8b0d419a2bd4bc3a932051b6ea5b4"
+      }
+    },
+    {
+      "file": "tortoiseshell-earrings-illustrative.png",
+      "title": "Illustrative tortoiseshell-type drop earrings",
+      "type": "Generated illustrative object; not an authenticated museum object",
+      "credit": "Generated with OpenAI image generation, based on the accepted local concept. Object-category context: Australian Museum / WWF-Australia Surrender Your Shell research.",
+      "displayDisclosure": "Illustrative jewellery; not an authenticated museum object.",
+      "sourcePage": "https://australian.museum/blog/amri-news/surrender-your-shell-using-dna-to-protect-the-hawksbill-turtle/",
+      "sourceContext": "The museum article documents actual hawksbill tortoiseshell jewellery. Its image CDN returned HTTP 403; no museum photograph was downloaded, edited, copied, or bypassed for this asset.",
+      "unusedMuseumPhotoCredit": "The documented earrings photograph is credited to Christine Hof / WWF-Australia. That photograph is not the source image of this generated asset.",
+      "localStyleReference": "outputs/nonmedical-web-concepts-20261119/01-three-risk-scroll.png",
+      "speciesContext": "Hawksbill turtle — Eretmochelys imbricata",
+      "interpretation": "A visual example of a museum-documented object type. The generated pair has no retail brand, sale listing, authenticated material provenance, or relationship to a particular CITES transaction. It must not be used as forensic identification of real shell or of any individual consumer item.",
+      "generation": {
+        "tool": "built-in image_gen.imagegen",
+        "transparent_background": true,
+        "prompt": "Use case: product-mockup. Asset type: isolated editorial illustrative object for a local educational webpage about hawksbill tortoiseshell trade, NOT a retail product advertisement. Supporting style reference: provided ocean webpage concept; take only the visual appearance of its bottom-left pair of tortoiseshell-type drop earrings as inspiration, do not reproduce any webpage or animals or typography. Generate one pair of realistic elongated teardrop tortoiseshell-type pendant earrings, polished translucent honey amber brown material with irregular dark brown almost-black organic mottled patches. Thin simple gold-colored fishhook ear wires with tiny rings, two matching but naturally non-identical tear-shaped pendants side by side. Museum-style neutral product documentation photo, straight on, both earrings fully in frame and pendant tips complete, gently separate, no dramatic perspective. Warm neutral soft reflected lighting, good edge definition and authentic material thickness, no artistic ocean lighting. IMPORTANT these are generated illustrative objects of a documented object category, not a claim to be an exact museum artifact or a currently sold item; put no claim, label, watermark or text into the pixels. True transparent RGBA background, no shadow, no floor, no card, no person, no turtle, no scene, no other jewellery. One isolated pair centered with about 10% clear padding around the entire pair."
+      },
+      "validation": {
+        "mode": "RGBA",
+        "width": 1312,
+        "height": 1199,
+        "bytes": 1010629,
+        "alphaMin": 0,
+        "alphaMax": 255,
+        "fullyTransparentFraction": 0.677
+      }
+    }
+  ]
+}

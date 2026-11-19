@@ -1,0 +1,109 @@
+{
+  "title": "Beyond one species — frozen project data",
+  "scopeLabel": "Project verified candidate entries",
+  "versions": {
+    "risk": "IUCN 2026-1",
+    "marineIdentity": "WoRMS cross-check accessed 2026-10-22",
+    "trade": "CITES full database 2026.1"
+  },
+  "sourceCheckedOn": "2026-10-22",
+  "tradeWindow": {
+    "start": 2015,
+    "end": 2024,
+    "appendices": [
+      "I",
+      "II",
+      "III"
+    ]
+  },
+  "sourceFiles": [
+    {
+      "file": "01_verified_marine_candidates_CR_EN_VU.csv",
+      "sha256": "6619b9ea8631aa4f278e43fa20c982f8efc237c296825782af0bb08a4f48f959",
+      "bytes": 597903
+    },
+    {
+      "file": "06_core_CITES_I_II_III_line_items.csv",
+      "sha256": "6357804f9f9a6478fe0d4695c60da30d8dfaae44c7a2cffb729bc5d87a181f09",
+      "bytes": 121082732
+    }
+  ],
+  "sources": [
+    {
+      "label": "IUCN Red List official checklist via GBIF",
+      "url": "https://doi.org/10.15468/0qnb58",
+      "version": "2026-1"
+    },
+    {
+      "label": "World Register of Marine Species",
+      "url": "https://www.marinespecies.org/"
+    },
+    {
+      "label": "CITES Trade Database full download",
+      "url": "https://trade.cites.org/en/cites_trade/download_db",
+      "version": "2026.1"
+    },
+    {
+      "label": "CITES Trade Database interpretation guide",
+      "url": "https://trade.cites.org/cites_trade_guidelines/en-CITES_Trade_Database_Guide.pdf"
+    }
+  ],
+  "definitions": {
+    "candidateEntry": "An accepted Animalia species entry in the frozen global IUCN CR/EN/VU pool with verified marine evidence from WoRMS under the project's name checks.",
+    "tradeIdentified": "At least one uniquely attributed positive-quantity original record for this candidate in the frozen 2015–2024 Appendix I–III extract, on either reporting side.",
+    "annualCoverage": "Number of distinct IUCN candidate taxon IDs with at least one identified core record in the year, with risk category held fixed to IUCN 2026-1.",
+    "annualRecordsCount": "Count of original source line items per year for a candidate. Not transactions, animals or a sum of quantities.",
+    "classMatrix": "Counts grouped by the candidate's frozen IUCN class, not by potentially differing CITES classification fields.",
+    "publicationYear": "IUCN publication/reference year supplied in the frozen checklist, not an inferred assessment date."
+  },
+  "limitations": [
+    "This is the project's verified candidate list, not a complete census of all threatened marine species worldwide.",
+    "The list contains 1,608 IUCN candidate entries, corresponding to 1,601 accepted WoRMS taxon IDs. They are not interchangeable totals.",
+    "Twelve candidate entries belong to unresolved many-to-one taxonomic joins. Trade records are not assigned to them automatically.",
+    "IUCN 2026-1 categories define the groups throughout this story; they do not reconstruct each species' status in each historical trade year.",
+    "Identified trade coverage uses only CITES Appendix I, II or III records in 2015–2024 from the frozen full database 2026.1.",
+    "No identified record does not mean no trade, no exploitation, or no threat. CITES coverage and reporting can differ among taxa and years.",
+    "Other candidate entries includes both eligible entries without an identified core record and unresolved taxonomic joins.",
+    "A candidate can occur in more than one year. Summing annual coverage cells does not give the number of distinct candidates across the decade.",
+    "Original line-item counts are not shipments, independent transactions, quantities of animals, or population estimates.",
+    "Importer and exporter reports can describe the same trade. Their quantities are not added here; this story counts identified candidate entries.",
+    "A trade record does not establish that trade caused a species' risk category or that a transaction was illegal.",
+    "Reported product terms are not a verified map of body parts or consumer uses. Anomalous terms are retained as source records rather than treated as biological facts.",
+    "This frozen full-database snapshot can differ from the preceding single-species page's live comparative-tabulation extract. Quantities and row counts must not be mixed between snapshots."
+  ],
+  "checks": {
+    "candidateIDsUnique": true,
+    "coreOriginalIDsUnique": true,
+    "riskCountsReconciled": true,
+    "tradeCountsReconciled": true,
+    "allAnnualCountsReconciled": true,
+    "classMatrixSumsReconciled": true,
+    "curatedRiskAssignmentsChecked": true,
+    "noQuantityAggregation": true,
+    "supplementaryNOnlyExcluded": true
+  },
+  "recordAudit": {
+    "appendixLineItems": {
+      "II": 235496,
+      "I": 8891,
+      "III": 8107
+    },
+    "reporterLineItems": {
+      "E": 118230,
+      "I": 134264
+    }
+  },
+  "totals": {
+    "candidateEntries": 1608,
+    "uniqueWoRMSAcceptedTaxa": 1601,
+    "citesJoinEligible": 1596,
+    "unresolvedJoinEntries": 12,
+    "tradeIdentifiedEntries": 387,
+    "otherCandidateEntries": 1221,
+    "eligibleEntriesWithoutIdentifiedCoreRecords": 1209,
+    "supplementaryNOnlyEntries": 2,
+    "classCount": 26,
+    "coreOriginalLineItems": 252494,
+    "curatedEntries": 24
+  }
+}

@@ -1,0 +1,53 @@
+/* A clear title with a restrained soft echo on one word and an italic second voice. */
+.closing.closing-epilogue h2.epilogue-title{
+  font-size:clamp(34px,3.4vw,46px);
+  line-height:1.14;
+  font-weight:500;
+  letter-spacing:-.04em;
+}
+.closing.closing-epilogue .epilogue-title .epilogue-title-line{
+  display:block;
+  color:#e1edf4;
+}
+.closing.closing-epilogue .epilogue-title .epilogue-soft-word{
+  position:relative;
+  display:inline-block;
+  isolation:isolate;
+  color:inherit;
+}
+.closing.closing-epilogue .epilogue-title .epilogue-ghost{
+  position:absolute;
+  display:block;
+  inset:0;
+  z-index:-1;
+  pointer-events:none;
+  color:inherit;
+  opacity:.25;
+  filter:blur(1.8px);
+  transform:translate(1.2px,.2px);
+}
+.closing.closing-epilogue .epilogue-title .epilogue-title-serif{
+  margin-top:.06em;
+  color:#b1cddc;
+  font-family:Georgia,'Times New Roman',serif;
+  font-style:italic;
+  font-weight:400;
+  font-size:1em;
+  letter-spacing:-.035em;
+  line-height:1.14;
+}
+@media(max-width:700px){
+  .closing.closing-epilogue h2.epilogue-title{font-size:clamp(30px,7.8vw,36px)}
+  .closing.closing-epilogue .epilogue-title .epilogue-ghost{filter:blur(1.4px);opacity:.23}
+}
+@media(prefers-reduced-motion:no-preference){
+  .closing.closing-epilogue .epilogue-title .epilogue-ghost{animation:epilogue-word-echo 10s ease-in-out infinite alternate}
+  .motion-off .closing.closing-epilogue .epilogue-title .epilogue-ghost{animation-play-state:paused}
+  @keyframes epilogue-word-echo{
+    from{transform:translate(-1.1px,.2px);opacity:.20}
+    to{transform:translate(1.8px,-.4px);opacity:.30}
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  .closing.closing-epilogue .epilogue-title .epilogue-ghost{animation:none;transform:translate(1px,.2px)}
+}

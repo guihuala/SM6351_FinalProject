@@ -1,0 +1,45 @@
+/* Finale-only controls. The parent document keeps its own theme and layout. */
+:root {
+  --finale-control-font: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+  --finale-control-ink: #ced6e1;
+  --finale-control-line: #3a5362;
+  --finale-control-accent: #1899c5;
+}
+
+/* The child adapter sets this only in the complete-page iframe. Native
+   programmatic scrolling stays enabled; standalone chapter scrollbars remain. */
+html[data-integrated="true"] { scrollbar-width: none; }
+html[data-integrated="true"]::-webkit-scrollbar { width: 0; height: 0; }
+
+.finale-return-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 10px 14px;
+  border: 1px solid color-mix(in srgb, var(--finale-control-line) 72%, transparent);
+  border-radius: 999px;
+  background: rgb(1 2 6 / 20%);
+  color: var(--finale-control-ink);
+  font: 500 16px / 1.25 var(--finale-control-font);
+  letter-spacing: .01em;
+  text-decoration: none;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  transition: border-color .2s ease, background-color .2s ease;
+}
+
+.finale-return-link:hover {
+  border-color: var(--finale-control-accent);
+  background: rgb(6 97 155 / 12%);
+}
+
+.finale-return-link:focus-visible {
+  outline: 2px solid var(--finale-control-accent);
+  outline-offset: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .finale-return-link { transition: none; }
+}

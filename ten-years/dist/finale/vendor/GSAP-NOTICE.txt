@@ -1,0 +1,12 @@
+GSAP and ScrollTrigger 3.12.5
+Copyright 2024 GreenSock. All rights reserved.
+Author: Jack Doyle.
+
+These two unmodified local files are reused from the team's supplied chapter.
+Original copyright notices remain at the top of both files.
+GSAP is distributed under its Standard License, not the MIT license.
+License: https://gsap.com/standard-license/
+Documentation: https://gsap.com/docs/v3/Plugins/ScrollTrigger/
+
+Use in this project: chapter entrances and restrained scroll-linked specimen
+translation. Native browser scrolling is preserved. No remote runtime dependency.

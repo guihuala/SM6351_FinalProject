@@ -1,0 +1,23 @@
+[
+  {
+    "scientificName": "Callorhinus ursinus",
+    "commonName": "Northern fur seal",
+    "sourceUrl": "https://www.fisheries.noaa.gov/species/northern-fur-seal",
+    "imageUrl": "https://www.fisheries.noaa.gov/s3/styles/original/s3/dam-migration/640x427-northern-fur-seal.png?itok=gQBeI_iE",
+    "alt": "Illustration of a northern fur seal showing dark brown fur, a light neck mane, a pointed snout, visible ear flaps, and large foreflippers.",
+    "transparentFraction": 0.7909269662921349,
+    "width": 800,
+    "height": 534,
+    "file": "beyond-one-species\\dist\\assets\\species\\extra\\northern-fur-seal.png"
+  },
+  {
+    "scientificName": "Cystophora cristata",
+    "commonName": "Hooded seal",
+    "sourceUrl": "https://www.fisheries.noaa.gov/species/hooded-seal",
+    "imageUrl": "https://www.fisheries.noaa.gov/s3/styles/original/s3/dam-migration/640x427-hooded-seal.jpg?itok=FQ4dawE1",
+    "alt": "Illustration of an adult male hooded seal displaying its silver-gray body, black spots, and inflated red nasal hood.",
+    "transparentFraction": 0,
+    "width": 800,
+    "height": 534
+  }
+]

@@ -1,0 +1,51 @@
+/* Compact count badges and fine bars only in the three risk composition charts. */
+.risk-zone .composition-head,
+.risk-zone .composition-row{
+  grid-template-columns:minmax(135px,1.15fr) minmax(120px,1.85fr) 32px 54px;
+}
+.risk-zone .composition-row{
+  min-height:54px;
+  padding:8px 0;
+}
+.risk-zone .composition-track{
+  height:6px;
+  border-radius:4px;
+}
+.risk-zone .composition-fill{
+  border-radius:3px;
+}
+.risk-zone .composition-count{
+  justify-self:center;
+  width:32px;
+  height:32px;
+  min-height:32px;
+  max-height:32px;
+  aspect-ratio:1;
+  padding:0;
+  border-radius:5px;
+  font-size:12px;
+  line-height:1;
+  font-variant-numeric:tabular-nums;
+}
+@media(max-width:700px){
+  .risk-zone .composition-head,
+  .risk-zone .composition-row{
+    grid-template-columns:minmax(94px,1.2fr) minmax(35px,1fr) 28px 42px;
+  }
+  .risk-zone .composition-row{
+    min-height:52px;
+    padding:7px 0;
+  }
+  .risk-zone .composition-track{
+    height:5px;
+    border-radius:3px;
+  }
+  .risk-zone .composition-count{
+    width:28px;
+    height:28px;
+    min-height:28px;
+    max-height:28px;
+    border-radius:4px;
+    font-size:11px;
+  }
+}

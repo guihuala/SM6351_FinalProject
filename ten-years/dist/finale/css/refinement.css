@@ -1,0 +1,43 @@
+/* A restrained edge glow leaves the shared deep-blue sea visible. */
+.ambient-vulnerable{background:radial-gradient(ellipse 32% 78% at 104% 25%,#d5b87718,transparent 85%),radial-gradient(ellipse 30% 74% at -4% 25%,#d5b87713,transparent 85%)}
+.ambient-endangered{background:radial-gradient(ellipse 32% 78% at 104% 25%,#c989631b,transparent 85%),radial-gradient(ellipse 30% 74% at -4% 25%,#c9896316,transparent 85%)}
+.ambient-critical{background:radial-gradient(ellipse 32% 78% at 104% 25%,#d9746b20,transparent 85%),radial-gradient(ellipse 30% 74% at -4% 25%,#d9746b19,transparent 85%)}
+.ocean-ambient{animation:ambient-tide 25s ease-in-out infinite alternate;transform-origin:50% 0}
+.motion-off .ocean-ambient{animation-play-state:paused}
+@keyframes ambient-tide{from{transform:translateX(-.5%) scale(1.015)}to{transform:translateX(.5%) scale(1.03)}}
+@media(prefers-reduced-motion:reduce){.ocean-ambient{animation:none;transform:none}}
+
+/* Small data tiles and generous spacing preserve the full comparison layout. */
+.comparison-stop{display:block;padding-block:12vh}
+.comparison-copy{max-width:640px;margin-bottom:34px}.comparison-copy .eyebrow{font-size:9px;letter-spacing:.17em;margin-bottom:18px}
+.comparison-copy h2{font-size:clamp(31px,3.1vw,43px);line-height:1.22;letter-spacing:-.035em;margin-bottom:20px}
+.comparison-stop .intro-text{font-size:13px;line-height:1.85;margin-bottom:0;color:#9bb7c8;max-width:500px}
+.comparison-viz{width:100%;max-width:none;min-width:0}
+.comparison-stop .matrix-glass{width:100%;max-width:none;margin:0;padding:16px 0;border:0;border-radius:0;background:none;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none}
+.comparison-stop .matrix{grid-template-columns:minmax(165px,1.2fr) repeat(3,minmax(70px,1fr));gap:22px 24px;width:100%;max-width:none}
+.comparison-stop .matrix-cell{width:40px;height:30px;min-height:30px;justify-self:center;aspect-ratio:auto;padding:3px;font-size:10px;border-radius:6px;backdrop-filter:blur(8px) saturate(.55);-webkit-backdrop-filter:blur(8px) saturate(.55);box-shadow:inset 0 1px 0 #e8faff24,0 2px 5px #0013290c}
+.comparison-stop .matrix-column{font-size:10px;line-height:1.45;padding:0 0 10px}.comparison-stop .matrix-row-label{font-size:11px;padding-right:12px;line-height:1.55}
+.comparison-stop .risk-colour-key{margin-top:20px}.comparison-stop .legend-description{font-size:8px;margin-bottom:10px;line-height:1.7}
+.comparison-stop .risk-legend-items{display:flex;flex-wrap:wrap;gap:14px 26px}.comparison-stop .risk-key-item{display:flex;align-items:center;gap:9px;font-size:8px;line-height:1.5}.comparison-stop .risk-key-item .scale-swatches{display:inline-flex;gap:2px;padding:3px;border-radius:5px}
+.comparison-stop .scale-swatches i{width:9px;height:7px}.comparison-stop .scale-range{font-size:8px;margin-top:10px}.comparison-stop .chart-note{font-size:9px;line-height:1.8;margin-top:14px;max-width:540px}
+/* Years stay aligned while their individual tiles are smaller than the grid tracks. */
+.annual-glass{padding:20px 16px;background:linear-gradient(145deg,#c5ebff05,#09223935);border-color:#c2e8fa0c;box-shadow:inset 0 1px 0 #ecfaff0b}
+.annual-grid{grid-template-columns:minmax(120px,1.2fr) repeat(10,minmax(0,1fr));gap:20px 12px;align-items:center}
+.annual-cell{width:min(100%,28px);height:26px;min-height:26px;justify-self:center;aspect-ratio:auto;font-size:9px;border-radius:5px;padding:2px;backdrop-filter:blur(8px) saturate(.55);-webkit-backdrop-filter:blur(8px) saturate(.55)}
+.annual-row-label{font-size:10px;padding-right:12px}.year-label{font-size:9px}
+@media(max-width:700px){.comparison-stop{padding-block:10vh}.comparison-copy{margin-bottom:27px}.comparison-copy h2{font-size:30px;margin-bottom:17px}.comparison-stop .intro-text{font-size:12px}.comparison-stop .matrix{grid-template-columns:minmax(96px,1.15fr) repeat(3,minmax(0,1fr));gap:16px 10px}.comparison-stop .matrix-cell{width:min(100%,32px);height:28px;min-height:28px;font-size:9px;border-radius:6px}.comparison-stop .matrix-row-label{font-size:9px;padding-right:5px}.comparison-stop .matrix-column{font-size:8px;padding-bottom:8px}.comparison-stop .risk-legend-items{display:grid;gap:8px}.comparison-stop .risk-key-item{font-size:8px;justify-content:space-between;max-width:290px}.annual-glass{padding:16px 8px}.annual-grid{grid-template-columns:repeat(10,minmax(0,1fr));gap:12px 6px}.annual-row-label{grid-column:1/-1;padding:7px 0 0;font-size:10px}.annual-corner{display:none}.annual-cell{width:min(100%,22px);height:22px;min-height:22px;font-size:8px;border-radius:4px;padding:2px}.year-label{font-size:7px}}
+
+/* Risk groups form three rows; classes form seven columns. Values stay in tooltips. */
+.comparison-stop .matrix-glass{overflow-x:auto;overscroll-behavior-inline:contain;scrollbar-width:thin}
+.comparison-stop .matrix-transposed{grid-template-columns:minmax(120px,1.4fr) repeat(7,minmax(65px,1fr));gap:16px 14px;align-items:center}
+.comparison-stop .matrix-cell{width:28px;height:28px;min-height:28px;padding:0;font-size:0;border-radius:4px}
+.comparison-stop .class-heading{max-width:95px;justify-self:center;text-align:center;font-size:9px;line-height:1.5;padding:0 0 9px}
+.matrix-risk-label{display:flex;align-items:center;font-size:10px;line-height:1.5;padding-right:12px}
+.matrix-cell,.annual-cell{background:linear-gradient(145deg,#effcff09,transparent 55%),var(--cell-color);box-shadow:inset 0 1px 0 #e8faff18,0 2px 5px #0013290c}
+.matrix-scroll-hint{display:none}
+.annual-glass{width:min(100%,650px);margin-inline:auto;padding:20px 16px}
+.annual-grid{grid-template-columns:minmax(110px,1.3fr) repeat(10,minmax(0,1fr));gap:14px 8px}
+.annual-cell{width:min(100%,26px);height:26px;min-height:26px;padding:0;font-size:0;border-radius:4px}
+.annual-chart .chart-heading,.annual-chart>.heatmap-key,.annual-chart>.chart-note{max-width:650px;margin-left:auto;margin-right:auto}
+.annual-chart .chart-heading{display:block}.annual-chart .chart-heading p{max-width:650px}
+@media(max-width:700px){.comparison-stop .matrix-transposed{min-width:590px;grid-template-columns:104px repeat(7,minmax(55px,1fr));gap:15px 10px}.comparison-stop .class-heading{font-size:8px;max-width:68px}.comparison-stop .matrix-cell{width:24px;height:24px;min-height:24px}.matrix-risk-label{position:sticky;left:0;z-index:2;font-size:9px;background:#061321ed;padding-right:12px}.matrix-scroll-hint{display:block;font-size:8px;color:#7797aa;margin:8px 0 0}.annual-glass{width:100%;padding:15px 8px}.annual-grid{grid-template-columns:repeat(10,minmax(0,1fr));gap:9px 4px}.annual-cell{width:min(100%,20px);height:20px;min-height:20px;border-radius:3px}.annual-row-label{grid-column:1/-1;padding:5px 0 0}}

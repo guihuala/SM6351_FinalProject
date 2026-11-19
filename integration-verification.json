@@ -1,0 +1,23 @@
+{
+  "baseCommit": "f4ec2b74bae03e5173bee6b399e4fa35e456f38d",
+  "checkedAt": "2026-11-19T23:21:15",
+  "originalTrackedFilesVerified": 93,
+  "originalFilesChanged": [],
+  "allOriginalPagesPreserved": true,
+  "entry": "ten-years/dist/complete.html",
+  "chapterPosition": "After Product forms, at the end of the existing opening page",
+  "localPreview": "http://127.0.0.1:8894/complete.html",
+  "finalChapterPreview": "http://127.0.0.1:8894/opening/complete.html#finale",
+  "checkedHTTPResources": 43,
+  "fixedDataAndLightUnchanged": true,
+  "modelSharedHashMatches": true,
+  "rootAndChildSyntaxChecks": "passed",
+  "parentProtocolSimulation": "passed: validation, initial page position, active/inactive, wheel requests, anchors, previous chapter, resize",
+  "childProtocolSimulation": "passed by delegated review: validation, deduplication, wheel/touch/key/anchor, native local controls, host activation",
+  "browserVisualQA": {
+    "completed": false,
+    "limit": "Protocol, resource and structure checks are not a browser visual or physical touch test."
+  },
+  "publication": "Prepared for the user-authorised GitHub upload; complete.html is additive and the original default entry is preserved.",
+  "originalContentCheck": "Git blob hashes after repository text normalisation"
+}
