@@ -1,12 +1,14 @@
 {
   "baseCommit": "f4ec2b74bae03e5173bee6b399e4fa35e456f38d",
-  "checkedAt": "2026-11-19T23:21:15",
+  "checkedAt": "2026-11-20T00:45:18+08:00",
   "originalTrackedFilesVerified": 93,
-  "originalFilesChanged": [],
+  "originalFilesChanged": [
+    "ten-years/dist/index.html"
+  ],
   "allOriginalPagesPreserved": true,
-  "entry": "ten-years/dist/complete.html",
+  "entry": "ten-years/dist/index.html",
   "chapterPosition": "After Product forms, at the end of the existing opening page",
-  "localPreview": "http://127.0.0.1:8894/complete.html",
+  "localPreview": "http://127.0.0.1:8894/",
   "finalChapterPreview": "http://127.0.0.1:8894/opening/complete.html#finale",
   "checkedHTTPResources": 43,
   "fixedDataAndLightUnchanged": true,
@@ -18,7 +20,10 @@
     "completed": false,
     "limit": "Protocol, resource and structure checks are not a browser visual or physical touch test."
   },
-  "publication": "User-authorised upload to main and the existing GitHub Pages pipeline; complete.html is additive and the original default entry is preserved.",
+  "publication": "User-authorised default entry points to the complete project through the existing GitHub Pages pipeline.",
   "originalContentCheck": "Git blob hashes after repository text normalisation",
-  "productKeyboardBoundary": "passed: 2024 forward keyboard boundary with focus in Product forms enters the finale; other focus, year, direction and wheel behaviour remain unchanged."
+  "productKeyboardBoundary": "passed: 2024 forward keyboard boundary with focus in Product forms enters the finale; other focus, year, direction and wheel behaviour remain unchanged.",
+  "integratedEntry": "ten-years/dist/opening/complete.html",
+  "defaultEntryChange": "Only the root redirect and its no-JavaScript fallback changed; query strings and fragments are preserved. Teammate content, scripts, styles and data are unchanged.",
+  "defaultEntryChecks": "passed: root, query parameters, legacy chapter fragments, finale fragment, no-JavaScript link; all legacy static chapter IDs exist in the complete entry."
 }

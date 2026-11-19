@@ -1,16 +1,16 @@
 # 最后一幕的整合入口
 
-本副本来自 `guihuala/SM6351_FinalProject` 的 `main`，基线提交为 `f4ec2b74bae03e5173bee6b399e4fa35e456f38d`。本次只新增文件，不修改队友已有的受版本管理文件。整合版沿用仓库现有 GitHub Pages 发布流程。
+本副本来自 `guihuala/SM6351_FinalProject` 的 `main`，基线提交为 `f4ec2b74bae03e5173bee6b399e4fa35e456f38d`。初次整合只新增文件；2026年11月20日按用户要求，将根入口 `ten-years/dist/index.html` 指向整合版。队友原有章节、脚本、样式和数据保持不变。整合版沿用仓库现有 GitHub Pages 发布流程。
 
 ## 查看整站
 
-双击根目录 `Open-complete-preview.cmd`，或者运行 `python preview-complete.py`。完整入口是 `ten-years/dist/complete.html`，随后进入 `opening/complete.html`。
+双击根目录 `Open-complete-preview.cmd`，或者运行 `python preview-complete.py`。默认入口是 `ten-years/dist/index.html`，直接进入 `opening/complete.html`；`complete.html` 继续作为兼容入口。
 
 页面顺序保留：水下开场、双髻鲨介绍、保护等级时间轴、贸易概览、年度鱼鳍贸易、Product forms，最后接入 Beyond one species。
 
 以后同步队友新提交后，可以运行 `python ten-years/scripts/build_complete_entry.py`，从当时的原开场文件重新生成整合入口；脚本只写新增的 `opening/complete.html`，不改原文件。加 `--verify` 可检查两个入口是否仍保持这个关系。
 
-`ten-years/dist/index.html` 与 `opening/index.html` 保留原样。直接打开原入口仍会看到原有版本；完整整合版使用新的 `complete.html`。线上入口为 `https://guihuala.github.io/SM6351_FinalProject/complete.html`。以后若确定将整合版作为默认入口，需要单独处理入口指向，本次没有替换原入口。
+线上默认入口为 `https://guihuala.github.io/SM6351_FinalProject/`。根入口保留查询参数和章节锚点，直接打开原链接即可从水下开场一路滚动到末章。`opening/index.html` 与 `project.html` 保留原样；原有章节锚点也存在于整合页中。
 
 ## 新增部分
 
