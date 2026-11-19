@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width,initial-scale=1">
+ <meta name="theme-color" content="#010206">
+ <title>The Global Trade of Sphyrna lewini</title>
+ <meta name="description" content="Dive into the habitat of the scalloped hammerhead and explore a decade of its reported fin trade using CITES data.">
+ <link rel="stylesheet" href="style.css?v=trade-simple">
+ <link rel="stylesheet" href="ocean/story.css?v=trade-scroll">
+ <script type="importmap">{"imports":{"three":"./ocean/vendor/three.module.js"}}</script>
+</head>
+<body class="decade-standalone decade-story-page ocean-page">
+ <main>
+  <div class="ocean-deep dv-shell" aria-hidden="true"></div>
+  <div id="ocean-intro" class="dv-shell ocean-story" tabindex="-1">
+   <div class="ocean-stage" aria-hidden="true">
+    <div class="ocean-surface"></div>
+    <div class="ocean-rays"></div>
+    <div class="ocean-bubbles"></div>
+    <canvas class="ocean-fish"></canvas>
+   </div>
+   <header class="ocean-intro-panel">
+    <div class="ocean-intro-content">
+     <a class="ocean-skip" href="#annual-trade">Skip to trade data</a>
+     <h1><span>The Global Trade of</span><i>Sphyrna lewini</i></h1>
+     <a class="ocean-cue" href="#page-two" aria-label="Meet the scalloped hammerhead">
+      <svg viewBox="0 0 28 36" fill="none" aria-hidden="true"><path d="M14 5v24M5 20l9 9 9-9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+     </a>
+    </div>
+   </header>
+   <section id="page-two" class="ocean-depth" aria-label="About the scalloped hammerhead" tabindex="-1">
+    <div class="ocean-depth-content">
+     <p><i>Sphyrna lewini</i> is a migratory shark of warm coastal and semi-oceanic waters around the world. It is recognizable by its wide, flattened head, and it can grow to about 4 meters.</p>
+     <a class="ocean-data-link" href="#trade-intro">Fin trade <span aria-hidden="true">↓</span></a>
+    </div>
+   </section>
+  </div>
+  <section id="trade-intro" class="dv-shell dv-trade-intro" tabindex="-1" aria-label="Fin trade introduction">
+   <div class="dv-trade-intro-layout">
+    <div class="dv-trade-intro-content"><p class="dv-trade-period">2015—2024</p></div>
+    <a class="dv-trade-continue" href="#annual-trade" aria-label="Explore trade data"><span aria-hidden="true">↓</span></a>
+   </div>
+  </section>
+  <section id="annual-trade" class="dv-shell" tabindex="0" aria-label="Annual trade and product forms, 2015–2024"></section>
+  <noscript><p class="ocean-script-note">Enable JavaScript to explore the trade charts.</p></noscript>
+ </main>
+ <script src="data.js"></script>
+ <script src="data/cites-fins-2015-2024.js"></script>
+ <script src="data/cites-management-events.js"></script>
+ <script src="motion.js?v=silk-1"></script>
+ <script src="app.js?v=trade-simple"></script>
+ <script src="chapter-scroll.js?v=ocean-story-2"></script>
+ <script src="ocean/vendor/gsap.min.js" defer></script>
+ <script src="ocean/vendor/ScrollTrigger.min.js" defer></script>
+ <script src="ocean/story.js?v=local-water" type="module"></script>
+ <script src="story.js?v=trade-chapter" defer></script>
+</body>
+</html>
