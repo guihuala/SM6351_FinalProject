@@ -18,6 +18,7 @@
     "completed": false,
     "limit": "Protocol, resource and structure checks are not a browser visual or physical touch test."
   },
-  "publication": "Prepared for the user-authorised GitHub upload; complete.html is additive and the original default entry is preserved.",
-  "originalContentCheck": "Git blob hashes after repository text normalisation"
+  "publication": "User-authorised upload to main and the existing GitHub Pages pipeline; complete.html is additive and the original default entry is preserved.",
+  "originalContentCheck": "Git blob hashes after repository text normalisation",
+  "productKeyboardBoundary": "passed: 2024 forward keyboard boundary with focus in Product forms enters the finale; other focus, year, direction and wheel behaviour remain unchanged."
 }

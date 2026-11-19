@@ -59,6 +59,21 @@ if(host&&frame){
     requestSync();
   }
 
+  // The shared chart emits keyboard boundaries on its annual root even when
+  // the key came from Product forms. Release only the final product boundary.
+  document.getElementById('annual-trade')?.addEventListener('decade:boundary',event=>{
+    const detail=event.detail;
+    const products=document.getElementById('product-forms');
+    if(detail?.origin!=='keyboard'||detail.direction!==1||detail.year!==2024||!products?.contains(document.activeElement))return;
+    event.preventDefault();
+    start();
+    host.scrollIntoView({behavior:'instant',block:'start'});
+    host.tabIndex=-1;
+    host.focus({preventScroll:true});
+    if(location.hash!=='#finale')history.pushState(null,'','#finale');
+    requestSync();
+  });
+
   addEventListener('message',onMessage);
   addEventListener('scroll',requestSync,{passive:true});
   addEventListener('resize',()=>{lastY=null;requestSync();},{passive:true});

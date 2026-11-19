@@ -4,7 +4,7 @@ import sys
 
 DIST = Path(__file__).resolve().parents[1] / 'dist'
 source = (DIST / 'opening/index.html').read_text(encoding='utf-8')
-head = '  <link rel="stylesheet" href="finale-host.css?v=20261119-integrated1">\n'
+head = '  <link rel="stylesheet" href="finale-host.css?v=20261119-integrated2">\n'
 section = '''
   <!-- Final chapter: isolated styles and scripts; earlier chapter markup is retained. -->
   <section id="finale" class="finale-host" aria-label="Final chapter: beyond one species">
@@ -15,7 +15,7 @@ section = '''
     <noscript><a class="finale-noscript" href="../finale/index.html">Open the final chapter</a></noscript>
   </section>
 '''
-script = '<script type="module" src="finale-host.js?v=20261119-integrated1"></script>\n'
+script = '<script type="module" src="finale-host.js?v=20261119-integrated2"></script>\n'
 assert all(source.count(tag) == 1 for tag in ('</head>', '</main>', '</body>'))
 assert 'id="finale"' not in source, 'The team entry already contains a final chapter; review the new integration.'
 result = source.replace('</head>', head + '</head>').replace('</main>', section + '</main>').replace('</body>', script + '</body>')
