@@ -9,7 +9,7 @@
  <meta name="description" content="Dive into the habitat of the scalloped hammerhead and explore a decade of its reported fin trade using CITES data.">
  <link rel="stylesheet" href="style.css?v=trade-simple">
  <link rel="stylesheet" href="ocean/story.css?v=trade-scroll">
- <link rel="stylesheet" href="opening/trade-chapters.css?v=chapter-reveal">
+ <link rel="stylesheet" href="opening/trade-chapters.css?v=product-page">
  <script type="importmap">{"imports":{"three":"./ocean/vendor/three.module.js"}}</script>
 </head>
 <body class="decade-standalone decade-story-page ocean-page">
@@ -48,19 +48,33 @@
     <a class="dv-trade-continue" href="#annual-trade" aria-label="Explore trade data"><svg viewBox="0 0 28 36" fill="none" aria-hidden="true"><path d="M14 5v24M5 20l9 9 9-9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
    </div>
   </section>
-  <section id="annual-trade" class="dv-shell opening-trade-chapter" data-collapsible-products tabindex="0" aria-label="Annual trade and product forms, 2015–2024"></section>
+  <section id="annual-trade" class="dv-shell opening-trade-chapter" tabindex="0" aria-label="Annual fin trade, 2015–2024"></section>
+  <section id="product-forms" class="dv-shell dv-linked opening-trade-chapter dv-product-scene" tabindex="-1" aria-labelledby="product-forms-title">
+    <div class="dv-product-scene-layout">
+      <header class="dv-product-scene-header">
+        <h2 id="product-forms-title">Product forms</h2>
+        <label class="dv-product-year">Year <select data-role="product-year" disabled></select></label>
+      </header>
+      <div data-role="product-panel"><p role="status">Loading product forms…</p></div>
+      <div class="dv-product-scene-footer">
+        <p data-role="product-caption"></p>
+        <a class="dv-product-link" href="#annual-trade">Annual trade <span aria-hidden="true">↑</span></a>
+      </div>
+      <noscript><p>Enable JavaScript to view product weights.</p></noscript>
+    </div>
+  </section>
   <noscript><p class="ocean-script-note">Enable JavaScript to explore the trade charts.</p></noscript>
  </main>
  <script src="data.js"></script>
  <script src="data/cites-fins-2015-2024.js"></script>
  <script src="data/cites-management-events.js"></script>
  <script src="motion.js?v=silk-1"></script>
- <script src="app.js?v=chapter-reveal"></script>
+ <script src="app.js?v=product-page"></script>
  <script src="chapter-scroll.js?v=ocean-story-2"></script>
  <script src="ocean/vendor/gsap.min.js" defer></script>
  <script src="ocean/vendor/ScrollTrigger.min.js" defer></script>
  <script src="ocean/story.js?v=local-water" type="module"></script>
- <script src="story.js?v=chapter-reveal" defer></script>
-<script type="module" src="opening/chapter-motion.js?v=chapter-reveal"></script>
+ <script src="story.js?v=product-page" defer></script>
+<script type="module" src="opening/chapter-motion.js?v=product-page"></script>
 </body>
 </html>

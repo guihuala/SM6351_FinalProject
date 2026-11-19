@@ -6,7 +6,7 @@
   --dv-accent: #3ddcd0;
   --trade-cue-ink: #cdefff;
   --trade-cue-line: #83ceff;
-  background: #041725;
+  background: color-mix(in srgb, var(--dv-bg) 32%, transparent);
 }
 
 .ocean-page #trade-intro.opening-trade-chapter::before,
@@ -80,21 +80,12 @@
   --dv-measure-ink: color-mix(in srgb, var(--dv-accent) 72%, var(--dv-ink));
 }
 
-.dv-shell.opening-trade-chapter[data-collapsible-products]:not(.dv-forms-expanded) .dv-layout {
+.dv-shell.opening-trade-chapter:not(.dv-product-scene) .dv-layout {
   width: min(100%, 1080px);
 }
 
-.dv-shell.opening-trade-chapter[data-collapsible-products]:not(.dv-forms-expanded) .dv-main {
+.dv-shell.opening-trade-chapter:not(.dv-product-scene) .dv-main {
   grid-template: minmax(0, 1fr) / minmax(0, 1fr);
-}
-
-.dv-shell.opening-trade-chapter.dv-linked .dv-linked-forms {
-  border-inline-start: 0;
-  padding-inline-start: 0;
-}
-
-.dv-shell.opening-trade-chapter.dv-linked .dv-linked-forms[hidden] {
-  display: none;
 }
 
 .dv-shell.opening-trade-chapter .dv-linked-summary .dv-quantity {
@@ -102,7 +93,7 @@
   letter-spacing: -.045em;
 }
 
-.dv-shell.opening-trade-chapter[data-collapsible-products]:not(.dv-forms-expanded) .dv-quantity {
+.dv-shell.opening-trade-chapter:not(.dv-product-scene) .dv-quantity {
   font-size: clamp(34px, 6vw, 72px);
 }
 
@@ -119,28 +110,87 @@
   flex: 1;
 }
 
-.dv-shell.opening-trade-chapter .dv-product-toggle {
+.dv-shell.opening-trade-chapter .dv-product-link {
   display: inline-flex;
   align-items: center;
   gap: 8px;
   min-height: 44px;
-  padding: 4px 0 4px 10px;
-  border: 0;
-  border-bottom: 1px solid var(--dv-measure-line);
-  background: transparent;
+  padding-inline-start: 4px;
   color: var(--dv-text);
   font: 500 var(--dv-button)/1.25 var(--dv-body);
+  text-decoration: none;
   white-space: nowrap;
 }
 
-.dv-shell.opening-trade-chapter .dv-product-toggle:hover,
-.dv-shell.opening-trade-chapter .dv-product-toggle[aria-expanded="true"] {
-  border-bottom-color: var(--dv-accent);
+.dv-shell.opening-trade-chapter .dv-product-link:hover {
+  text-decoration: underline;
 }
 
-.dv-shell.opening-trade-chapter .dv-product-toggle span {
+.dv-shell.opening-trade-chapter .dv-product-link span {
   color: var(--dv-accent);
   font-size: 1.15em;
+}
+
+.decade-story-page .dv-shell.dv-product-scene {
+  height: auto;
+  min-height: 100svh;
+  touch-action: pan-y pinch-zoom;
+}
+
+.dv-shell.dv-product-scene .dv-product-scene-layout {
+  width: min(100%, 920px);
+  margin-inline: auto;
+  padding: clamp(22px, 6svh, 60px) clamp(16px, 5vw, 64px);
+  display: grid;
+  gap: clamp(10px, 3svh, 30px);
+}
+
+.dv-shell.dv-product-scene :is(.dv-product-scene-header, .dv-product-scene-footer) {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px 16px;
+  flex-wrap: wrap;
+}
+
+.dv-shell.dv-product-scene .dv-product-scene-header h2 {
+  margin: 0;
+  color: var(--dv-ink);
+  font: 500 var(--dv-h2)/1.15 var(--dv-heading);
+  letter-spacing: -.025em;
+}
+
+.dv-shell.dv-product-scene .dv-product-year {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  color: var(--dv-muted);
+  font-size: var(--dv-caption);
+}
+
+.dv-shell.dv-product-scene .dv-product-year select {
+  min-height: 44px;
+  padding-inline: 8px;
+  border: 1px solid var(--dv-trade-rule);
+  border-radius: 4px;
+  color: var(--dv-text);
+  background: var(--dv-bg);
+}
+
+.dv-shell.dv-product-scene .dv-product {
+  min-height: clamp(50px, 11svh, 94px);
+}
+
+.dv-shell.dv-product-scene .dv-product[aria-pressed="true"] .dv-bar-label {
+  color: var(--dv-accent);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.dv-shell.dv-product-scene .dv-product-scene-footer p {
+  margin: 0;
+  color: var(--dv-muted);
+  font-size: var(--dv-caption);
 }
 
 .dv-shell.opening-trade-chapter.dv-linked :is(.dv-column-selected-top, .dv-column-selected-bottom) {
@@ -151,15 +201,8 @@
   background: var(--dv-measure-ink);
 }
 
-@media (max-width: 420px) {
-  .dv-shell.opening-trade-chapter .dv-product-toggle {
-    padding-inline-start: 4px;
-    gap: 5px;
-  }
-}
-
 @media (max-height: 510px) {
-  .dv-shell.opening-trade-chapter[data-collapsible-products]:not(.dv-forms-expanded) .dv-quantity {
+  .dv-shell.opening-trade-chapter:not(.dv-product-scene) .dv-quantity {
     font-size: clamp(30px, 5vw, 48px);
   }
 }
@@ -181,19 +224,21 @@
   }
 
   .dv-shell.opening-trade-chapter[data-chart-entered] :is(.dv-linked-summary, .dv-chart-stage, .dv-toolbar),
-  .dv-shell.opening-trade-chapter.dv-forms-expanded .dv-linked-forms {
+  .dv-shell.dv-product-scene[data-chart-entered] :is(.dv-product-scene-header, .dv-forms-chart, .dv-product-scene-footer) {
     animation: trade-reveal .6s cubic-bezier(.22,.65,.24,1) both;
   }
 
-  .dv-shell.opening-trade-chapter[data-chart-entered] .dv-chart-stage {
+  .dv-shell.opening-trade-chapter[data-chart-entered] .dv-chart-stage,
+  .dv-shell.dv-product-scene[data-chart-entered] .dv-forms-chart {
     animation-delay: .12s;
   }
 
-  .dv-shell.opening-trade-chapter[data-chart-entered] .dv-toolbar {
+  .dv-shell.opening-trade-chapter[data-chart-entered] .dv-toolbar,
+  .dv-shell.dv-product-scene[data-chart-entered] .dv-product-scene-footer {
     animation-delay: .22s;
   }
 
-  .dv-shell.opening-trade-chapter :is(.dv-linked-summary, .dv-chart-stage, .dv-toolbar, .dv-linked-forms):focus-within {
+  .dv-shell.opening-trade-chapter :is(.dv-linked-summary, .dv-chart-stage, .dv-toolbar, .dv-forms-chart, .dv-product-scene-header, .dv-product-scene-footer):focus-within {
     animation: none;
   }
 }

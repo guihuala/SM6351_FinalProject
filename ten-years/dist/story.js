@@ -3,9 +3,10 @@
 const root=document.getElementById('annual-trade');
 const intro=document.getElementById('ocean-intro');
 const tradeIntro=document.getElementById('trade-intro');
+const productTarget=document.getElementById('product-forms');
 const reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
 const sharedFlow=!!window.MarineDecadeFlow;
-const api=MarineDecade.mount(root,{linked:true,year:2024,releaseAtBoundary:true,sharedFlow,intro:!!intro,headingTarget:tradeIntro?.querySelector('.dv-trade-intro-content'),imageBase:root.dataset?.imageBase,collapsibleProducts:root.hasAttribute?.('data-collapsible-products')});
+const api=MarineDecade.mount(root,{linked:true,year:2024,releaseAtBoundary:true,sharedFlow,intro:!!intro,headingTarget:tradeIntro?.querySelector('.dv-trade-intro-content'),imageBase:root.dataset?.imageBase,productTarget});
 const chapterScroll=window.MarineChapterScroll?.create();
 if(sharedFlow){
  const canvas=document.createElement('canvas');
@@ -33,17 +34,20 @@ tradeIntro?.addEventListener('click',event=>{
  if(event.target.closest('a[href="#annual-trade"]'))followChapter(event,root);
 });
 root.querySelector('.dv-chapter-link')?.addEventListener('click',event=>followChapter(event,tradeIntro||intro));
-if(tradeIntro||intro){
+root.querySelector('a[href="#product-forms"]')?.addEventListener('click',event=>followChapter(event,productTarget));
+productTarget?.querySelector('a[href="#annual-trade"]')?.addEventListener('click',event=>followChapter(event,root));
+if(tradeIntro||intro||productTarget){
  root.addEventListener('decade:boundary',event=>{
-  if(event.detail.origin==='touch'&&event.detail.direction<0)followChapter(event,tradeIntro||intro);
+  if(event.detail.origin==='touch')followChapter(event,event.detail.direction<0?(tradeIntro||intro):productTarget);
  });
 }
 function followProductLink(){
  if(location.hash!=='#product-forms')return;
- history.replaceState(null,'','#annual-trade');
+ if(!productTarget)history.replaceState(null,'','#annual-trade');
  chapterScroll?.cancel();
- root.scrollIntoView({behavior:'instant'});
- root.focus({preventScroll:true});
+ const target=productTarget||root;
+ target.scrollIntoView({behavior:'instant'});
+ target.focus({preventScroll:true});
 }
 window.addEventListener('hashchange',followProductLink);
 followProductLink();

@@ -1,5 +1,6 @@
 const intro = document.querySelector('#trade-intro');
 const chart = document.querySelector('#annual-trade');
+const products = document.querySelector('#product-forms');
 const reduced = matchMedia('(prefers-reduced-motion: reduce)');
 let frame, introVisible = false;
 
@@ -30,14 +31,15 @@ const observer = new IntersectionObserver(entries => {
       introVisible = entry.isIntersecting;
       requestIntro();
     } else if (!entry.isIntersecting) {
-      delete chart.dataset.chartEntered;
+      delete entry.target.dataset.chartEntered;
     } else if (entry.intersectionRatio >= .24) {
-      chart.dataset.chartEntered = '';
+      entry.target.dataset.chartEntered = '';
     }
   }
 }, {threshold: [0, .24]});
 observer.observe(intro);
 observer.observe(chart);
+if (products) observer.observe(products);
 
 addEventListener('scroll', requestIntro, {passive: true});
 addEventListener('resize', requestIntro);

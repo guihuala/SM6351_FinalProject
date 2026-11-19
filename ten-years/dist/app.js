@@ -63,7 +63,7 @@ function attachAtmosphere(root){
 function mount(root, options = {}) {
   if (!(root instanceof HTMLElement)) throw Error('Provide a chapter container element.');
   const linked = options.linked === true;
-  const collapsibleProducts = linked && options.collapsibleProducts === true;
+  const productTarget = linked && options.productTarget instanceof HTMLElement ? options.productTarget : null;
   const chapterView=options.chapterView??null;
   if(chapterView&&!['annual','forms'].includes(chapterView))throw Error('Chapter view must be annual or forms.');
   const chapterStart=!linked&&chapterView==='forms'?11:0,chapterEnd=linked||chapterView==='annual'?9:20;
@@ -74,7 +74,7 @@ function mount(root, options = {}) {
   root.setAttribute('aria-label',chapterView?(chapterView==='forms'?'Product forms, 2015–2024. Scroll or use arrow keys to explore.':'Annual trade, 2015–2024. Scroll or use arrow keys to explore.'):'A decade of trade. Scroll or use arrow keys to explore.');
   root.innerHTML = markup;
   root.classList.toggle('dv-linked',linked);
-  root.classList.remove('dv-trade-separated','dv-forms-expanded');
+  root.classList.remove('dv-trade-separated');
   root.dataset.chapter=chapterView||'';
   if(chapterView&&!linked){
     const title=root.querySelector('h1');
@@ -99,11 +99,11 @@ function mount(root, options = {}) {
   root.prepend(instructions);root.setAttribute('aria-describedby',instructions.id);
   const chartLabel=root.querySelector('[data-role="chart-label"]');
   let chapterHeading=null;
-  let productPanel, productToggle;
-  const q = name => root.querySelector(`[data-role="${name}"]`);
+  let productChart, productYear;
+  const q = name => root.querySelector(`[data-role="${name}"]`) ?? productTarget?.querySelector(`[data-role="${name}"]`);
   const action = name => root.querySelector(`[data-action="${name}"]`);
   if(linked){
-    root.setAttribute('aria-label','Annual trade and product forms, 2015–2024');
+    root.setAttribute('aria-label',productTarget?'Annual fin trade, 2015–2024':'Annual trade and product forms, 2015–2024');
     const heading=document.createElement('h2');
     if(options.intro){
       const link=document.createElement('a');
@@ -129,21 +129,22 @@ function mount(root, options = {}) {
     plot.insertAdjacentHTML('afterbegin','<div class="dv-linked-summary"></div>');
     q('amount-label').id=`${uid}-amount-label`;
     root.querySelector('.dv-linked-summary').append(q('amount-label'),q('quantity').parentElement);
-    plot.insertAdjacentHTML('afterend',`<section id="${uid}-forms" class="dv-linked-forms" aria-labelledby="${uid}-forms-title">
-      <header class="dv-forms-heading"><h3 id="${uid}-forms-title">Product forms</h3><span data-role="forms-year"></span></header>
-    </section>`);
     const forms=q('forms-chart');
-    const formsPanel=root.querySelector('.dv-linked-forms');
-    formsPanel.append(forms);
+    if(productTarget){
+      q('product-panel').replaceChildren(forms);
+      productChart=forms;
+      productYear=q('product-year');
+      productYear.innerHTML=D.YEARS.map(year=>`<option value="${year}">${year}</option>`).join('');
+      productYear.disabled=false;
+      toolbar.insertAdjacentHTML('beforeend',`<a class="dv-product-link" href="#${productTarget.id}">Product forms <span aria-hidden="true">↓</span></a>`);
+    }else{
+      plot.insertAdjacentHTML('afterend',`<section class="dv-linked-forms" aria-labelledby="${uid}-forms-title">
+        <header class="dv-forms-heading"><h3 id="${uid}-forms-title">Product forms</h3><span data-role="forms-year"></span></header>
+      </section>`);
+      root.querySelector('.dv-linked-forms').append(forms);
+    }
     forms.inert=false;
     forms.removeAttribute('aria-hidden');
-    if(collapsibleProducts){
-      productPanel=formsPanel;
-      productPanel.hidden=true;
-      toolbar.insertAdjacentHTML('beforeend',`<button type="button" class="dv-product-toggle" data-action="toggle-products"
-        aria-expanded="false" aria-controls="${uid}-forms">Product forms <span aria-hidden="true">+</span></button>`);
-      productToggle=action('toggle-products');
-    }
     if(options.headingTarget instanceof HTMLElement){
       root.querySelector('.dv-layout').prepend(root.querySelector('.dv-views'));
       root.querySelector('.dv-layout').append(toolbar);
@@ -371,11 +372,12 @@ function mount(root, options = {}) {
     root.dataset.year=String(selected);
     updateAmount(data[selected-2015]);
     const heading=q('forms-year');
-    heading.textContent=String(selected);
+    if(heading)heading.textContent=String(selected);
+    if(productYear)productYear.value=String(selected);
     cancelLinkedYearAnimation();
     if(animate){
       const offset=6*Math.sign(selected-previousYear);
-      const targets=collapsibleProducts?[q('quantity').parentElement,heading]:[heading];
+      const targets=productTarget?[q('quantity').parentElement]:[heading];
       for(const target of targets){
         const animation=target.animate?.([
           {opacity:.72,transform:`translateY(${offset}px)`},
@@ -398,6 +400,7 @@ function mount(root, options = {}) {
     q('amount-label').textContent=`${selected} · ${name}`;
   }
   function updateFormValues(animate=false){
+    const activeProduct=productTarget?filters().term:null;
     if(linked){
       const max=Math.max(1,...formSeries.map(series=>series.values[selected-2015].value??0));
       const step=10**Math.floor(Math.log10(max))/5;
@@ -428,6 +431,7 @@ function mount(root, options = {}) {
       }
       g.row.classList.toggle('is-missing',missing);
       g.row.setAttribute('aria-label',`${g.name}, ${selected}: ${weight}. View annual trend`);
+      if(productTarget)g.row.setAttribute('aria-pressed',String(g.row.dataset.product===activeProduct));
       if(!linked||!missing)g.zero.hidden=entry.value!==0;
     });
   }
@@ -445,6 +449,7 @@ function mount(root, options = {}) {
     q('items').textContent = entry.rows.length ? D.fmt(entry.rows.length) : '—';
     q('year-note').textContent = entry.value === null ? 'No matching records. Missing does not mean zero trade.' : selected === 2015 ? 'The record starts here.' : previous?.value === null ? 'No previous-year record; year-on-year change is unavailable.' : 'Interpret changes alongside reporting coverage and trade composition.';
     chartLabel.textContent=chartCaption(view);
+    if(productTarget)q('product-caption').textContent=chartCaption('forms');
     if(linked&&options.intro)chartLabel.title=caption(view);
     q('form-metrics').innerHTML='';
     q('chart-legend').hidden=view==='forms';q('chart-key').textContent=view==='forms'?'':'Gaps = no records';
@@ -523,7 +528,7 @@ function mount(root, options = {}) {
       if(column){
         const year=+column.dataset.year;
         if(year!==selected)chooseYear(year,'hover');
-        return collapsibleProducts?hideInspect():inspectYear(year);
+        return productTarget?hideInspect():inspectYear(year);
       }
       const image=event.target.closest('.dv-product-image');
       if(image)inspectProduct(image.closest('[data-product]').dataset.product,'hover');
@@ -748,14 +753,6 @@ function mount(root, options = {}) {
     const button=event.target.closest('[data-action]');if(!button)return;
     dismissHint();
     switch(button.dataset.action){
-      case 'toggle-products': {
-        const show=productPanel.hidden;
-        productPanel.hidden=!show;
-        root.classList.toggle('dv-forms-expanded',show);
-        productToggle.setAttribute('aria-expanded',String(show));
-        productToggle.querySelector('span').textContent=show?'−':'+';
-        break;
-      }
       case 'view-annual':setView('annual','click');break;
       case 'view-forms':setView('forms','click');break;
       case 'previous':step(-1,'click');break;
@@ -764,7 +761,7 @@ function mount(root, options = {}) {
       case 'flow':
         if(options.sharedFlow)root.dispatchEvent(new CustomEvent('decade:flow-toggle',{bubbles:true}));else flowLayer?.toggle();break;
       case 'inspect-product':
-        if(suppressProductClick){suppressProductClick=false;break;}
+        if(suppressProductClick&&root.contains(button)){suppressProductClick=false;break;}
         inspectProduct(button.dataset.product);break;
       case 'data':
       case 'filters':showDialog('data-dialog');break;
@@ -793,7 +790,8 @@ function mount(root, options = {}) {
     const direction=Math.sign(touchStart.lastY-point.clientY);
     const beforeFirstYear=direction<0&&targetProgress<=chapterStart;
     const afterLastYear=direction>0&&targetProgress>=chapterEnd;
-    if((chapterView&&(beforeFirstYear||afterLastYear))||(linked&&options.releaseAtBoundary&&beforeFirstYear&&dy<0)){
+    const adjacentChapter=(beforeFirstYear&&dy<0)||(productTarget&&afterLastYear&&dy>0);
+    if((chapterView&&(beforeFirstYear||afterLastYear))||(linked&&options.releaseAtBoundary&&adjacentChapter)){
       touchStart.boundary=direction;touchStart.distance=Math.abs(touchStart.y-point.clientY);touchStart.lastY=point.clientY;return;
     }
     touchStart.boundary=null;
@@ -844,6 +842,7 @@ function mount(root, options = {}) {
   }
   async function change(event) {
     const role=event.target.dataset.role;
+    if(role==='product-year'){chooseYear(event.target.value,'click');return;}
     if(['term','reporter','source'].includes(role)){pause();eventIndex=0;rebuild();root.dispatchEvent(new CustomEvent('decade:filters-change',{bubbles:true,detail:{filters:filters()}}));return;}
     if(!['csv-input','events-input'].includes(role))return;
     const file=event.target.files[0];if(!file)return;
@@ -866,6 +865,9 @@ function mount(root, options = {}) {
   function visibility(){if(document.hidden){pause();settle();}}
   const resizeObserver=new ResizeObserver(()=>{if(resizeFrame)cancelAnimationFrame(resizeFrame);resizeFrame=requestAnimationFrame(()=>{resizeFrame=0;if(!destroyed)rebuild();});});
   if(linked)reduced.addEventListener('change',cancelLinkedYearAnimation);
+  productTarget?.addEventListener('click',click);
+  productTarget?.addEventListener('change',change);
+  productTarget?.addEventListener('pointermove',previewMove,{passive:true});
   root.addEventListener('wheel',wheel,{passive:false});root.addEventListener('keydown',keydown);root.addEventListener('click',click);root.addEventListener('change',change);root.addEventListener('touchstart',touchstart,{passive:true});root.addEventListener('touchmove',touchmove,{passive:false});root.addEventListener('touchend',touchend,{passive:true});root.addEventListener('touchcancel',touchend,{passive:true});root.addEventListener('pointerdown',pointerdown);root.addEventListener('pointermove',previewMove,{passive:true});root.addEventListener('pointerleave',hideInspect);root.addEventListener('focusin',previewFocus);root.addEventListener('focusout',hideInspect);document.addEventListener('visibilitychange',visibility);resizeObserver.observe(root);resizeObserver.observe(q('chart'));
   const detachAtmosphere=options.sharedFlow?()=>{}:attachAtmosphere(root);
   const flowLayer=options.sharedFlow?null:global.MarineDecadeFlow?.attach(root);
@@ -873,7 +875,7 @@ function mount(root, options = {}) {
   const api={
     setYear:year=>chooseYear(year,'api'),setView:next=>setView(next,'api'),setData,setEvents,setFilters,play,pause:()=>{pause();settle();},
     getState:()=>({year:selected,view,position,targetPosition,progress,targetProgress,transitioning:!!switchMotion||(progress>9&&progress<11),demo,filters:filters(),playing:playing!==null}),
-    destroy(){if(destroyed)return;pause();destroyed=true;root.removeAttribute('aria-describedby');flowLayer?.destroy();detachAtmosphere();if(linked)reduced.removeEventListener('change',cancelLinkedYearAnimation);cancelLinkedYearAnimation();clearTimeout(settleTimer);if(motionFrame)cancelAnimationFrame(motionFrame);resizeObserver.disconnect();if(resizeFrame)cancelAnimationFrame(resizeFrame);root.querySelectorAll('dialog[open]').forEach(dialog=>dialog.close());root.removeEventListener('wheel',wheel);root.removeEventListener('keydown',keydown);root.removeEventListener('click',click);root.removeEventListener('change',change);root.removeEventListener('touchstart',touchstart);root.removeEventListener('touchmove',touchmove);root.removeEventListener('touchend',touchend);root.removeEventListener('touchcancel',touchend);root.removeEventListener('pointerdown',pointerdown);root.removeEventListener('pointermove',previewMove);root.removeEventListener('pointerleave',hideInspect);root.removeEventListener('focusin',previewFocus);root.removeEventListener('focusout',hideInspect);document.removeEventListener('visibilitychange',visibility);chapterHeading?.remove();root.classList.remove('dv-trade-separated');root.innerHTML='';delete root._marineDecade;}
+    destroy(){if(destroyed)return;pause();destroyed=true;root.removeAttribute('aria-describedby');flowLayer?.destroy();detachAtmosphere();if(linked)reduced.removeEventListener('change',cancelLinkedYearAnimation);cancelLinkedYearAnimation();clearTimeout(settleTimer);if(motionFrame)cancelAnimationFrame(motionFrame);resizeObserver.disconnect();if(resizeFrame)cancelAnimationFrame(resizeFrame);root.querySelectorAll('dialog[open]').forEach(dialog=>dialog.close());root.removeEventListener('wheel',wheel);root.removeEventListener('keydown',keydown);root.removeEventListener('click',click);root.removeEventListener('change',change);root.removeEventListener('touchstart',touchstart);root.removeEventListener('touchmove',touchmove);root.removeEventListener('touchend',touchend);root.removeEventListener('touchcancel',touchend);root.removeEventListener('pointerdown',pointerdown);root.removeEventListener('pointermove',previewMove);root.removeEventListener('pointerleave',hideInspect);root.removeEventListener('focusin',previewFocus);root.removeEventListener('focusout',hideInspect);document.removeEventListener('visibilitychange',visibility);chapterHeading?.remove();productTarget?.removeEventListener('click',click);productTarget?.removeEventListener('change',change);productTarget?.removeEventListener('pointermove',previewMove);productChart?.remove();if(productYear)productYear.disabled=true;root.classList.remove('dv-trade-separated');root.innerHTML='';delete root._marineDecade;}
   };
   root._marineDecade=api;
   if(options.data)setData(options.data);else rebuild();

@@ -2,13 +2,14 @@ const assert=require('assert/strict'),fs=require('fs'),vm=require('vm'),path=req
 const handlers=new Map();
 const root={querySelector:()=>null,addEventListener:(name,fn)=>handlers.set(name,fn),scrollIntoView(){this.scrolled=true;},focus(){this.focused=true;}};
 const tradeIntro={id:'trade-intro',querySelector:()=>null,addEventListener(){},scrollIntoView(){this.scrolled=true;},focus(){this.focused=true;}};
+const products={id:'product-forms',querySelector:()=>null,scrollIntoView(){this.scrolled=true;},focus(){this.focused=true;}};
 const api={pause(){this.paused=true;}};
-let mountOptions,observed,visibility;
+let mountOptions,observed,visibility,productRoute;
 const sandbox={
  window:{matchMedia:()=>({matches:true}),addEventListener:(name,fn)=>handlers.set(name,fn)},
  location:{hash:'#product-forms'},
  history:{replaceState(_a,_b,hash){sandbox.location.hash=hash;},pushState(_a,_b,hash){sandbox.location.hash=hash;}},
- document:{getElementById:id=>({'annual-trade':root,'trade-intro':tradeIntro})[id]},
+ document:{getElementById:id=>({'annual-trade':root,'trade-intro':tradeIntro,'product-forms':productRoute})[id]},
  IntersectionObserver:class{constructor(fn){visibility=fn;}observe(element){observed=element;}},
  MarineDecade:{mount(element,options){assert.equal(element,root);mountOptions=options;return api;}}
 };
@@ -28,6 +29,16 @@ handlers.get('decade:boundary')({detail:{origin:'touch',direction:-1},preventDef
 assert.equal(tradeIntro.scrolled,true);
 assert.equal(tradeIntro.focused,true);
 assert.equal(sandbox.location.hash,'#trade-intro');
+productRoute=products;
+sandbox.location.hash='#product-forms';
+vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../dist/story.js'),'utf8'),sandbox);
+assert.equal(mountOptions.productTarget,products);
+assert.equal(sandbox.location.hash,'#product-forms');
+assert.equal(products.scrolled,true);
+assert.equal(products.focused,true);
+sandbox.location.hash='#annual-trade';
+handlers.get('decade:boundary')({detail:{origin:'touch',direction:1},preventDefault(){}});
+assert.equal(sandbox.location.hash,'#product-forms');
 
 const app=fs.readFileSync(path.join(__dirname,'../dist/app.js'),'utf8');
 require('../dist/motion.js');
@@ -70,19 +81,22 @@ heading.animate=(frames,options)=>{
 };
 const product=name=>({name,row:node(),fill:node(),zero:node(),value:node()});
 const geometry=product('Fins'),dried=product('Dried fins');
+geometry.row.dataset={product:'fins'};
+dried.row.dataset={product:'fin (dried)'};
 const quantity=node(),unit=node(),label=node(),scale=node(),bars=node();
 quantity.parentElement={animate:heading.animate};
 const roles={'forms-year':heading,quantity,'quantity-unit':unit,'amount-label':label,'forms-scale-max':scale,'product-bars':bars};
 const annual=[10,35,null,0,40].map(value=>({value}));
 const reduced={matches:false};
+const productYear={};
 const stage={
-  root:{dataset:{}}, reduced, chartX:index=>50+index*22,
-  q:name=>roles[name]??{querySelector:selector=>selector==='.dv-year-indicator'?indicator:column},
+  root:{dataset:{}}, reduced, productYear, chartX:index=>50+index*22,
+  q:name=>name==='forms-year'?null:roles[name]??{querySelector:selector=>selector==='.dv-year-indicator'?indicator:column},
   D:{fmt:String}, data:annual, filters:()=>({term:'fins'}), productName:()=>'Unspecified fins (FIN)', formGeometry:[geometry,dried],
   formSeries:[{values:annual},{values:[40,40,10,10,null].map(value=>({value}))}]
 };
 vm.runInNewContext(`
-  const linked=true,collapsibleProducts=true,linkedYearAnimations=[];
+  const linked=true,productTarget={},linkedYearAnimations=[];
   let selected=2015,linkedFormsCeiling=0;
   ${presentation}
   globalThis.select=year=>{const previous=selected;selected=year;updateLinkedYear(previous);};
@@ -90,8 +104,10 @@ vm.runInNewContext(`
 stage.select(2015);
 assert.equal(animations.length,0,'initial presentation is static');
 stage.select(2016);
-assert.equal(animations.length,2,'selection animates the amount and the product year');
-assert.equal(heading.textContent,'2016');
+assert.equal(animations.length,1,'selection animates the annual amount');
+assert.equal(productYear.value,'2016');
+assert.equal(geometry.row.attributes['aria-pressed'],'true');
+assert.equal(dried.row.attributes['aria-pressed'],'false');
 assert.equal(indicator.style.transform,'translateX(72px)');
 assert.equal(label.textContent,'2016 · Unspecified fins (FIN)');
 assert.equal(quantity.textContent,'35');
@@ -102,7 +118,6 @@ assert.equal(geometry.fill.classList.contains('dv-fill-moving'),true);
 assert.equal(dried.fill.style.width,'100%');
 stage.select(2017);
 assert.equal(animations[0].cancelled,true,'rapid navigation cancels the previous label animation');
-assert.equal(animations[1].cancelled,true,'rapid navigation cancels the previous amount animation');
 assert.equal(quantity.textContent,'No records');
 assert.equal(unit.hidden,true);
 assert.equal(geometry.value.textContent,'No records');
@@ -118,6 +133,6 @@ reduced.matches=true;
 stage.select(2019);
 assert.equal(geometry.value.textContent,'40 kg');
 assert.equal(geometry.fill.classList.contains('dv-fill-moving'),false);
-assert.equal(animations.length,6);
+assert.equal(animations.length,3);
 assert.equal(animations.at(-1).cancelled,true);
 console.log('PASS: linked summary, shared product scale, immediate year selection, and separate missing and zero states.');

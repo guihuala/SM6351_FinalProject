@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="../style.css?v=trade-simple">
   <link rel="stylesheet" href="../ocean/story.css?v=trade-scroll">
   <link rel="stylesheet" href="trade.css?v=continuous-trade">
-  <link rel="stylesheet" href="trade-chapters.css?v=chapter-reveal">
+  <link rel="stylesheet" href="trade-chapters.css?v=product-page">
 </head>
 <body>
 <nav class="dv-shell opening-navigation" aria-label="Trade chapters">
@@ -44,9 +44,23 @@
         <a class="dv-trade-continue" href="#annual-trade" aria-label="Explore annual trade data"><svg viewBox="0 0 28 36" fill="none" aria-hidden="true"><path d="M14 5v24M5 20l9 9 9-9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
       </div>
     </section>
-    <section id="annual-trade" class="dv-shell opening-trade-chapter" data-collapsible-products tabindex="0" aria-label="Annual trade and product forms, 2015–2024" data-image-base="../images/">
+    <section id="annual-trade" class="dv-shell opening-trade-chapter" tabindex="0" aria-label="Annual fin trade, 2015–2024" data-image-base="../images/">
       <p class="opening-trade-status" role="status">Loading annual trade charts…</p>
       <noscript><p class="opening-trade-status">Enable JavaScript to explore the trade charts.</p></noscript>
+    </section>
+    <section id="product-forms" class="dv-shell dv-linked opening-trade-chapter dv-product-scene" tabindex="-1" aria-labelledby="product-forms-title">
+      <div class="dv-product-scene-layout">
+        <header class="dv-product-scene-header">
+          <h2 id="product-forms-title">Product forms</h2>
+          <label class="dv-product-year">Year <select data-role="product-year" disabled></select></label>
+        </header>
+        <div data-role="product-panel"><p role="status">Loading product forms…</p></div>
+        <div class="dv-product-scene-footer">
+          <p data-role="product-caption"></p>
+          <a class="dv-product-link" href="#annual-trade">Annual trade <span aria-hidden="true">↑</span></a>
+        </div>
+        <noscript><p>Enable JavaScript to view product weights.</p></noscript>
+      </div>
     </section>
   </div>
 </main>
@@ -78,7 +92,7 @@
   <div class="trade-number"><span></span><strong>221,294.79 kg</strong><small></small></div>
 </section>
 <script type="module" src="trade.js?v=shared-assets"></script>
-<script type="module" src="annual-trade-loader.js"></script>
-<script type="module" src="chapter-motion.js?v=chapter-reveal"></script>
+<script type="module" src="annual-trade-loader.js?v=product-page"></script>
+<script type="module" src="chapter-motion.js?v=product-page"></script>
 </body>
 </html>
