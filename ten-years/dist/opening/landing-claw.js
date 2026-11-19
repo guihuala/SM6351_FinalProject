@@ -1,5 +1,5 @@
-import * as THREE from './vendor/three.module.js';
-import {GLTFLoader} from './vendor/GLTFLoader.js';
+import * as THREE from '../ocean/vendor/three.module.js';
+import {GLTFLoader} from '../ocean/vendor/GLTFLoader.js';
 
 export function createLandingClaw() {
   // Coordinates are measured in viewport heights, with y=0 at the top.

@@ -1,6 +1,6 @@
-import * as THREE from './vendor/three.module.js';
-import {clone as cloneSkeleton} from './vendor/SkeletonUtils.js';
-import {GLTFLoader} from './vendor/GLTFLoader.js';
+import * as THREE from '../ocean/vendor/three.module.js';
+import {clone as cloneSkeleton} from '../ocean/vendor/SkeletonUtils.js';
+import {GLTFLoader} from '../ocean/vendor/GLTFLoader.js';
 const renderer=new THREE.WebGLRenderer({canvas:document.querySelector('#fish'),alpha:true,powerPreference:'low-power'});
 renderer.setClearColor(0,0);renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.45;
 const scene=new THREE.Scene(),camera=new THREE.OrthographicCamera(-10,10,6,-6,.1,100);camera.position.set(0,-16,25);camera.lookAt(0,0,0);
@@ -51,7 +51,7 @@ function resize(){
  fish2.scale.setScalar(length);
  buildPath();
 }
-new GLTFLoader().load('./assets/scalloped_hammerhead_juvenile_low_poly.glb',g=>{
+new GLTFLoader().load('../ocean/assets/scalloped_hammerhead_juvenile_low_poly.glb',g=>{
  const box=new THREE.Box3().setFromObject(g.scene),size=box.getSize(new THREE.Vector3());const normalized=new THREE.Group();g.scene.position.sub(box.getCenter(new THREE.Vector3()));normalized.add(g.scene);normalized.scale.setScalar(1/Math.max(size.x,size.y,size.z));fish.add(normalized);
  g.scene.traverse(o=>{if(o.isMesh){o.frustumCulled=false;o.material=o.material.clone();o.material.roughness=.45;o.material.metalness=0;o.castShadow=true;o.receiveShadow=true;}});
  mixer=new THREE.AnimationMixer(g.scene);g.animations.forEach((clip,i)=>{if(i===0)mixer.clipAction(clip).play();});const second=cloneSkeleton(normalized);fish2.add(second);mixer2=new THREE.AnimationMixer(second);if(g.animations.length){mixer2.clipAction(g.animations[0]).play();mixer2.update(.8);}ready=true;window.fishPreview={ready:true,animations:g.animations.map(x=>x.name),size:size.toArray()};
@@ -65,7 +65,7 @@ let frameId, last, elapsed=0;
 function syncRendering() {
  const {intro, entrance, exit} = window.oceanStory || fallbackStory;
  const active = ready && !document.hidden && !reduced.matches && exit < 1 && (intro < 1 || entrance > 0);
- if (renderer.domElement.hidden === active) renderer.domElement.hidden = !active;
+ if (!active) renderer.domElement.hidden = true;
  if (active && frameId === undefined) frameId = requestAnimationFrame(frame);
  if (!active && frameId !== undefined) {
   cancelAnimationFrame(frameId);
@@ -81,7 +81,7 @@ function syncRendering() {
  } else if (!clawRequested && clawTimer === undefined) {
   clawTimer = setTimeout(() => {
    clawRequested = true;
-   import('./landing-claw.js?v=bounded-render').then(({createLandingClaw}) => {
+   import('./landing-claw.js?v=shared-assets').then(({createLandingClaw}) => {
     if (!document.hidden && !reduced.matches && scrollY <= innerHeight * .05) drawLandingClaw = createLandingClaw();
     else clawRequested = false;
    }).catch(console.error);
@@ -160,6 +160,7 @@ const layerOpacity=story.entrance>0
  ? THREE.MathUtils.smoothstep(story.entrance,0,.08)
  : Math.pow(1-THREE.MathUtils.clamp(story.intro,0,1),Math.log2(5));
 renderer.domElement.style.opacity=String(layerOpacity);
+renderer.domElement.hidden=false;
 drawLandingClaw?.(dt,story.entrance<=0 && story.intro<1,layerOpacity);
 }
 

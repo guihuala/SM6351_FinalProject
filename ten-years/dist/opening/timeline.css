@@ -23,12 +23,7 @@
   border-radius: 999px;
   background: #ffffff0d;
   transform-origin: left center;
-  transform: scaleX(0);
-  transition: transform 480ms ease-out;
-}
-.rating-timeline.rail-open::before { transform: scaleX(1); }
-@media (prefers-reduced-motion: reduce) {
-  .rating-timeline::before { transition: none; }
+  transform: scaleX(var(--rail-progress, 0));
 }
 .rating-timeline li {
   --tone: #ae575b;

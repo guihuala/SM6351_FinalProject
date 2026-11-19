@@ -1,9 +1,16 @@
 # SM6351_FinalProject
 
-- [專案設計規範](design/DESIGN-STANDARD.md)：色彩、字體、電腦／手機字級與實作約定。
-- [字體參考圖](design/reference/typography.png)
-- [互動時間軸說明](ten-years/README.md)
-- [合併後的首頁](ten-years/dist/index.html)
+## 專案目錄
+
+| 位置 | 內容 |
+| --- | --- |
+| [ten-years/dist/](ten-years/dist/) | 直接部署的網站。[首頁](ten-years/dist/index.html)會進入[水下開場](ten-years/dist/opening/index.html)，[獨立圖表頁](ten-years/dist/project.html)保留原有連結入口。 |
+| [ten-years/dist/opening/](ten-years/dist/opening/) | 開場場景、保育時間軸、交易概覽，以及最後兩章的樣式和入場動畫。 |
+| [ten-years/dist/ocean/](ten-years/dist/ocean/) | 獨立頁面的水下開場，以及兩個入口共用的海水圖、雙髻鯊模型與渲染程式庫。 |
+| [ten-years/data/](ten-years/data/) 和 [ten-years/scripts/](ten-years/scripts/) | CITES 原始資料、資料建置及驗證。網站讀取 [dist/data/](ten-years/dist/data/) 的發佈資料。 |
+| [design/](design/) | [專案設計規範](design/DESIGN-STANDARD.md)與[原始參考](design/reference/)。 |
+
+[互動與資料說明](ten-years/README.md) · [視覺資產](ten-years/ASSETS.md) · [CITES 管理事件](ten-years/EVENTS.md)
 
 ## 本機預覽
 

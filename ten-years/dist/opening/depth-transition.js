@@ -1,74 +1,96 @@
-gsap.registerPlugin(ScrollTrigger);
-window.oceanStory={intro:0,entrance:0,exit:0};
-const state=window.oceanStory;
-const background=document.querySelector('.deep-background');
-const title=document.querySelector('.ocean-title');
-const cue=document.querySelector('.scroll-cue');
-function apply(){
- const eased=state.intro*state.intro*(3-2*state.intro);
- background.style.opacity=eased;
- title.style.opacity=String(1-Math.min(1,state.intro*2));
- title.style.transform=`translateY(calc(-50% - ${state.intro*80}px))`;
- cue.style.visibility=state.intro>.03?'hidden':'visible';
- window.dispatchEvent(new Event('opening:progress'));
-}
-gsap.to(state,{intro:1,ease:'none',onUpdate:apply,scrollTrigger:{start:0,end:()=>innerHeight*2,scrub:.5,invalidateOnRefresh:true}});
-function revealCopy(selector, startScreen, trigger) {
-  const paragraph = document.querySelector(selector);
-  const originalText=paragraph.textContent;
-  paragraph.setAttribute('aria-label',originalText);
-  paragraph.replaceChildren();
-  const words=[];
-  originalText.trim().split(/\s+/).forEach((word,index)=>{
-   if(index)paragraph.append(document.createTextNode(' '));
-   const wrapper=document.createElement('span');wrapper.style.display='inline-block';wrapper.setAttribute('aria-hidden','true');
-   wrapper.textContent=word;
-   words.push(wrapper);
-   paragraph.append(wrapper);
-  });
-  gsap.set(paragraph,{autoAlpha:1,y:0});
-  return gsap.timeline({scrollTrigger:{
-    trigger, start:trigger ? 'top top' : ()=>innerHeight*startScreen, end:()=>'+='+innerHeight,
-    scrub:1.5, invalidateOnRefresh:true
-  }}).fromTo(words,{opacity:0,y:5},{
-    opacity:1,y:0,ease:'sine.out',duration:.8/1.8,stagger:{amount:1/1.8}
-  },0);
-}
-revealCopy('.scene-two-copy p', 2)
-  .fromTo(state,{entrance:0},{entrance:1,ease:'none',onUpdate:apply,duration:1},0);
-// One screen for the paragraph, followed by one screen per assessment.
-const assessments = document.querySelectorAll('.rating-timeline li');
+const state = window.oceanStory = {intro: 0, entrance: 0, exit: 0};
+const background = document.querySelector('.deep-background');
+const title = document.querySelector('.ocean-title');
+const cue = document.querySelector('.scroll-cue');
+const secondSection = document.querySelector('#page-two');
 const thirdSection = document.querySelector('#page-three');
-revealCopy('.scene-three-copy p', 0, thirdSection);
-const thirdScene = gsap.timeline();
+const tradeSection = document.querySelector('#trade-total');
+const secondCopy = document.querySelector('.scene-two-copy');
+const thirdCopy = document.querySelector('.scene-three-copy');
 const ratingTimeline = document.querySelector('.rating-timeline');
-thirdScene.eventCallback('onUpdate', () => {
-  ratingTimeline.classList.toggle('rail-open', thirdScene.progress() > 0);
-});
-assessments.forEach((item, index) => {
-  const start = index;
+const assessments = ratingTimeline.querySelectorAll('li');
+
+function revealCopy(copy) {
+  const paragraph = copy.querySelector('p');
+  const text = paragraph.textContent;
+  paragraph.setAttribute('aria-label', text);
+  paragraph.replaceChildren();
+  const words = text.trim().split(/\s+/).map((word, index) => {
+    if (index) paragraph.append(document.createTextNode(' '));
+    const span = document.createElement('span');
+    span.style.display = 'inline-block';
+    span.setAttribute('aria-hidden', 'true');
+    span.textContent = word;
+    paragraph.append(span);
+    return span;
+  });
+  gsap.set(paragraph, {autoAlpha: 1});
+  return gsap.timeline({paused: true}).fromTo(words, {opacity: 0, y: 5}, {
+    opacity: 1, y: 0, ease: 'sine.out', duration: .8 / 1.8, stagger: {amount: 1 / 1.8}
+  });
+}
+
+const secondReveal = revealCopy(secondCopy);
+const thirdReveal = revealCopy(thirdCopy);
+const ratings = gsap.timeline({paused: true});
+ratings.fromTo(ratingTimeline, {'--rail-progress': 0}, {'--rail-progress': 1, duration: .45, ease: 'power2.out'}, 0);
+assessments.forEach((item, start) => {
   const badge = item.querySelector('.rating-badge');
-  thirdScene
-    .to(item.querySelector('.rating-dot'), {opacity:1, duration:0.16}, start)
-    .to(item.querySelector('.rating-year'), {opacity:1, duration:0.2}, start)
-    .to(item.querySelector('.rating-line'), {scaleY:1, duration:0.5, ease:'none'}, start + 0.2)
-    .to(badge, {opacity:1, scale:1, duration:0.22, ease:'power2.out'}, start + 0.7)
-    .to(badge, {boxShadow:'0 0 16px 3px currentColor', duration:0.12}, start + 0.7)
-    .to(item.querySelector('.rating-label'), {opacity:1, duration:0.25}, start + 0.75);
+  ratings
+    .to(item.querySelector('.rating-dot'), {opacity: 1, duration: .16}, start)
+    .to(item.querySelector('.rating-year'), {opacity: 1, duration: .2}, start)
+    .to(item.querySelector('.rating-line'), {scaleY: 1, duration: .5, ease: 'none'}, start + .2)
+    .to(badge, {opacity: 1, scale: 1, duration: .22, ease: 'power2.out'}, start + .7)
+    .to(badge, {boxShadow: '0 0 16px 3px currentColor', duration: .12}, start + .7)
+    .to(item.querySelector('.rating-label'), {opacity: 1, duration: .25}, start + .75);
 });
-ScrollTrigger.create({
-  trigger: thirdSection,
-  start: () => 'top -=' + innerHeight,
-  end: () => '+=' + (innerHeight * assessments.length),
-  animation: thirdScene,
-  scrub: true
-});
-gsap.to(state,{exit:1,ease:'none',scrollTrigger:{start:()=>innerHeight*4,end:()=>innerHeight*6,scrub:.5,invalidateOnRefresh:true},onUpdate:()=>{
- const copy=document.querySelector('.scene-two-copy');
- copy.style.transform=`translateY(calc(-50% - ${state.exit*innerHeight*2}px))`;
- copy.style.visibility=state.exit>=1?'hidden':'visible';
- window.dispatchEvent(new Event('opening:progress'));
-}});
-await document.fonts.ready;
-ScrollTrigger.refresh();
-apply();
+
+let secondTop, thirdTop, exitStart, secondScreen, thirdScreen;
+let frame;
+function progress(y, start, duration) {
+  return Math.max(0, Math.min(1, (y - start) / Math.max(1, duration)));
+}
+
+function render() {
+  frame = undefined;
+  const y = Math.max(0, scrollY);
+  const intro = progress(y, 0, secondTop);
+  const entrance = progress(y, secondTop, secondScreen);
+  const exit = progress(y, exitStart, thirdTop - exitStart);
+  const third = progress(y, thirdTop, thirdScreen);
+  const rating = progress(y, thirdTop + thirdScreen, thirdScreen * assessments.length);
+
+  Object.assign(state, {intro, entrance, exit});
+  background.style.opacity = intro * intro * (3 - 2 * intro);
+  title.style.opacity = 1 - Math.min(1, intro * 2);
+  title.style.transform = `translateY(calc(-50% - ${intro * 80}px))`;
+  cue.style.visibility = intro > .03 ? 'hidden' : 'visible';
+  secondCopy.style.transform = `translateY(calc(-50% - ${exit * (thirdTop - exitStart)}px))`;
+  secondCopy.style.visibility = entrance > 0 && exit < 1 ? 'visible' : 'hidden';
+  thirdCopy.style.visibility = third > 0 ? 'visible' : 'hidden';
+  ratingTimeline.style.visibility = rating > 0 ? 'visible' : 'hidden';
+  secondReveal.progress(entrance);
+  thirdReveal.progress(third);
+  ratings.progress(rating);
+  window.dispatchEvent(new Event('opening:progress'));
+}
+
+function requestRender() {
+  if (frame === undefined) frame = requestAnimationFrame(render);
+}
+
+function measure() {
+  const top = element => element.getBoundingClientRect().top + scrollY;
+  secondTop = top(secondSection);
+  thirdTop = top(thirdSection);
+  exitStart = (secondTop + thirdTop) / 2;
+  secondScreen = (thirdTop - secondTop) / 4;
+  thirdScreen = (top(tradeSection) - thirdTop) / 5;
+  requestRender();
+}
+
+addEventListener('scroll', requestRender, {passive: true});
+addEventListener('resize', measure);
+addEventListener('pageshow', measure);
+document.fonts.ready.then(measure);
+measure();

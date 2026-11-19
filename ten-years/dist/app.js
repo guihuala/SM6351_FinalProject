@@ -63,6 +63,7 @@ function attachAtmosphere(root){
 function mount(root, options = {}) {
   if (!(root instanceof HTMLElement)) throw Error('Provide a chapter container element.');
   const linked = options.linked === true;
+  const collapsibleProducts = linked && options.collapsibleProducts === true;
   const chapterView=options.chapterView??null;
   if(chapterView&&!['annual','forms'].includes(chapterView))throw Error('Chapter view must be annual or forms.');
   const chapterStart=!linked&&chapterView==='forms'?11:0,chapterEnd=linked||chapterView==='annual'?9:20;
@@ -73,7 +74,7 @@ function mount(root, options = {}) {
   root.setAttribute('aria-label',chapterView?(chapterView==='forms'?'Product forms, 2015–2024. Scroll or use arrow keys to explore.':'Annual trade, 2015–2024. Scroll or use arrow keys to explore.'):'A decade of trade. Scroll or use arrow keys to explore.');
   root.innerHTML = markup;
   root.classList.toggle('dv-linked',linked);
-  root.classList.remove('dv-trade-separated');
+  root.classList.remove('dv-trade-separated','dv-forms-expanded');
   root.dataset.chapter=chapterView||'';
   if(chapterView&&!linked){
     const title=root.querySelector('h1');
@@ -98,6 +99,7 @@ function mount(root, options = {}) {
   root.prepend(instructions);root.setAttribute('aria-describedby',instructions.id);
   const chartLabel=root.querySelector('[data-role="chart-label"]');
   let chapterHeading=null;
+  let productPanel, productToggle;
   const q = name => root.querySelector(`[data-role="${name}"]`);
   const action = name => root.querySelector(`[data-action="${name}"]`);
   if(linked){
@@ -127,18 +129,28 @@ function mount(root, options = {}) {
     plot.insertAdjacentHTML('afterbegin','<div class="dv-linked-summary"></div>');
     q('amount-label').id=`${uid}-amount-label`;
     root.querySelector('.dv-linked-summary').append(q('amount-label'),q('quantity').parentElement);
-    plot.insertAdjacentHTML('afterend',`<section class="dv-linked-forms" aria-labelledby="${uid}-forms-title">
+    plot.insertAdjacentHTML('afterend',`<section id="${uid}-forms" class="dv-linked-forms" aria-labelledby="${uid}-forms-title">
       <header class="dv-forms-heading"><h3 id="${uid}-forms-title">Product forms</h3><span data-role="forms-year"></span></header>
     </section>`);
     const forms=q('forms-chart');
-    root.querySelector('.dv-linked-forms').append(forms);
+    const formsPanel=root.querySelector('.dv-linked-forms');
+    formsPanel.append(forms);
     forms.inert=false;
     forms.removeAttribute('aria-hidden');
+    if(collapsibleProducts){
+      productPanel=formsPanel;
+      productPanel.hidden=true;
+      toolbar.insertAdjacentHTML('beforeend',`<button type="button" class="dv-product-toggle" data-action="toggle-products"
+        aria-expanded="false" aria-controls="${uid}-forms">Product forms <span aria-hidden="true">+</span></button>`);
+      productToggle=action('toggle-products');
+    }
     if(options.headingTarget instanceof HTMLElement){
       root.querySelector('.dv-layout').prepend(root.querySelector('.dv-views'));
       root.querySelector('.dv-layout').append(toolbar);
-      chapterHeading=root.querySelector('.dv-heading');
-      options.headingTarget.append(chapterHeading);
+      if(!options.headingTarget.querySelector('h2')){
+        chapterHeading=root.querySelector('.dv-heading');
+        options.headingTarget.append(chapterHeading);
+      }
       const back=root.querySelector('.dv-chapter-link');
       if(back){
         back.href=`#${options.headingTarget.closest('section[id]').id}`;
@@ -161,7 +173,8 @@ function mount(root, options = {}) {
   let position=0,targetPosition=0,progress=0,targetProgress=0,view='annual',sceneBlend=0,scrubDirection=1,switchMotion=null,formSeries=[],formGeometry=[],motionFrame=0,lastFrameTime=0,settleTimer=null,motionOrigin='init';
   let chartY=value=>0,inTick=false;
   let hintFade=null,previewYear=null;
-  let mounted=false,linkedYearAnimation;
+  let mounted=false;
+  const linkedYearAnimations=[];
   let linkedFormsCeiling=0;
   let policyHTML='',policyPending='',policyOpacity=0,policyPhase=null,policyElapsed=0,policyFrom=0;
   const switchDuration=680;
@@ -319,7 +332,7 @@ function mount(root, options = {}) {
     motionOrigin=origin;targetProgress=M.progressFor(view,Math.round(value));
     if(linked){
       progress=targetProgress;renderMotion();
-      if(origin==='click'||origin==='keyboard')q('interaction-status').textContent=`Product forms updated to ${selected}.`;
+      if(origin==='click'||origin==='keyboard')q('interaction-status').textContent=`Trade data updated to ${selected}.`;
       return;
     }
     // Year controls stay in the active view, including when a scroll transition is interrupted.
@@ -351,8 +364,7 @@ function mount(root, options = {}) {
     chooseYear(next+2015,origin);return true;
   }
   function cancelLinkedYearAnimation(){
-    linkedYearAnimation?.cancel();
-    linkedYearAnimation=null;
+    for(const animation of linkedYearAnimations.splice(0))animation.cancel();
   }
   function updateLinkedYear(previousYear=selected){
     const animate=previousYear!==selected&&!reduced.matches;
@@ -363,10 +375,14 @@ function mount(root, options = {}) {
     cancelLinkedYearAnimation();
     if(animate){
       const offset=6*Math.sign(selected-previousYear);
-      linkedYearAnimation=heading.animate?.([
-        {opacity:.62,transform:`translateY(${offset}px)`},
-        {opacity:1,transform:'translateY(0)'}
-      ],{duration:210,easing:'cubic-bezier(.2,.7,.25,1)'});
+      const targets=collapsibleProducts?[q('quantity').parentElement,heading]:[heading];
+      for(const target of targets){
+        const animation=target.animate?.([
+          {opacity:.72,transform:`translateY(${offset}px)`},
+          {opacity:1,transform:'translateY(0)'}
+        ],{duration:240,easing:'cubic-bezier(.2,.7,.25,1)'});
+        if(animation)linkedYearAnimations.push(animation);
+      }
     }
     const chart=q('chart');
     chart.querySelector('[aria-current="true"]')?.removeAttribute('aria-current');
@@ -507,7 +523,7 @@ function mount(root, options = {}) {
       if(column){
         const year=+column.dataset.year;
         if(year!==selected)chooseYear(year,'hover');
-        return inspectYear(year);
+        return collapsibleProducts?hideInspect():inspectYear(year);
       }
       const image=event.target.closest('.dv-product-image');
       if(image)inspectProduct(image.closest('[data-product]').dataset.product,'hover');
@@ -732,6 +748,14 @@ function mount(root, options = {}) {
     const button=event.target.closest('[data-action]');if(!button)return;
     dismissHint();
     switch(button.dataset.action){
+      case 'toggle-products': {
+        const show=productPanel.hidden;
+        productPanel.hidden=!show;
+        root.classList.toggle('dv-forms-expanded',show);
+        productToggle.setAttribute('aria-expanded',String(show));
+        productToggle.querySelector('span').textContent=show?'−':'+';
+        break;
+      }
       case 'view-annual':setView('annual','click');break;
       case 'view-forms':setView('forms','click');break;
       case 'previous':step(-1,'click');break;
@@ -767,14 +791,16 @@ function mount(root, options = {}) {
     event.preventDefault();
     if(touchStart.product)suppressProductClick=true;
     const direction=Math.sign(touchStart.lastY-point.clientY);
-    if(chapterView&&((direction>0&&targetProgress>=chapterEnd)||(direction<0&&targetProgress<=chapterStart))){
+    const beforeFirstYear=direction<0&&targetProgress<=chapterStart;
+    const afterLastYear=direction>0&&targetProgress>=chapterEnd;
+    if((chapterView&&(beforeFirstYear||afterLastYear))||(linked&&options.releaseAtBoundary&&beforeFirstYear&&dy<0)){
       touchStart.boundary=direction;touchStart.distance=Math.abs(touchStart.y-point.clientY);touchStart.lastY=point.clientY;return;
     }
     touchStart.boundary=null;
     scrub((touchStart.lastY-point.clientY)/160,'touch',false);
     touchStart.lastY=point.clientY;
   }
-  function touchend(){if(touchStart){const previous=touchStart;touchStart=null;settle();if(previous.boundary&&previous.distance>=50)root.dispatchEvent(new CustomEvent('decade:boundary',{bubbles:true,detail:{direction:previous.boundary,year:selected,view,origin:'touch'}}));}}
+  function touchend(event){if(touchStart){const previous=touchStart;touchStart=null;settle();if(event?.type!=='touchcancel'&&previous.boundary&&previous.distance>=50)root.dispatchEvent(new CustomEvent('decade:boundary',{bubbles:true,detail:{direction:previous.boundary,year:selected,view,origin:'touch'}}));}}
   function exportCSV() {
     const f=filters();
     const series=!linked&&view==='annual'?[{term:f.term,values:data}]:formSeries;

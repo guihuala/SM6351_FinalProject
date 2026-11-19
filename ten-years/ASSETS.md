@@ -2,7 +2,9 @@
 
 ## 水下开场
 
-合并后的首页沿用 2026-11-17 版 Sphyrna lewini 网站的双髻鲨模型、海水背景图和气泡。开场光束由 CSS 绘制，海水图和气泡使用 WebP 文件。部署所需素材存放于 [dist/ocean](dist/ocean/)。
+当前首页和独立图表页共用 [dist/ocean/assets](dist/ocean/assets/) 中的双髻鲨模型、深水背景和气泡。两页共用的 Three.js、GSAP 及相关加载器保存在 [dist/ocean/vendor](dist/ocean/vendor/)。
+
+[dist/opening/assets](dist/opening/assets/) 存放首页专用的水面备用图、捕捞装置模型和开场字体。停留在开场时，动态水面会延后向 Spline 加载，备用图始终随网站提供。
 
 - 场景参考 [The Race Below](https://storytelling.11thhourracing.org/the-race-below)，11th Hour Racing / HLabs。
 - 模型 [Scalloped hammerhead juvenile low poly](https://sketchfab.com/3d-models/scalloped-hammerhead-juvenile-low-poly-f5adc17c922b48feae76aaea98552dd4)。
@@ -38,4 +40,4 @@
 
 Use case: photorealistic-natural. Asset type: cinematic website chapter hero background, wide landscape 16:9. An evocative, scientifically plausible scalloped hammerhead shark (Sphyrna lewini), one shark only, photographed underwater at night in vast near-black deep navy open water. Full animal visible in oblique overhead view, broad recognizable scalloped hammer head at upper right, tapered muscular grey body extending diagonally toward bottom left, elegant wide pectoral fins, natural asymmetric caudal fin. The shark occupies the right 60 percent of frame, with substantial empty inky water on the left for large editorial typography. Subtle cool silver side illumination reveals skin texture and silhouette, dramatic restrained high contrast, delicate sparse suspended particulate, marine documentary feeling, premium museum exhibition atmosphere. Color palette almost black #071719, silver grey, muted petrol teal. No seabed, no reef, no divers, no other animals, no bubbles, no glowing eyes, no typography, no labels, no logos, no borders. Image is illustrative artwork, not a photograph claimed as biological evidence.
 
-字体均为系统字体；无外部脚本、字体或 CDN 依赖。
+图表使用 [dist/fonts](dist/fonts/) 提供的本地字体。

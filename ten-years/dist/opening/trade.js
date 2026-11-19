@@ -23,13 +23,21 @@ for (const label of [year, explanation]) {
   label.style.transition = 'opacity 400ms ease-out';
 }
 let sequence = 'waiting', timer;
-let sequenceRegion;
+let sequenceRegion, previousProgress;
 function updateSequence(t) {
-  const region = t < 0.25 ? 'before' : t < 1.5 ? 'summary' : 'products';
-  if (region === sequenceRegion) return;
+  const region = t <= 0 ? 'outside' : t < .25 ? 'fade' : t < 1.5 ? 'summary' : 'products';
+  const movingBack = t < previousProgress;
+  const firstUpdate = previousProgress === undefined;
+  previousProgress = t;
+  if (region === sequenceRegion) {
+    if (region === 'summary' && movingBack && sequence !== 'complete') finishSequence();
+    return;
+  }
   sequenceRegion = region;
   clearTimeout(timer);
-  if (region === 'products') {
+  if (region === 'products' ||
+      (region === 'fade' && sequence !== 'waiting') ||
+      (region === 'summary' && (movingBack || firstUpdate || sequence === 'complete'))) {
     finishSequence();
     return;
   }
@@ -214,7 +222,7 @@ function update(){
   paint();
   if(travel>0&&!requested){
     requested=true;
-    import('./trade-model.js?v=palette-1').then(m=>m.loadModel(model.querySelector('canvas'))).then(draw=>{drawModel=draw;paint(true)}).catch(console.error);
+    import('./trade-model.js?v=shared-assets').then(m=>m.loadModel(model.querySelector('canvas'))).then(draw=>{drawModel=draw;paint(true)}).catch(console.error);
   }
 }
 addEventListener('scroll',requestUpdate,{passive:true});

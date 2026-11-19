@@ -1,8 +1,8 @@
-import * as THREE from './vendor/three.module.js';
-import {GLTFLoader} from './vendor/GLTFLoader.js';
+import * as THREE from '../ocean/vendor/three.module.js';
+import {GLTFLoader} from '../ocean/vendor/GLTFLoader.js';
 
 export async function loadModel(canvas){
-  const {scene:shark}=await new GLTFLoader().loadAsync('./assets/scalloped_hammerhead_juvenile_low_poly.glb');
+  const {scene:shark}=await new GLTFLoader().loadAsync('../ocean/assets/scalloped_hammerhead_juvenile_low_poly.glb');
   const renderer=new THREE.WebGLRenderer({canvas,alpha:true,antialias:true,powerPreference:'low-power'});
   renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));
   renderer.setClearColor(0,0);
