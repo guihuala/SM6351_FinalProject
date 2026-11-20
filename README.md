@@ -1,29 +1,69 @@
-# SM6351_FinalProject
+# Sphyrna lewini — Distribution & Trade Flow
 
-## 專案目錄
+An interactive 3D globe that tells a single-species story in two views:
 
-| 位置 | 內容 |
-| --- | --- |
-| [ten-years/dist/](ten-years/dist/) | 直接部署的網站。[首頁](ten-years/dist/index.html)會進入[水下開場](ten-years/dist/opening/index.html)，[獨立圖表頁](ten-years/dist/project.html)保留原有連結入口。 |
-| [ten-years/dist/opening/](ten-years/dist/opening/) | 開場場景、保育時間軸、交易概覽，以及最後兩章的樣式和入場動畫。 |
-| [ten-years/dist/ocean/](ten-years/dist/ocean/) | 獨立頁面的水下開場，以及兩個入口共用的海水圖、雙髻鯊模型與渲染程式庫。 |
-| [ten-years/data/](ten-years/data/) 和 [ten-years/scripts/](ten-years/scripts/) | CITES 原始資料、資料建置及驗證。網站讀取 [dist/data/](ten-years/dist/data/) 的發佈資料。 |
-| [design/](design/) | [專案設計規範](design/DESIGN-STANDARD.md)與[原始參考](design/reference/)。 |
+1. **Distribution** — mapped GBIF occurrence countries for the scalloped hammerhead.
+2. **Trade flow** — annual CITES-reported export-to-import country relationships, 2015–2024.
 
-[互動與資料說明](ten-years/README.md) · [視覺資產](ten-years/ASSETS.md) · [CITES 管理事件](ten-years/EVENTS.md)
+The visual language uses a simplified solid-color Earth, restrained country fills, a deep-blue underwater background, and the button system from the supplied style guide.
 
-## 本機預覽
+## Run
 
-在專案根目錄執行以下指令，再開啟瀏覽器中的 [http://localhost:8765/](http://localhost:8765/)。
+Requirements: Node.js 20 or newer.
 
-```sh
-python3 -m http.server 8765 --directory ten-years/dist
+```bash
+npm install
+npm run dev
 ```
 
-首頁會依序呈現水下開場、雙髻鯊介紹、保育等級歷程、貿易概覽和 2015–2024 年 CITES 魚鰭貿易互動圖表。貿易概覽後繼續向下捲動即可進入圖表，也可選擇 **Explore annual trade data** 直接跳到圖表。
+Production build:
 
-## GitHub Pages 部署
+```bash
+npm run build
+npm run preview
+```
 
-首次部署前，在 GitHub 儲存庫的 **Settings → Pages** 將 **Source** 設為 **GitHub Actions**，並將 `.github/workflows/deploy-pages.yml` 和 `ten-years/dist/` 一起提交並推送到 `main`。
+Do not open `dist/index.html` with a `file://` URL. Serve it through HTTP so browsers can load the local GeoJSON, textures, and data.
 
-之後每次推送到 `main` 都會自動發佈 `ten-years/dist/`。也可以在 **Actions → Deploy to GitHub Pages** 選擇 `main` 手動執行，部署完成後可在執行記錄中開啟網站。
+## Interaction
+
+- Drag the globe to rotate and use the wheel or pinch gesture to zoom.
+- Switch between **Distribution** and **Trade flow** using the top-right buttons.
+- In trade mode, exporter countries use muted coral and importer countries use white.
+- Hover red occurrence circles or trade arcs for contextual information.
+- Click a country or trade route to pin its detail panel.
+- In trade mode, use the year selector to change the annual network.
+- **Reset** restores the camera and clears the current selection.
+
+## Data preparation
+
+The supplied comparative CSV is read by `scripts/extract-data.mjs`:
+
+```bash
+npm run prepare:data -- "C:/path/to/comptab.csv"
+```
+
+The cleaned output is `public/data/sphyrna-data.json`.
+
+The script also requests the mapped occurrence country facet for GBIF species key `2418789` and stores the result with the trade data. The raw CSV is not modified.
+
+## Data rules
+
+- Only rows where `Taxon = Sphyrna lewini` are retained.
+- All 399 source rows pass the species, country-code, year, and numeric-quantity checks.
+- Import-side and export-side quantities remain separate.
+- Quantities remain separate by product term and unit.
+- Trade line weight represents comparative record count, not biological abundance or a synthesized quantity.
+- Distribution counts describe mapped GBIF records and observation coverage, not population abundance.
+
+## Sources and credits
+
+- CITES Trade Database 2026.1 comparative CSV supplied by the project owner.
+- IUCN Red List 2026-1.
+- GBIF species occurrence search for `Sphyrna lewini`.
+- Natural Earth country geometry.
+- Deep-water background and Manrope font reused from the user-supplied Sphyrna lewini website package.
+
+## Stack
+
+React, TypeScript, Three.js, React Three Fiber, Drei, `r3f-globe`, and Vite.
