@@ -1,4 +1,4 @@
-# Sphyrna lewini — Distribution & Trade Flow
+# Trade — Sphyrna lewini Distribution & Trade Flow
 
 An interactive 3D globe that tells a single-species story in two views:
 
