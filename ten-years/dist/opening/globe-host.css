@@ -1,0 +1,52 @@
+.dv-shell.globe-chapter {
+  --globe-gutter: clamp(16px, 4vw, 64px);
+  z-index: 10;
+  height: auto;
+  padding: 24px var(--globe-gutter);
+  touch-action: auto;
+}
+
+.globe-chapter .globe-header,
+.globe-chapter .globe-links {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0 20px;
+}
+
+.globe-chapter h2 {
+  margin: 0;
+  color: var(--dv-ink);
+  font: 500 var(--dv-h2)/1.15 var(--dv-heading);
+  letter-spacing: -.025em;
+}
+
+.globe-chapter .globe-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  font: 500 var(--dv-button)/1.25 var(--dv-body);
+  letter-spacing: .01em;
+}
+
+.globe-chapter .globe-frame {
+  display: block;
+  width: 100%;
+  height: max(620px, calc(100svh - 10rem));
+  margin-block: 12px;
+  border: 1px solid var(--dv-line);
+  border-radius: 6px;
+  background: var(--dv-surface);
+}
+
+@media (max-width: 480px) {
+  .globe-chapter .globe-frame {
+    width: calc(100% + 2 * var(--globe-gutter));
+    height: max(560px, calc(100svh - 14rem));
+    margin-inline: calc(-1 * var(--globe-gutter));
+    border-inline: 0;
+    border-radius: 0;
+  }
+}

@@ -17,12 +17,13 @@
   <link rel="stylesheet" href="../ocean/story.css?v=trade-scroll">
   <link rel="stylesheet" href="trade.css?v=continuous-trade">
   <link rel="stylesheet" href="trade-chapters.css?v=chapter-shark">
+  <link rel="stylesheet" href="globe-host.css?v=20261121-globe">
   <link rel="stylesheet" href="finale-host.css?v=20261120-scroll3">
 </head>
 <body>
 <nav class="dv-shell opening-navigation" aria-label="Trade chapters">
   <a class="opening-skip" href="#annual-trade">Explore annual trade data <span aria-hidden="true">→</span></a>
-  <a class="opening-next" href="#trade-intro">Continue to annual trade data <span aria-hidden="true">→</span></a>
+  <a class="opening-next" href="#distribution-trade">Continue to the 3D globe <span aria-hidden="true">→</span></a>
 </nav>
 <main>
   <section class="story-intro" id="ocean-intro" aria-label="Introduction" tabindex="-1"></section>
@@ -39,6 +40,22 @@
   </section>
   <section id="trade-total" aria-label="Reported trade weight"></section>
   <section id="trade-products" aria-label="Trade by product"></section>
+
+  <section id="distribution-trade" class="dv-shell globe-chapter" tabindex="-1" aria-labelledby="distribution-trade-title">
+    <header class="globe-header">
+      <h2 id="distribution-trade-title">Distribution and trade flow</h2>
+      <nav class="globe-links" aria-label="3D globe chapter navigation">
+        <a href="../sphyrna/index.html" target="_blank" rel="noopener">Open globe in a new tab</a>
+        <a href="#trade-intro">Continue to Fin trade <span aria-hidden="true">↓</span></a>
+      </nav>
+    </header>
+    <iframe class="globe-frame" src="../sphyrna/index.html" loading="lazy" title="Interactive 3D globe showing scalloped hammerhead distribution and reported trade flows"></iframe>
+    <nav class="globe-links" aria-label="Adjacent chapters">
+      <a href="#trade-products">Trade overview <span aria-hidden="true">↑</span></a>
+      <a href="#trade-intro">Continue to Fin trade <span aria-hidden="true">↓</span></a>
+    </nav>
+  </section>
+
   <div class="opening-chapters decade-story-page ocean-page">
     <section id="trade-intro" class="dv-shell dv-trade-intro opening-trade-chapter" tabindex="-1" aria-label="Fin trade introduction">
       <div class="dv-trade-intro-layout">
