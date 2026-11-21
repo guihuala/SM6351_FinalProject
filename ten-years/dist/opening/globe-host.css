@@ -1,8 +1,8 @@
 .dv-shell.globe-chapter {
-  --globe-gutter: clamp(16px, 4vw, 64px);
+  --globe-gutter: 0px;
   z-index: 10;
   height: auto;
-  padding: 24px var(--globe-gutter);
+  padding: 0;
   touch-action: auto;
 }
 
@@ -49,19 +49,17 @@
 .globe-chapter .globe-frame {
   display: block;
   width: 100%;
-  height: max(620px, calc(100svh - 10rem));
-  margin-block: 12px;
-  border: 1px solid var(--dv-line);
-  border-radius: 6px;
-  background: var(--dv-surface);
+  height: 100svh;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  background: #041725;
 }
 
 @media (max-width: 480px) {
   .globe-chapter .globe-frame {
-    width: calc(100% + 2 * var(--globe-gutter));
-    height: max(560px, calc(100svh - 14rem));
-    margin-inline: calc(-1 * var(--globe-gutter));
-    border-inline: 0;
-    border-radius: 0;
+    width: 100%;
+    height: 100svh;
+    margin: 0;
   }
 }
