@@ -53,28 +53,33 @@ button {
   min-height: 620px;
   overflow: hidden;
   isolation: isolate;
-  background:
-    radial-gradient(circle at 50% 48%, rgba(35, 103, 127, 0.2), transparent 34%),
-    linear-gradient(150deg, #020b16, #041a2c 52%, #083247);
+  background: #041725;
 }
 
 .deep-water {
   position: absolute;
   inset: 0;
   z-index: -3;
-  background:
-    linear-gradient(110deg, rgba(1, 12, 22, 0.48), rgba(1, 16, 27, 0.04) 55%, rgba(2, 14, 23, 0.32)),
-    url('/assets/deep-water-deep.png') center / cover no-repeat;
-  filter: brightness(0.6) saturate(1.04);
-  transform: scale(1.035);
+  overflow: hidden;
+  background: #041725;
+}
+
+.deep-water::before {
+  position: absolute;
+  inset: 0;
+  background: url('/assets/deep-water.png') center 78% / cover no-repeat;
+  content: "";
+  filter: brightness(0.8) saturate(0.9);
+  transform: scale(1.2);
+  transform-origin: center bottom;
 }
 
 .deep-water::after {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(circle at 54% 43%, transparent 0 26%, rgba(1, 13, 22, 0.1) 56%, rgba(1, 9, 17, 0.44) 100%),
-    linear-gradient(to bottom, rgba(2, 15, 25, 0.06), transparent 34%, rgba(2, 13, 23, 0.26));
+    linear-gradient(110deg, rgba(1, 13, 24, 0.38), rgba(1, 18, 29, 0.08) 75%),
+    linear-gradient(to bottom, rgba(1, 17, 27, 0.15), transparent 40%, rgba(1, 14, 25, 0.2));
   content: "";
 }
 
@@ -95,9 +100,9 @@ button {
   z-index: 1;
   pointer-events: none;
   background:
-    linear-gradient(90deg, rgba(2, 15, 24, 0.34), transparent 22%, transparent 76%, rgba(2, 14, 22, 0.4)),
-    radial-gradient(ellipse at 50% 120%, rgba(25, 93, 108, 0.15), transparent 45%);
-  mix-blend-mode: multiply;
+    linear-gradient(90deg, rgba(2, 15, 24, 0.14), transparent 18%, transparent 82%, rgba(2, 14, 22, 0.16)),
+    radial-gradient(ellipse at 50% 120%, rgba(25, 93, 108, 0.1), transparent 45%);
+  mix-blend-mode: soft-light;
 }
 
 .grain {
@@ -880,7 +885,8 @@ button {
   align-items: center;
   background:
     linear-gradient(rgba(2, 14, 24, 0.7), rgba(2, 14, 24, 0.8)),
-    url('/assets/deep-water-deep.png') center / cover no-repeat;
+    url('/assets/deep-water.png') center 78% / cover no-repeat,
+    #041725;
 }
 
 .loading-screen p {
