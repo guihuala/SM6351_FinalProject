@@ -196,13 +196,13 @@ applyView(false);
 
 // Virtual trackball: rotate freely in 3D without moving the camera or model center.
 const inspectionArea=document.createElement('div');inspectionArea.id='fish-inspection';inspectionArea.hidden=true;
-inspectionArea.tabIndex=0;inspectionArea.setAttribute('role','region');inspectionArea.setAttribute('aria-label','Rotate shark freely in 3D. Drag in any direction. Arrow keys rotate; Q and E roll; Home resets.');
-inspectionArea.innerHTML='<div class="rotation-hint"><span>Drag freely · 360°</span><button type="button" aria-label="Reset shark orientation">Reset</button></div>';
+inspectionArea.tabIndex=0;inspectionArea.setAttribute('role','region');inspectionArea.setAttribute('aria-label','Rotate shark in 3D. Drag to rotate. Arrow keys rotate; Q and E roll; Home resets.');
+inspectionArea.innerHTML='<div class="rotation-hint"><span>Drag to rotate · 360°</span><button type="button" aria-label="Reset shark orientation">Reset</button></div>';
 const resetOrientationButton = inspectionArea.querySelector('button');
 resetOrientationButton.addEventListener('click', () => inspectionOrientation.identity());
 document.body.append(inspectionArea);
 const inspectionStyle=document.createElement('style');inspectionStyle.textContent=`
-#fish-inspection{position:fixed;z-index:7;left:52%;right:2%;top:20%;bottom:12%;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none}
+#fish-inspection{position:fixed;z-index:7;left:52%;right:2%;top:20%;bottom:12%;cursor:grab;touch-action:pan-y pinch-zoom;user-select:none;-webkit-user-select:none}
 #fish-inspection[hidden]{display:none}#fish-inspection.dragging{cursor:grabbing}
 #fish-inspection:focus-visible{outline:1px solid #dceef580;outline-offset:-6px;border-radius:18px}
 .rotation-hint{position:absolute;bottom:0;left:0;right:0;text-align:center;color:#edf7fb;font:300 13px Manrope,sans-serif;pointer-events:none}.rotation-hint button{display:block;margin:6px auto 0;padding:4px 8px;border:0;background:transparent;text-decoration:underline;text-underline-offset:3px;color:#dceef5b3;font:inherit;cursor:pointer;pointer-events:auto}

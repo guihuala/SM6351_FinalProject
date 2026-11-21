@@ -1,4 +1,4 @@
-// The earlier chapters remain unchanged. This bridge only owns #finale.
+// Keep the final chapter aligned with the host document and connect keyboard navigation.
 const CHANNEL='sm6351-finale';
 const host=document.getElementById('finale');
 const frame=document.getElementById('finale-frame');
@@ -14,20 +14,23 @@ if(host&&frame&&pane){
 
   function sync(){
     pending=0;
+    if(!loaded)return;
     const rect=host.getBoundingClientRect();
     active=rect.top<innerHeight&&rect.bottom>0;
     const y=clamp(-rect.top,0,Math.max(0,frameHeight-innerHeight));
     // The earlier page has overflow-x:hidden on body, which captures sticky
     // positioning. Keep only this viewport aligned with the document scroll.
-    pane.style.height=`${innerHeight}px`;
-    pane.style.transform=`translate3d(0,${y}px,0)`;
-    if(!loaded)return;
     if(y===lastY&&active===lastActive)return;
+    if(y!==lastY)pane.style.transform=`translate3d(0,${y}px,0)`;
     lastY=y;lastActive=active;
     emit({type:'viewport',y,active});
   }
 
-  function requestSync(){if(!pending)pending=requestAnimationFrame(sync);}
+  function requestSync(){if(loaded&&!pending)pending=requestAnimationFrame(sync);}
+  function resizePane(){
+    pane.style.height=`${innerHeight}px`;
+    lastY=null;requestSync();
+  }
   function start(){
     if(started)return;
     started=true;
@@ -64,24 +67,34 @@ if(host&&frame&&pane){
     requestSync();
   }
 
-  // The shared chart emits keyboard boundaries on its annual root even when
-  // the key came from Product forms. Release only the final product boundary.
-  document.getElementById('annual-trade')?.addEventListener('decade:boundary',event=>{
+  const annual=document.getElementById('annual-trade');
+  const products=document.getElementById('product-forms');
+  // Both charts report keyboard boundaries through the annual chart root.
+  annual?.addEventListener('decade:boundary',event=>{
     const detail=event.detail;
-    const products=document.getElementById('product-forms');
-    if(detail?.origin!=='keyboard'||detail.direction!==1||detail.year!==2024||!products?.contains(document.activeElement))return;
-    event.preventDefault();
-    start();
-    host.scrollIntoView({behavior:'instant',block:'start'});
-    host.tabIndex=-1;
-    host.focus({preventScroll:true});
-    if(location.hash!=='#finale')history.pushState(null,'','#finale');
+    if(detail?.origin!=='keyboard')return;
+    const forward=detail.direction===1;
+    if(detail.year!==(forward?2024:2015))return;
+    const focused=document.activeElement;
+    let target;
+    if(annual.contains(focused)){
+      target=forward?products:document.getElementById('trade-intro');
+      if(target===products)window.decadeView?.setYear(2015);
+    }else if(products?.contains(focused)){
+      target=forward?host:annual;
+    }
+    if(!target)return;
+    if(target===host){start();host.tabIndex=-1;}
+    target.scrollIntoView({behavior:'instant',block:'start'});
+    target.focus({preventScroll:true});
+    const hash='#'+target.id;
+    if(location.hash!==hash)history.pushState(null,'',hash);
     requestSync();
   });
 
   addEventListener('message',onMessage);
   addEventListener('scroll',requestSync,{passive:true});
-  addEventListener('resize',()=>{lastY=null;requestSync();},{passive:true});
+  addEventListener('resize',resizePane,{passive:true});
   addEventListener('pageshow',requestSync);
   document.fonts?.ready.then(requestSync);
   if('IntersectionObserver' in window){
@@ -90,7 +103,7 @@ if(host&&frame&&pane){
     },{rootMargin:'1200px 0px',threshold:0});
     observer.observe(host);
   }else start();
-  requestSync();
+  resizePane();
   window.SM6351Integration=Object.freeze({
     getState:()=>({loaded,started,active,chapterHeight:frameHeight,childScroll:lastY}),
     enter(){start();host.scrollIntoView({behavior:'instant',block:'start'});requestSync();}

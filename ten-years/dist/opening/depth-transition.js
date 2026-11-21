@@ -45,15 +45,17 @@ assessments.forEach((item, start) => {
     .to(item.querySelector('.rating-label'), {opacity: 1, duration: .25}, start + .75);
 });
 
-let secondTop, thirdTop, exitStart, secondScreen, thirdScreen;
-let frame;
+let secondTop, thirdTop, exitStart, secondScreen, thirdScreen, animationEnd;
+let frame, lastY;
 function progress(y, start, duration) {
   return Math.max(0, Math.min(1, (y - start) / Math.max(1, duration)));
 }
 
 function render() {
   frame = undefined;
-  const y = Math.max(0, scrollY);
+  const y = Math.min(animationEnd, Math.max(0, scrollY));
+  if (y === lastY) return;
+  lastY = y;
   const intro = progress(y, 0, secondTop);
   const entrance = progress(y, secondTop, secondScreen);
   const exit = progress(y, exitStart, thirdTop - exitStart);
@@ -76,7 +78,9 @@ function render() {
 }
 
 function requestRender() {
-  if (frame === undefined) frame = requestAnimationFrame(render);
+  if (frame === undefined && Math.min(animationEnd, Math.max(0, scrollY)) !== lastY) {
+    frame = requestAnimationFrame(render);
+  }
 }
 
 function measure() {
@@ -86,6 +90,8 @@ function measure() {
   exitStart = (secondTop + thirdTop) / 2;
   secondScreen = (thirdTop - secondTop) / 4;
   thirdScreen = (top(tradeSection) - thirdTop) / 5;
+  animationEnd = thirdTop + thirdScreen * (1 + assessments.length);
+  lastY = undefined;
   requestRender();
 }
 

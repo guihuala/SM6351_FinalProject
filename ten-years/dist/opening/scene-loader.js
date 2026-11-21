@@ -25,7 +25,7 @@ function syncScene() {
       fishTimer = undefined;
       if (!canStartFish()) return;
       fishRequested = true;
-      import('./fish.js?v=shared-assets').catch(error => console.warn('The animated shark is unavailable.', error));
+      import('./fish.js?v=20261121-touch-scroll').catch(error => console.warn('The animated shark is unavailable.', error));
     }, 350);
   }
   const active = visible && !document.hidden && intro < .65;

@@ -17,6 +17,7 @@
 - `ten-years/dist/finale/`：你的最后一幕，保留鲨鱼缩小过渡、三个风险等级、三个商品例子、来源浮层与结尾。
 - `opening/complete.html`：在十年贸易前接入 3D 地球，在 Product forms 后接入末章。
 - `sphyrna/`：3D 地球的发布目录。整合页和独立入口共用这一份页面与数据。
+- `opening/globe-host.js`：整站里的地球支持用普通滚轮或单指纵向滑动继续阅读，按住 Shift 滚轮或双指捏合可缩放。滚动输入按画面帧合并。地球离开视口时暂停渲染，返回时恢复，并保留当前视图和年份。独立地球沿用原有操作。
 - `opening/finale-host.css` 与 `finale-host.js`：只负责新增区域的显示、滚动和加载。
 - `finale/js/integration.js`：将末章内的滚动操作交给整站，保留弹窗、表单及图表内的局部滚动。
 

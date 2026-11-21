@@ -27,6 +27,7 @@ import {
 } from './utils';
 
 const assetUrl = (file: string) => `${import.meta.env.BASE_URL}${file}`;
+const embedded = window.parent !== window;
 
 function LoadingScreen({ error }: { error?: string }) {
   return (
@@ -299,6 +300,28 @@ export default function App() {
     lng: 34,
   });
   const [resetSignal, setResetSignal] = useState(0);
+  const [scene, setScene] = useState<HTMLDivElement | null>(null);
+  const [rendering, setRendering] = useState(false);
+
+  useEffect(() => {
+    if (!scene) return;
+    let inView = !('IntersectionObserver' in window);
+    const sync = () => setRendering(inView && !document.hidden);
+    // The rootless observer also clips to the host viewport when embedded.
+    const observer = 'IntersectionObserver' in window
+      ? new IntersectionObserver(([entry]) => {
+          inView = entry.intersectionRatio > 0;
+          sync();
+        }, { threshold: 0.001 })
+      : undefined;
+    observer?.observe(scene);
+    document.addEventListener('visibilitychange', sync);
+    sync();
+    return () => {
+      observer?.disconnect();
+      document.removeEventListener('visibilitychange', sync);
+    };
+  }, [scene]);
 
   useEffect(() => {
     let cancelled = false;
@@ -414,14 +437,16 @@ export default function App() {
       onPointerLeave={() => setHover(null)}
     >
       <div className="deep-water" aria-hidden="true" />
-      <div className="scene" aria-label="Interactive 3D globe">
+      <div className="scene" ref={setScene} aria-label="Interactive 3D globe">
         <Canvas
           camera={{ position: [110, 82, 332], fov: 38, near: 1, far: 2000 }}
-          dpr={[1, 1.7]}
+          dpr={[1, embedded ? 1.35 : 1.7]}
+          frameloop={rendering ? 'always' : 'never'}
           gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
         >
           <Suspense fallback={null}>
             <GlobeScene
+              rendering={rendering}
               mode={mode}
               countries={countries}
               data={data}

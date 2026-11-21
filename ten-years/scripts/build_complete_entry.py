@@ -4,7 +4,7 @@ import sys
 
 DIST = Path(__file__).resolve().parents[1] / 'dist'
 source = (DIST / 'opening/index.html').read_text(encoding='utf-8')
-head = '''  <link rel="stylesheet" href="globe-host.css?v=20261121-globe">
+head = '''  <link rel="stylesheet" href="globe-host.css?v=20261121-scroll">
   <link rel="stylesheet" href="finale-host.css?v=20261120-scroll3">
 '''
 trade_chapters = '  <div class="opening-chapters decade-story-page ocean-page">\n'
@@ -15,11 +15,12 @@ globe = '''
     <header class="globe-header">
       <h2 id="distribution-trade-title">Distribution and trade flow</h2>
       <nav class="globe-links" aria-label="3D globe chapter navigation">
-        <a href="../sphyrna/index.html" target="_blank" rel="noopener">Open globe in a new tab</a>
+        <a href="../sphyrna/index.html?v=20261121-render" target="_blank" rel="noopener">Open globe in a new tab</a>
         <a href="#trade-intro">Continue to Fin trade <span aria-hidden="true">↓</span></a>
       </nav>
     </header>
-    <iframe class="globe-frame" src="../sphyrna/index.html" loading="lazy" title="Interactive 3D globe showing scalloped hammerhead distribution and reported trade flows"></iframe>
+    <p class="globe-gestures"><span class="globe-zoom-key">Hold Shift and scroll to zoom.</span><span class="globe-zoom-touch">Pinch to zoom.</span></p>
+    <iframe class="globe-frame" src="../sphyrna/index.html?v=20261121-render" loading="lazy" title="Interactive 3D globe showing scalloped hammerhead distribution and reported trade flows"></iframe>
     <nav class="globe-links" aria-label="Adjacent chapters">
       <a href="#trade-products">Trade overview <span aria-hidden="true">↑</span></a>
       <a href="#trade-intro">Continue to Fin trade <span aria-hidden="true">↓</span></a>
@@ -37,7 +38,9 @@ finale = '''
     <noscript><a class="finale-noscript" href="../finale/index.html">Open the final chapter</a></noscript>
   </section>
 '''
-script = '<script type="module" src="finale-host.js?v=20261120-scroll3"></script>\n'
+script = '''<script type="module" src="globe-host.js?v=20261121-render"></script>
+<script type="module" src="finale-host.js?v=20261121-render"></script>
+'''
 assert all(source.count(part) == 1 for part in ('</head>', '</main>', '</body>', trade_chapters, next_link))
 assert 'id="distribution-trade"' not in source and 'id="finale"' not in source, 'The team entry already contains an integrated chapter.'
 result = (

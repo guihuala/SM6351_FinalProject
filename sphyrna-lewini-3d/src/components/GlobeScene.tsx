@@ -25,6 +25,7 @@ import type {
 import { getRouteMidpoint } from '../utils';
 
 interface GlobeSceneProps {
+  rendering: boolean;
   mode: ViewMode;
   countries: CountryFeatureCollection;
   data: SphyrnaData;
@@ -140,6 +141,7 @@ function CameraRig({
 }
 
 export default function GlobeScene({
+  rendering,
   mode,
   countries,
   data,
@@ -158,6 +160,11 @@ export default function GlobeScene({
   const globeRef = useRef<GlobeMethods | undefined>(undefined);
   const controlsRef = useRef<OrbitControlsImpl | null>(null);
   const { camera } = useThree();
+
+  useEffect(() => {
+    if (rendering) globeRef.current?.resumeAnimation();
+    else globeRef.current?.pauseAnimation();
+  }, [rendering]);
 
   const globeMaterial = useMemo(
     () =>

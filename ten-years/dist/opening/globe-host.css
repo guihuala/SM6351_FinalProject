@@ -31,6 +31,21 @@
   letter-spacing: .01em;
 }
 
+.globe-chapter .globe-gestures {
+  margin: 4px 0 0;
+  color: var(--dv-muted);
+  font: 400 var(--dv-caption)/1.5 var(--dv-body);
+}
+
+.globe-chapter .globe-zoom-touch {
+  display: none;
+}
+
+@media (pointer: coarse) {
+  .globe-chapter .globe-zoom-key { display: none; }
+  .globe-chapter .globe-zoom-touch { display: inline; }
+}
+
 .globe-chapter .globe-frame {
   display: block;
   width: 100%;

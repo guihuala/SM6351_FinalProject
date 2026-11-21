@@ -63,7 +63,7 @@ function verifySceneReversal() {
   function flush() {
     const run = pending;
     pending = undefined;
-    run();
+    run?.();
   }
 
   function at(screens) {
@@ -92,6 +92,10 @@ function verifySceneReversal() {
   });
   assert.equal(JSON.parse(forward[4]).second, 'hidden');
   assert.equal(JSON.parse(forward[4]).rating, 'visible');
+  at(15);
+  context.scrollY = viewport * 16;
+  handlers.get('scroll')();
+  assert.equal(pending, undefined, 'Scrolling after the opening completes schedules no frame');
 
   viewport = 480;
   context.scrollY = 6.5 * viewport;
