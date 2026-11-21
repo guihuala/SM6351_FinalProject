@@ -1,12 +1,13 @@
-// The product section keeps its original scroll budget. The spacer begins where
-// the viewport would previously have reached the bottom of the five-scene story.
+// The product reveal, interactive hold and globe transition have separate scroll ranges.
 const products = document.querySelector('#trade-products');
 const stage = document.querySelector('#trade-stage');
 const ring = stage.querySelector('.trade-ring');
 const ringSvg = ring.querySelector('svg');
+const hold = document.createElement('div');
+hold.style.height = '100vh';
 const spacer = document.createElement('div');
 spacer.style.height = '150vh';
-products.after(spacer);
+products.after(hold, spacer);
 const frame = document.createElement('iframe');
 frame.title = 'Distribution, trade flows and subsequent chapters';
 frame.inert = true;
@@ -48,7 +49,7 @@ frame.addEventListener('load', () => {
   render();
 });
 function render() {
-  const start = products.getBoundingClientRect().bottom + scrollY - innerHeight;
+  const start = hold.getBoundingClientRect().bottom + scrollY - innerHeight;
   const progress = clamp((scrollY-start)/spacer.offsetHeight);
   if (!loaded && scrollY >= start-2*innerHeight) {
     loaded=true;
