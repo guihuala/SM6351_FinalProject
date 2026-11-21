@@ -1,49 +1,10 @@
 .dv-shell.globe-chapter {
   --globe-gutter: 0px;
   z-index: 10;
-  height: auto;
+  height: 100svh;
   padding: 0;
+  overflow: hidden;
   touch-action: auto;
-}
-
-.globe-chapter .globe-header,
-.globe-chapter .globe-links {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 0 20px;
-}
-
-.globe-chapter h2 {
-  margin: 0;
-  color: var(--dv-ink);
-  font: 500 var(--dv-h2)/1.15 var(--dv-heading);
-  letter-spacing: -.025em;
-}
-
-.globe-chapter .globe-links a {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  min-height: 44px;
-  font: 500 var(--dv-button)/1.25 var(--dv-body);
-  letter-spacing: .01em;
-}
-
-.globe-chapter .globe-gestures {
-  margin: 4px 0 0;
-  color: var(--dv-muted);
-  font: 400 var(--dv-caption)/1.5 var(--dv-body);
-}
-
-.globe-chapter .globe-zoom-touch {
-  display: none;
-}
-
-@media (pointer: coarse) {
-  .globe-chapter .globe-zoom-key { display: none; }
-  .globe-chapter .globe-zoom-touch { display: inline; }
 }
 
 .globe-chapter .globe-frame {

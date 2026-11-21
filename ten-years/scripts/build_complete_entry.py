@@ -4,7 +4,7 @@ import sys
 
 DIST = Path(__file__).resolve().parents[1] / 'dist'
 source = (DIST / 'opening/index.html').read_text(encoding='utf-8')
-head = '''  <link rel="stylesheet" href="globe-host.css?v=20261121-globe-only">
+head = '''  <link rel="stylesheet" href="globe-host.css?v=20261121-parent-chrome-free">
   <link rel="stylesheet" href="finale-host.css?v=20261120-scroll3">
 '''
 trade_chapters = '  <div class="opening-chapters decade-story-page ocean-page">\n'
@@ -12,11 +12,7 @@ next_link = '  <a class="opening-next" href="#trade-intro">Continue to annual tr
 globe_link = '  <a class="opening-next" href="#distribution-trade">Continue to the 3D globe <span aria-hidden="true">→</span></a>\n'
 globe = '''
   <section id="distribution-trade" class="dv-shell globe-chapter" tabindex="-1" aria-label="Distribution and trade flow">
-    <iframe class="globe-frame" src="../trade/index.html?v=20261121-globe-only" loading="lazy" title="Interactive 3D globe showing scalloped hammerhead distribution and reported trade flows"></iframe>
-    <nav class="globe-links" aria-label="Adjacent chapters">
-      <a href="#trade-products">Trade overview <span aria-hidden="true">↑</span></a>
-      <a href="#trade-intro">Continue to Fin trade <span aria-hidden="true">↓</span></a>
-    </nav>
+    <iframe class="globe-frame" src="../trade/index.html?v=20261121-controls-restored" loading="lazy" title="Interactive 3D globe showing scalloped hammerhead distribution and reported trade flows"></iframe>
   </section>
 
 '''

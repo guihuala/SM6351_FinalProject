@@ -1116,19 +1116,3 @@ button {
     animation-iteration-count: 1 !important;
   }
 }
-
-/* The hosted trade chapter is intentionally globe-only. */
-.app-shell > :is(
-  .brand,
-  .view-switch,
-  .year-picker,
-  .mode-label,
-  .legend,
-  .data-ribbon,
-  .selection-tag,
-  .detail-panel,
-  .hover-card,
-  .source-foot
-) {
-  display: none !important;
-}
