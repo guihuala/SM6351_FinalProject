@@ -1,0 +1,90 @@
+.rating-timeline {
+  --badge: clamp(40px, 4.4vw, 72px);
+  --rail: clamp(24px, 3.6vh, 40px);
+  position: fixed;
+  top: 63%;
+  left: 4%;
+  width: 44%;
+  z-index: 4;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 0;
+  padding: 0;
+  height: var(--rail);
+  list-style: none;
+  pointer-events: none;
+  color: #edf7fb;
+}
+.rating-timeline::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 1px solid #ffffff47;
+  border-radius: 999px;
+  background: #ffffff0d;
+  transform-origin: left center;
+  transform: scaleX(0);
+  transition: transform 480ms ease-out;
+}
+.rating-timeline.rail-open::before { transform: scaleX(1); }
+@media (prefers-reduced-motion: reduce) {
+  .rating-timeline::before { transition: none; }
+}
+.rating-timeline li {
+  --tone: #ae575b;
+  --stem: 7vh;
+  position: relative;
+  text-align: center;
+}
+.rating-timeline li:nth-child(2) { --tone: #cb363b; --stem: 12vh; }
+.rating-timeline li:nth-child(3) { --tone: #ed1624; --stem: 19vh; }
+.rating-line, .rating-dot, .rating-badge, .rating-label, .rating-year { position: absolute; }
+.rating-line {
+  left: calc(50% - 1px);
+  bottom: 50%;
+  width: 2px;
+  height: var(--stem);
+  background: var(--tone);
+  transform: scaleY(0);
+  transform-origin: bottom;
+}
+.rating-dot {
+  left: calc(50% - 5px);
+  top: calc(50% - 5px);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--tone);
+  opacity: 0;
+}
+.rating-badge {
+  bottom: calc(50% + var(--stem));
+  left: calc(50% - var(--badge) / 2);
+  width: var(--badge);
+  height: var(--badge);
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--tone);
+  color: var(--tone);
+  -webkit-text-fill-color: white;
+  box-shadow: 0 0 0 0 currentColor;
+  font-size: calc(var(--badge) * 0.37);
+  font-weight: 600;
+  transform: scale(.85);
+  opacity: 0;
+}
+.rating-label, .rating-year { inset-inline: 2px; opacity: 0; }
+.rating-label {
+  bottom: calc(50% + var(--stem) + var(--badge) + 12px);
+  font-size: clamp(13px, 1.12vw, 18px);
+  line-height: 1.25;
+  text-wrap: balance;
+}
+.rating-year { top: calc(100% + 24px); font-size: 18px; font-weight: 500; }
+@media (max-width: 600px) {
+  .rating-timeline { top: 82%; left: 5%; width: 90%; --badge: clamp(28px,5vh,40px); }
+  .rating-timeline li { --stem: 3vh; }
+  .rating-timeline li:nth-child(2) { --stem: 6vh; }
+  .rating-timeline li:nth-child(3) { --stem: 10vh; }
+}

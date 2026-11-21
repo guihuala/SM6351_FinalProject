@@ -1,0 +1,59 @@
+#trade-total{height:300vh}#trade-products{height:200vh}
+#trade-stage{position:fixed;inset:0;z-index:6;color:#edf7fb;pointer-events:none}
+#trade-stage[hidden]{display:none}
+.trade-summary,.trade-number,.trade-model,.trade-detail{position:absolute}
+.trade-summary{inset:0;text-align:center}
+.trade-summary p,.trade-summary h2{position:absolute;left:10%;width:80%;margin:0}
+.trade-summary p{bottom:59%;font-size:clamp(20px,3vw,40px)}
+.trade-summary h2{top:60%;left:50%;transform:translateX(-50%);max-width:640px;font-size:clamp(17px,2vw,28px);font-weight:400}
+.trade-number{transform:translate(-50%,-50%);display:grid;text-align:center;white-space:nowrap;line-height:1.12}
+.trade-number strong{font-weight:600;letter-spacing:-.045em}
+.trade-number span,.trade-number small{font-size:clamp(11px,1.1vw,16px);line-height:1.5}
+
+.trade-model{left:1%;top:22%;width:50%;height:64%}.trade-model canvas{width:100%;height:100%;display:block}
+.trade-detail{inset:15% 6% 4% 54%;display:flex;flex-direction:column;justify-content:center;align-items:stretch;--base-gap:1.5vh;--ring-inset:min(.96vh,.75vw);gap:var(--base-gap)}
+.trade-ring{height:min(32vh,25vw);text-align:center}.trade-ring svg{height:100%;width:100%;overflow:visible}
+.trade-ring circle{fill:none;stroke-width:24;pointer-events:none}
+#trade-stage.interactive .trade-ring .trade-hit{pointer-events:visibleStroke;cursor:pointer}
+.trade-columns,.trade-row{display:grid;grid-template-columns:1fr 1.1fr .95fr;text-align:right;align-items:center}
+.trade-columns span:first-child,.trade-row span:first-child{text-align:left}
+.trade-columns,.trade-list small{font-size:clamp(10px,.9vw,14px);color:#a8c3cc}
+/* Repeat the visible gap, including the SVG inset and space above the capital P. */
+.trade-columns{padding-top:calc(var(--base-gap) + var(--ring-inset) + (1lh - 1cap)/2)}
+.trade-list small{display:block;margin-top:1.5vh}
+.trade-row{width:100%;padding:.52vh 0;border:0;border-top:1px solid #a7d3e42b;background:transparent;color:inherit;font:inherit;font-size:clamp(13px,1.22vw,20px);font-variant-numeric:tabular-nums}
+.trade-row span:first-child::before{content:'';display:inline-block;width:.55em;height:.55em;border-radius:50%;background:var(--swatch);margin-right:.55em}
+.interactive .trade-row{pointer-events:auto;cursor:pointer}.trade-row.active{color:#fff;background:color-mix(in srgb,var(--swatch) 22%,transparent);box-shadow:inset 2px 0 var(--swatch)}
+@media(max-width:650px){.trade-model{top:10%;height:20%;width:90%;left:5%}.trade-detail{inset:32% 7% 3%;--base-gap:1vh;--ring-inset:min(.72vh,1.41vw)}.trade-ring{height:min(24vh,47vw)}.trade-row{font-size:14px}.trade-summary h2{top:57%}}
+
+/* Scene four: saved composition, with the counter scaling down on narrow screens. */
+.trade-summary p {
+  bottom: calc(50% + min(6.16vw, 71.68px) + 8px);
+  font-size: 32px;
+  color: rgb(237 247 251 / 60%);
+}
+.trade-summary h2 {
+  top: calc(50% + min(6.16vw, 71.68px) + 32px);
+  width: 96%;
+  max-width: none;
+  white-space: nowrap;
+  font-size: min(var(--note-size, 28px), 2.65vw);
+  color: #edf7fb;
+}
+
+.trade-ring{position:relative}
+.minor-label,.minor-comparison button{font:inherit;color:inherit;cursor:pointer}
+.minor-label{position:absolute;bottom:104%;white-space:nowrap;border:1px solid transparent;border-radius:6px;background:#0a1822d9;color:var(--swatch);font-size:clamp(10px,1vw,14px);padding:5px;pointer-events:auto}
+.minor-label.powder{right:52%}.minor-label.specimens{left:52%}
+.minor-label.active,.minor-label:focus-visible{border-color:var(--swatch)}
+.minor-comparison{position:absolute;z-index:2;right:100%;top:0;width:max-content;max-width:85vw;padding:12px;text-align:left;border:1px solid #7393a3;border-radius:10px;background:#0a1822fa;pointer-events:auto;font-size:13px}
+.minor-comparison header{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.minor-comparison button{background:transparent;border:0;padding:5px}
+.minor-comparison header button{font-size:20px;line-height:1}
+.minor-comparison small{color:#b8cad2}
+.minor-comparison>button{display:block;width:100%;text-align:left;color:var(--swatch)}
+.minor-comparison>button.active{background:color-mix(in srgb,var(--swatch) 17%,transparent)}
+.minor-bar{position:relative;height:6px;margin:12px 4px;background:linear-gradient(to right,#FFC14D var(--powder-share),#A8E86B var(--powder-share))}
+.minor-bar::after{content:'';position:absolute;right:-3px;top:50%;transform:translateY(-50%);width:8px;height:8px;border-radius:50%;background:#A8E86B}
+@media(max-width:650px){.minor-comparison{top:100%;right:50%;transform:translateX(50%)}}
+
