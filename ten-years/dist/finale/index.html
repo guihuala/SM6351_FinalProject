@@ -11,7 +11,7 @@
   <meta name="local-version" content="20261119-copy1">
   <link rel="stylesheet" href="./css/style.css">
   <link rel="stylesheet" href="./css/refinement.css">
-  <link rel="stylesheet" href="./css/closing.css?v=20261120-closing1">
+  <link rel="stylesheet" href="./css/closing.css?v=20261123-epilogue1">
   <link rel="stylesheet" href="./css/chart-density.css">
   <link rel="stylesheet" href="./js/ready-effects.css?v=20261119-copy1">
   <link rel="stylesheet" href="./css/ready-effects.css?v=20261118-ready7">
@@ -20,7 +20,7 @@
   <link rel="stylesheet" href="./css/product-stories.css?v=20261119-copy1">
   <link rel="stylesheet" href="./css/integration.css?v=20261123-chrome1">
   <script type="module" src="./js/integration.js"></script>
-  <script type="module" src="./js/app.js?v=20261120-closing1"></script>
+  <script type="module" src="./js/app.js?v=20261123-epilogue1"></script>
 </head>
 <body>
   <a class="skip-link" href="#wider-story">Skip the introduction</a>
@@ -79,25 +79,11 @@
     </section>
     <section class="closing closing-epilogue page-width" id="epilogue" aria-labelledby="closing-title">
       <div class="epilogue-copy">
-        <p class="eyebrow">STUDY LIST &amp; SOURCES</p>
         <div id="closing-title" class="epilogue-title" role="heading" aria-level="2" aria-label="Their future is part of ours."><span class="epilogue-title-line">Their future</span><span class="epilogue-title-line epilogue-title-serif">is part of ours.</span></div>
-        <p class="epilogue-note">We followed one species through trade. Along the way, we found a much wider story—of marine life, human demand and the ocean we share.</p>
-        <p class="epilogue-lead">1,608 study entries. 387 with CITES records.</p>
-        <span class="epilogue-trace" aria-hidden="true"></span>
-        <div class="epilogue-actions">
-          <button id="open-catalogue" class="epilogue-primary">Browse the study list <span aria-hidden="true">&#8599;</span></button>
-          <div class="epilogue-secondary"><button data-open="sources-dialog">Scope &amp; sources</button><a href="./data/candidates.csv" download>Download the list</a></div>
-        </div>
       </div>
-      <div class="epilogue-lives" aria-hidden="true">
-        <img class="epilogue-life" src="./assets/species/sphyrna-lewini-noaa.png" alt="" loading="lazy" decoding="async">
-        <img class="epilogue-life" src="./assets/species/eretmochelys-imbricata-noaa.png" alt="" loading="lazy" decoding="async">
-        <img class="epilogue-life" src="./assets/species/balaenoptera-borealis-noaa.png" alt="" loading="lazy" decoding="async">
-        <img class="epilogue-life" src="./assets/species/callorhinus-ursinus-noaa.png" alt="" loading="lazy" decoding="async">
-      </div>
+      <a class="epilogue-home" href="../opening/complete.html" data-finale-home>Back to the start</a>
     </section>
   </main>
-  <footer class="site-footer"><a href="#surface">Back to chapter start</a></footer>
   <div class="page-progress" aria-hidden="true" hidden></div>
   <dialog id="species-dialog" class="detail-dialog"><div class="dialog-top"><span class="eyebrow">SPECIES DETAILS</span><button class="close-button" data-close aria-label="Close species details">×</button></div><div id="species-detail"></div></dialog>
   <dialog id="catalogue-dialog" class="catalogue-dialog"><div class="dialog-top"><div><p class="eyebrow">THE STUDY LIST</p><h2>Browse the entries</h2></div><button class="close-button" data-close aria-label="Close the candidate list">×</button></div><p class="dialog-description">Each entry follows an IUCN assessment name. Some names map to the same accepted WoRMS taxon, so entry counts and unique taxon counts differ.</p><div class="catalogue-filters"><label>Search<input id="catalogue-search" type="search" placeholder="Scientific name, family or class"></label><label>Risk group<select id="catalogue-risk"><option value="">All groups</option><option value="VU">Vulnerable</option><option value="EN">Endangered</option><option value="CR">Critically Endangered</option></select></label><label>Record coverage<select id="catalogue-trade"><option value="">All study entries</option><option value="identified">With CITES records</option><option value="other">Without a confirmed match</option></select></label></div><div id="catalogue-context" class="catalogue-context"></div><p id="catalogue-count" class="list-count" role="status"></p><div id="catalogue-results" class="catalogue-results"></div><p class="chart-note">CITES full database 2026.1 · Appendix I–III · 2015–2024. Entries without a confirmed match include candidates with no identified record and candidates whose taxonomic match needs review. This does not establish an absence of trade.</p></dialog>

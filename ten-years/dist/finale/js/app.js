@@ -340,8 +340,8 @@ function updateScroll() {
     if(active!==state.activeRisk){state.activeRisk=active;$$('.risk-nav a[data-risk]').forEach(a=>{a.classList.toggle('active',a.dataset.risk===active);if(a.dataset.risk===active)a.setAttribute('aria-current','step');else a.removeAttribute('aria-current');});}
     const nav=$('.risk-nav');
     const fadeIn=clamp((scrollY-(start-vh*.65))/Math.max(160,vh*.23));
-    const tradeEnd=$('#trade-reveal').getBoundingClientRect().bottom+scrollY;
-    const fadeOut=clamp((tradeEnd+150-scrollY)/Math.max(160,vh*.23));
+    const epilogueTop=$('#epilogue').getBoundingClientRect().top;
+    const fadeOut=smooth((epilogueTop-vh*.4)/(vh*.45));
     const navAlpha=Math.min(fadeIn,fadeOut);
     nav.hidden=false;nav.style.setProperty('--nav-alpha',navAlpha.toFixed(3));
     nav.classList.toggle('is-visible',navAlpha>.01);
@@ -394,7 +394,7 @@ async function init() {
     });
     document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!$('#context-popover').hidden){event.preventDefault();event.stopPropagation();closePopover(true);}},true);
     $('#reveal-trade').addEventListener('click',()=>{state.trade=!state.trade;applyTrade();});
-    $('#open-catalogue').addEventListener('click',()=>openCatalogue());$('#explore-recorded').addEventListener('click',()=>openCatalogue({trade:'identified'}));
+    $('#explore-recorded').addEventListener('click',()=>openCatalogue({trade:'identified'}));
     ['catalogue-search','catalogue-risk','catalogue-trade'].forEach(id=>document.getElementById(id).addEventListener(id==='catalogue-search'?'input':'change',()=>{state.limit=100;renderCatalogue();}));
     document.addEventListener('scroll',requestScroll,{passive:true});window.addEventListener('resize',requestScroll,{passive:true});
     document.addEventListener('visibilitychange',()=>{updateMotion();requestScroll();});
