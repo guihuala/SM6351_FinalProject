@@ -25,7 +25,7 @@ document.head.append(style);
 const clamp = n => Math.max(0, Math.min(1, n));
 function ease(n) { const x=clamp(n); return x*x*(3-2*x); }
 
-let chapter, loaded=false, active=false;
+let chapter, loaded=false, active=false, pendingFrame, lastProgress;
 function chapterTop() {
   return chapter.getBoundingClientRect().top + frame.contentWindow.scrollY;
 }
@@ -36,6 +36,7 @@ frame.addEventListener('load', () => {
   chapter = frame.contentDocument.querySelector('#distribution-trade');
   if (!chapter) return;
   alignGlobe();
+  lastProgress=undefined;
   // A reverse scroll in the team's document crosses back into the same
   // parent timeline, including wheel events forwarded by the globe controls.
   frame.contentWindow.addEventListener('scroll', () => {
@@ -49,29 +50,30 @@ frame.addEventListener('load', () => {
   render();
 });
 function render() {
-  const start = hold.getBoundingClientRect().bottom + scrollY - innerHeight;
+  const start = spacer.offsetTop - innerHeight;
   const progress = clamp((scrollY-start)/spacer.offsetHeight);
   if (!loaded && scrollY >= start-2*innerHeight) {
     loaded=true;
     frame.src='../opening/complete.html#distribution-trade';
   }
+  if(progress===lastProgress)return;
+  lastProgress=progress;
   const moving=progress>0;
   const complete=progress >= 1-0.5/spacer.offsetHeight && !!chapter;
+  const entering=complete&&!active;
+  const box=moving?ring.getBoundingClientRect():null;
   document.body.classList.toggle('ring-travel',moving);
   document.body.classList.toggle('globe-active',complete);
   stage.inert=moving;
   frame.inert=!complete;
   frame.style.pointerEvents=complete?'auto':'none';
   if (active && !complete && document.activeElement===frame) frame.blur();
-  if (!active && complete) frame.focus({preventScroll:true});
   active=complete;
   if (!moving) {
     ringSvg.style.transform=ringSvg.style.opacity='';
     frame.style.visibility='hidden';
     return;
   }
-  if (!active) alignGlobe();
-  const box=ring.getBoundingClientRect();
   const move=ease(progress*3-1);
   const x=innerWidth/2, y=innerHeight/2;
   // Initial sphere radius 100, camera (110,82,332), vertical FOV 38°.
@@ -87,7 +89,18 @@ function render() {
   frame.style.visibility=chapter && reveal>0?'visible':'hidden';
   frame.style.opacity=reveal;
   frame.style.clipPath=complete?'none':'circle('+radius+'px at 50% 50%)';
+  if (entering) frame.focus({preventScroll:true});
 }
-addEventListener('scroll',render,{passive:true});
-addEventListener('resize',render);
+addEventListener('scroll',()=>{
+  if(pendingFrame!==undefined)return;
+  pendingFrame=requestAnimationFrame(()=>{
+    pendingFrame=undefined;
+    render();
+  });
+},{passive:true});
+addEventListener('resize',()=>{
+  if(!active)alignGlobe();
+  lastProgress=undefined;
+  render();
+});
 render();

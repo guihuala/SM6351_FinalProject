@@ -49,14 +49,33 @@ new GLTFLoader().load('./assets/scalloped_hammerhead_juvenile_low_poly.glb',g=>{
 },undefined,e=>{console.error(e);window.fishPreview={ready:false,error:String(e)};});
 const drawLandingClaw=createLandingClaw();
 resize();addEventListener('resize',resize);
-let last=performance.now(),elapsed=0;
-function frame(now){requestAnimationFrame(frame);if(document.hidden){last=now;return;}if(now-last<1000/30)return;const frameSeconds=(now-last)/1000;const dt=Math.min(frameSeconds,.06);last=now;elapsed+=dt;
-const story=window.oceanStory||{intro:0,entrance:0};
+const initialStory={intro:0,entrance:0,exit:0};
+let frameId=0,last,elapsed=0;
+function syncRendering(){
+ const exited=window.oceanStory?.exit>=1;
+ if(document.hidden||exited){
+  if(frameId)cancelAnimationFrame(frameId);
+  frameId=0;
+  last=undefined;
+  if(exited){
+   renderer.domElement.style.visibility='hidden';
+   inspectionArea.hidden=true;
+   if(activePointer!==null)finishInspection();
+   drawLandingClaw(0,false,0);
+   if(ready)Object.assign(window.fishPreview,{fishCount:0,exitProgress:1});
+  }
+ }else if(!frameId){
+  frameId=requestAnimationFrame(frame);
+ }
+}
+function frame(now){
+ frameId=requestAnimationFrame(frame);
+ if(last!==undefined&&now-last<1000/30)return;
+ const frameSeconds=last===undefined?0:(now-last)/1000;
+ const dt=Math.min(frameSeconds,.06);last=now;elapsed+=dt;
+const story=window.oceanStory||initialStory;
 applyView(story.entrance>0);
 const exitProgress=story.exit||0;
-const secondCopy=document.querySelector('.scene-two-copy');
-secondCopy.style.transform=`translateY(calc(-50% - ${exitProgress*innerHeight*2}px))`;
-secondCopy.style.visibility=exitProgress>=.999?'hidden':'visible';
 const canInspect=story.entrance>=.995&&exitProgress<.001;
 inspectionArea.hidden=!canInspect;
 if(!canInspect&&activePointer!==null){finishInspection();}
@@ -113,7 +132,10 @@ if(story.entrance<=0){
  window.fishPreview.fishCount=fish.visible?1:0;
  window.fishPreview.exitProgress=exitProgress;
 }
- if(!swimPaused){mixer.update(dt*1.5);mixer2.update(dt*1.5);}
+ if(!swimPaused){
+  mixer.update(dt*1.5);
+  if(fish2.visible)mixer2.update(dt*1.5);
+ }
 }
 rayTime.value=elapsed;alignLight();lightSample.copy(fish.position).project(camera);const depth=THREE.MathUtils.clamp((1-lightSample.y)*.5,0,1);light.intensity=4.2*Math.exp(-depth*.8)*(.96+.04*Math.sin(elapsed*.7));renderer.clear();if(story.entrance<=0)renderer.render(rayScene,rayCamera);renderer.clearDepth();renderer.render(scene,camera);
 // Update visibility only after this frame has rendered the correct fish and camera.
@@ -121,9 +143,9 @@ const layerOpacity=story.entrance>0
  ? THREE.MathUtils.smoothstep(story.entrance,0,.08)
  : Math.pow(1-THREE.MathUtils.clamp(story.intro,0,1),Math.log2(5));
 renderer.domElement.style.opacity=String(layerOpacity);
+renderer.domElement.style.visibility='visible';
 drawLandingClaw(frameSeconds,story.entrance<=0 && story.intro<1,layerOpacity);
 }
-requestAnimationFrame(frame);
 
 // Authoring tools are opt-in and never appear on the normal website.
 const cameraEditor=new URLSearchParams(location.search).get('cameraEditor')==='1';
@@ -208,3 +230,6 @@ inspectionArea.addEventListener('keydown',event=>{
  if(keys[event.key]){event.preventDefault();rotateInCameraSpace(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(...keys[event.key]),Math.PI/18));}
 });
 inspectionArea.addEventListener('dblclick',()=>inspectionOrientation.identity());
+window.addEventListener('opening:progress',syncRendering);
+document.addEventListener('visibilitychange',syncRendering);
+syncRendering();

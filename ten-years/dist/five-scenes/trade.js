@@ -10,6 +10,8 @@ const stage=document.querySelector('#trade-stage');
 const el=s=>stage.querySelector(s);
 const summary=el('.trade-summary'), number=el('.trade-number'), ring=el('.trade-ring'), list=el('.trade-list'), model=el('.trade-model');
 const oldCopy=document.querySelector('.scene-three-copy'), oldTimeline=document.querySelector('.rating-timeline');
+const totalsSection=document.querySelector('#trade-total');
+const productsSection=document.querySelector('#trade-products');
 let selected=-1, hover=-1, enabled=false, requested=false, drawModel, ringProgress=0;
 const pieces=[];
 const year = summary.querySelector('p');
@@ -151,14 +153,32 @@ products.forEach(([name,weight,color],i)=>{
 });
 const clamp=x=>Math.max(0,Math.min(1,x));
 function ramp(x){x=clamp(x);return x*x*(3-2*x)}
+let updateFrame, ringRect, lastProgress;
+function requestUpdate(){
+  if(updateFrame!==undefined)return;
+  updateFrame=requestAnimationFrame(()=>{
+    updateFrame=undefined;
+    update();
+  });
+}
+function invalidateLayout(){
+  ringRect=undefined;
+  lastProgress=undefined;
+}
+function refreshLayout(){
+  invalidateLayout();
+  requestUpdate();
+}
 function update(){
-  const totalsSection = document.querySelector('#trade-total');
   const distance = scrollY + innerHeight - totalsSection.offsetTop;
   // The summary occupies one animation unit over its full section height.
   // Map the product section's scroll distance to the two existing animation units.
-  const t = distance <= totalsSection.offsetHeight
+  const progress = distance <= totalsSection.offsetHeight
     ? distance / totalsSection.offsetHeight
-    : 1 + 2 * (distance - totalsSection.offsetHeight) / document.querySelector('#trade-products').offsetHeight;
+    : 1 + 2 * (distance - totalsSection.offsetHeight) / productsSection.offsetHeight;
+  const t = Math.max(0,Math.min(3,progress));
+  if(t===lastProgress)return;
+  lastProgress=t;
   const visible=t>0;
   updateSequence(t);
   stage.hidden=!visible;
@@ -172,7 +192,7 @@ function update(){
   stage.style.opacity=ramp(t/.25);
   summary.style.opacity=1-travel;
   number.style.opacity = sequence === 'waiting' ? 0 : ramp(t / 0.25);
-  const rect=ring.getBoundingClientRect();
+  const rect=ringRect ??= ring.getBoundingClientRect();
   number.style.left=innerWidth/2+(rect.left+rect.width/2-innerWidth/2)*travel+'px';
   number.style.top=innerHeight/2+(rect.top+rect.height/2-innerHeight/2)*travel+'px';
   const big=Number(stage.dataset.editorSize)||Math.min(innerWidth*.11,128),small=Math.min(rect.width,rect.height)*.104;
@@ -194,13 +214,19 @@ function update(){
     import('./trade-model.js?v=palette-1').then(m=>m.loadModel(model.querySelector('canvas'))).then(draw=>{drawModel=draw;paint()}).catch(console.error);
   }
 }
-addEventListener('scroll',update,{passive:true});addEventListener('resize',update);document.fonts.ready.then(update);update();
+addEventListener('scroll',requestUpdate,{passive:true});
+addEventListener('resize',refreshLayout);
+document.fonts.ready.then(refreshLayout);
+update();
 
 if(new URLSearchParams(location.search).get('tradeEditor') === '1'){
   import('./trade-editor.js?v=single-line').then(({openTradeEditor})=>{
     scrollTo(0, document.querySelector('#trade-total').offsetTop + innerHeight);
     update();
     finishSequence();
-    openTradeEditor({stage, year, explanation, counter, update});
+    openTradeEditor({stage, year, explanation, counter, update(){
+      invalidateLayout();
+      update();
+    }});
   });
 }

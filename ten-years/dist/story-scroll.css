@@ -1,0 +1,10 @@
+/* Hide the document scrollbar while keeping native scrolling and local panels. */
+html,
+body {
+  scrollbar-width: none;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
+}

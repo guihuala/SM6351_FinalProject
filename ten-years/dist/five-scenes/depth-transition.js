@@ -4,39 +4,44 @@ const state=window.oceanStory;
 const background=document.querySelector('.deep-background');
 const title=document.querySelector('.ocean-title');
 const cue=document.querySelector('.scroll-cue');
+const secondCopy=document.querySelector('.scene-two-copy');
+const scrub=matchMedia('(prefers-reduced-motion: reduce)').matches ? true : .32;
+function notifyProgress(){
+ window.dispatchEvent(new Event('opening:progress'));
+}
 function apply(){
  const eased=state.intro*state.intro*(3-2*state.intro);
  background.style.opacity=eased;
  title.style.opacity=String(1-Math.min(1,state.intro*2));
  title.style.transform=`translateY(calc(-50% - ${state.intro*80}px))`;
  cue.style.visibility=state.intro>.03?'hidden':'visible';
+ notifyProgress();
 }
-gsap.to(state,{intro:1,ease:'none',onUpdate:apply,scrollTrigger:{start:0,end:()=>innerHeight*2,scrub:.5,invalidateOnRefresh:true}});
+gsap.to(state,{intro:1,ease:'none',onUpdate:apply,scrollTrigger:{start:0,end:()=>innerHeight*2,scrub,invalidateOnRefresh:true}});
 function revealCopy(selector, startScreen, trigger) {
   const paragraph = document.querySelector(selector);
   const originalText=paragraph.textContent;
   paragraph.setAttribute('aria-label',originalText);
   paragraph.replaceChildren();
-  const characters=[];
-  originalText.trim().split(/\s+/).forEach((word,index)=>{
-   if(index)paragraph.append(document.createTextNode(' '));
-   const wrapper=document.createElement('span');wrapper.style.display='inline-block';wrapper.setAttribute('aria-hidden','true');
-   for(const letter of word){
-    const character=document.createElement('span');character.textContent=letter;
-    character.style.display='inline-block';wrapper.append(character);characters.push(character);
-   }
-   paragraph.append(wrapper);
+  const words=originalText.trim().split(/\s+/).map((word,index)=>{
+    if(index)paragraph.append(document.createTextNode(' '));
+    const span=document.createElement('span');
+    span.style.display='inline-block';
+    span.setAttribute('aria-hidden','true');
+    span.textContent=word;
+    paragraph.append(span);
+    return span;
   });
   gsap.set(paragraph,{autoAlpha:1,y:0});
   return gsap.timeline({scrollTrigger:{
     trigger, start:trigger ? 'top top' : ()=>innerHeight*startScreen, end:()=>'+='+innerHeight,
-    scrub:1.5, invalidateOnRefresh:true
-  }}).fromTo(characters,{opacity:0,filter:'blur(6px)'},{
-    opacity:1,filter:'blur(0px)',ease:'sine.out',duration:.8/1.8,stagger:{amount:1/1.8}
+    scrub, invalidateOnRefresh:true
+  }}).fromTo(words,{opacity:0},{
+    opacity:1,ease:'sine.out',duration:.8/1.8,stagger:{amount:1/1.8}
   },0);
 }
 revealCopy('.scene-two-copy p', 2)
-  .fromTo(state,{entrance:0},{entrance:1,ease:'none',onUpdate:apply,duration:1},0);
+  .fromTo(state,{entrance:0},{entrance:1,ease:'none',onUpdate:notifyProgress,duration:1},0);
 // One screen for the paragraph, followed by one screen per assessment.
 const assessments = document.querySelectorAll('.rating-timeline li');
 const thirdSection = document.querySelector('#page-three');
@@ -62,13 +67,15 @@ ScrollTrigger.create({
   start: () => 'top -=' + innerHeight,
   end: () => '+=' + (innerHeight * assessments.length),
   animation: thirdScene,
-  scrub: true
+  scrub
 });
-gsap.to(state,{exit:1,ease:'none',scrollTrigger:{start:()=>innerHeight*4,end:()=>innerHeight*6,scrub:.5,invalidateOnRefresh:true},onUpdate:()=>{
- const copy=document.querySelector('.scene-two-copy');
- copy.style.transform=`translateY(calc(-50% - ${state.exit*innerHeight*2}px))`;
- copy.style.visibility=state.exit>=1?'hidden':'visible';
-}});
+function applyExit(){
+ secondCopy.style.transform=`translateY(calc(-50% - ${state.exit*innerHeight*2}px))`;
+ secondCopy.style.visibility=state.exit>=1?'hidden':'visible';
+ notifyProgress();
+}
+gsap.to(state,{exit:1,ease:'none',scrollTrigger:{start:()=>innerHeight*4,end:()=>innerHeight*6,scrub,invalidateOnRefresh:true},onUpdate:applyExit});
 await document.fonts.ready;
 ScrollTrigger.refresh();
 apply();
+applyExit();
