@@ -55,7 +55,7 @@ function render() {
   const progress = clamp((scrollY-start)/spacer.offsetHeight);
   if (!loaded && scrollY >= start-2*innerHeight) {
     loaded=true;
-    frame.src='../opening/complete.html?sharedOcean=1&v=transparent-ocean#distribution-trade';
+    frame.src='../opening/complete.html?sharedOcean=1&v=globe-edge-fade#distribution-trade';
   }
   if(progress===lastProgress)return;
   lastProgress=progress;

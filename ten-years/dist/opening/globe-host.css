@@ -1,5 +1,6 @@
 .dv-shell.globe-chapter {
   --globe-gutter: 0px;
+  --globe-edge-fade: 24px;
   z-index: 10;
   height: 100svh;
   padding: 0;
@@ -18,12 +19,18 @@
   background: transparent;
   /* Match the embedded document so the browser keeps its canvas transparent. */
   color-scheme: light;
+  /* Let the shared water show through before the iframe meets Fin trade. */
+  mask-image: linear-gradient(to bottom, #000 calc(100% - var(--globe-edge-fade)), transparent);
 }
 
-@media (max-width: 480px) {
-  .globe-chapter .globe-frame {
-    width: 100%;
-    height: 100svh;
-    margin: 0;
+@media (max-height: 720px) {
+  .dv-shell.globe-chapter {
+    --globe-edge-fade: 18px;
+  }
+}
+
+@media (max-width: 760px) {
+  .dv-shell.globe-chapter {
+    --globe-edge-fade: 12px;
   }
 }
