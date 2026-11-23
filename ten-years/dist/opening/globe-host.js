@@ -97,5 +97,16 @@ function connectGlobe() {
 
 if (frame) {
   frame.addEventListener('load', connectGlobe);
-  connectGlobe();
+  const start = () => { frame.src = frame.dataset.src; };
+  if ('IntersectionObserver' in window) {
+    const preload = Math.min(550, Math.round(innerHeight * .65));
+    const observer = new IntersectionObserver(entries => {
+      if (!entries.some(entry => entry.isIntersecting)) return;
+      observer.disconnect();
+      start();
+    }, { rootMargin: `${preload}px 0px` });
+    observer.observe(frame);
+  } else {
+    start();
+  }
 }

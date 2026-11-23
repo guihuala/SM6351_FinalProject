@@ -23,7 +23,7 @@ export function createLandingClaw() {
   let tipDropAtStop;
   const randomDepth = () => THREE.MathUtils.randFloat(0.3, 0.6);
   let time = 0, delay = 0, lane = Math.random(), depth = randomDepth();
-  new GLTFLoader().load('./assets/claw-landing.glb', gltf => {
+  new GLTFLoader().load('./assets/claw-landing.glb?v=lighter-fasteners', gltf => {
     body = gltf.scene;
     mount.add(body);
     ring = body.getObjectByName('aro_superior');

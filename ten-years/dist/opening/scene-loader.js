@@ -1,5 +1,4 @@
 const scene = document.querySelector('#scene');
-const mask = document.querySelector('#opening-loading');
 const reduced = matchMedia('(prefers-reduced-motion: reduce)');
 let app, loading = false, failed = false, playing = false, fishRequested = false;
 let fishTimer, waterTimer;
@@ -10,14 +9,14 @@ function canStartFish() {
 }
 
 function canStartWater() {
-  return !mask?.hasAttribute('data-water-fallback') &&
-    !document.hidden && !reduced.matches && scrollY <= innerHeight * .05;
+  return !document.hidden && !reduced.matches && scrollY <= innerHeight * .05;
 }
 
 function syncScene() {
   const intro = window.oceanStory?.intro ?? 0;
-  const visible = !failed && !mask?.hasAttribute('data-water-fallback') && !reduced.matches && intro < 1;
-  if (scene.hidden === visible) scene.hidden = !visible;
+  const visible = !failed && !reduced.matches && intro < 1;
+  const showWater = Boolean(app && visible);
+  if (scene.hidden === showWater) scene.hidden = !showWater;
   if (!canStartFish()) {
     clearTimeout(fishTimer);
     fishTimer = undefined;
@@ -27,7 +26,7 @@ function syncScene() {
       fishTimer = undefined;
       if (!canStartFish()) return;
       fishRequested = true;
-      import('./fish.js?v=opening-loading').catch(error => {
+      import('./fish.js?v=static-first').catch(error => {
         dispatchEvent(new CustomEvent('opening:asset-ready', {detail: 'fish'}));
         console.warn('The animated shark is unavailable.', error);
       });
@@ -43,12 +42,10 @@ function syncScene() {
     clearTimeout(waterTimer);
     waterTimer = undefined;
   } else if (!app && !loading && active && waterTimer === undefined) {
-    // Start water alongside the shark when the loading screen is waiting for it.
-    const waiting = mask && !mask.hidden && !mask.hasAttribute('data-revealed');
     waterTimer = setTimeout(() => {
       waterTimer = undefined;
       if (canStartWater()) loadScene();
-    }, waiting ? 0 : 2600);
+    }, 350);
   }
 }
 
@@ -62,10 +59,6 @@ async function loadScene() {
     }
     const instance = new Application(scene);
     await instance.load('https://prod.spline.design/nKLH316Z3wAxXA5k/scene.splinecode');
-    if (mask?.hasAttribute('data-water-fallback')) {
-      instance.stop();
-      return;
-    }
     app = window.splineApp = instance;
     playing = true;
     syncScene();
@@ -79,7 +72,6 @@ async function loadScene() {
 }
 
 addEventListener('opening:progress', syncScene);
-addEventListener('opening:asset-fallback', syncScene);
 addEventListener('scroll', syncScene, {passive: true});
 document.addEventListener('visibilitychange', syncScene);
 reduced.addEventListener('change', syncScene);

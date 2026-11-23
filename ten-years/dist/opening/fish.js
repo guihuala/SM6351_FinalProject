@@ -64,12 +64,10 @@ let drawLandingClaw, clawRequested = false, clawTimer;
 resize();addEventListener('resize',resize);
 const reduced = matchMedia('(prefers-reduced-motion: reduce)');
 const fallbackStory = {intro:0, entrance:0, exit:0};
-const openingMask = document.getElementById('opening-loading');
 let frameId, last, elapsed=0, firstFrame=true;
 function syncRendering() {
  const {intro, entrance, exit} = window.oceanStory || fallbackStory;
- const openingFallback = entrance <= 0 && openingMask?.hasAttribute('data-fish-fallback');
- const active = ready && !openingFallback && !document.hidden && !reduced.matches && exit < 1 && (intro < 1 || entrance > 0);
+ const active = ready && !document.hidden && !reduced.matches && exit < 1 && (intro < 1 || entrance > 0);
  if (!active) renderer.domElement.hidden = true;
  if (active && frameId === undefined) frameId = requestAnimationFrame(frame);
  if (!active && frameId !== undefined) {
@@ -86,7 +84,7 @@ function syncRendering() {
  } else if (!clawRequested && clawTimer === undefined) {
   clawTimer = setTimeout(() => {
    clawRequested = true;
-   import('./landing-claw.js?v=shared-assets').then(({createLandingClaw}) => {
+   import('./landing-claw.js?v=lightweight').then(({createLandingClaw}) => {
     if (!document.hidden && !reduced.matches && scrollY <= innerHeight * .05) drawLandingClaw = createLandingClaw();
     else clawRequested = false;
    }).catch(console.error);

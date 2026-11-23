@@ -134,9 +134,10 @@ if(host&&frame&&pane){
       requestSync();
     });
     viewportObserver.observe(host);
+    const preload=Math.min(550,Math.round(innerHeight*.65));
     const observer=new IntersectionObserver(entries=>{
       if(entries.some(entry=>entry.isIntersecting)){start();observer.disconnect();}
-    },{rootMargin:'2200px 0px',threshold:0});
+    },{rootMargin:`${preload}px 0px`,threshold:0});
     observer.observe(host);
   }else start();
   resizePane();

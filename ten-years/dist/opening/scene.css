@@ -25,6 +25,10 @@ body::before {
   pointer-events:none;
 }
 
+#scene[hidden] {
+  visibility:hidden;
+}
+
 #status {
   position:fixed;
   inset:45% 0 auto;

@@ -1,8 +1,7 @@
 // The optional host owns page scrolling; the standalone chapter keeps its native behaviour.
-const embedded = window.parent !== window && new URLSearchParams(location.search).get('integrated') === '1';
+const embedded = document.documentElement.dataset.integrated === 'true';
 
 if (embedded) {
-  document.documentElement.dataset.integrated = 'true';
   const channel = 'sm6351-finale', origin = location.origin;
   globalThis.__MARINE_EMBEDDED = true;
   globalThis.__MARINE_HOST_ACTIVE = false;
