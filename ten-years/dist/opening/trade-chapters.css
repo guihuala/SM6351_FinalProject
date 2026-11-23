@@ -7,6 +7,15 @@
   background: color-mix(in srgb, var(--dv-bg) 32%, transparent);
 }
 
+.dv-shell.opening-trade-chapter:focus-visible {
+  outline: none;
+}
+
+.opening-trade-chapter:focus-visible :is(.dv-trade-intro-content h2, .dv-linked-summary .dv-amount-label, .dv-product-scene-header h2) {
+  text-decoration: underline 2px var(--dv-accent);
+  text-underline-offset: .22em;
+}
+
 .ocean-page #trade-intro.opening-trade-chapter::before,
 .ocean-page #annual-trade.opening-trade-chapter::before {
   content: none;

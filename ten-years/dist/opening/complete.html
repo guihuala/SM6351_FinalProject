@@ -7,10 +7,13 @@
     if (/\/opening\/(?:index\.html)?$/.test(location.pathname)) {
       location.replace('complete.html' + location.search + location.hash);
     }
+    if (window.parent !== window && new URLSearchParams(location.search).get('sharedOcean') === '1') {
+      document.documentElement.dataset.sharedOcean = '';
+    }
   </script>
   <title>Spline underwater — Reference preview</title>
   <link rel="icon" type="image/png" sizes="64x64" href="../favicon.png">
-  <link rel="stylesheet" href="scene.css">
+  <link rel="stylesheet" href="scene.css?v=shared-ocean">
   <link rel="stylesheet" href="../story-scroll.css">
   <link rel="stylesheet" href="./timeline.css?v=reversible-scroll">
   <script type="importmap">{"imports":{"three":"../ocean/vendor/three.module.js"}}</script>
@@ -18,8 +21,8 @@
   <link rel="stylesheet" href="opening-loading.css?v=1">
   <link rel="stylesheet" href="../ocean/story.css?v=trade-scroll">
   <link rel="stylesheet" href="trade.css?v=continuous-trade">
-  <link rel="stylesheet" href="trade-chapters.css?v=fin-trade-swipe">
-  <link rel="stylesheet" href="globe-host.css?v=20261121-parent-chrome-free">
+  <link rel="stylesheet" href="trade-chapters.css?v=chapter-focus">
+  <link rel="stylesheet" href="globe-host.css?v=shared-ocean">
   <link rel="stylesheet" href="finale-host.css?v=20261123-smooth1">
 </head>
 <body>
@@ -49,7 +52,7 @@
   <section id="trade-products" aria-label="Trade by product"></section>
 
   <section id="distribution-trade" class="dv-shell globe-chapter" tabindex="-1" aria-label="Distribution and trade flow">
-    <iframe class="globe-frame" src="../trade/index.html?v=scroll-performance" loading="lazy" title="Interactive 3D globe showing scalloped hammerhead distribution and reported trade flows"></iframe>
+    <iframe class="globe-frame" src="../trade/index.html?integrated=1&amp;v=shared-ocean" loading="lazy" title="Interactive 3D globe showing scalloped hammerhead distribution and reported trade flows"></iframe>
   </section>
 
   <div class="opening-chapters decade-story-page ocean-page">
