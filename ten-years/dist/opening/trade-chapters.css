@@ -4,7 +4,6 @@
   --dv-text: #edf7fb;
   --dv-muted: #a8c3cc;
   --dv-accent: #3ddcd0;
-  background: color-mix(in srgb, var(--dv-bg) 32%, transparent);
 }
 
 .dv-shell.opening-trade-chapter:focus-visible {
