@@ -1,4 +1,5 @@
 const scene = document.querySelector('#scene');
+const mask = document.querySelector('#opening-loading');
 const reduced = matchMedia('(prefers-reduced-motion: reduce)');
 let app, loading = false, failed = false, playing = false, fishRequested = false;
 let fishTimer, waterTimer;
@@ -9,12 +10,13 @@ function canStartFish() {
 }
 
 function canStartWater() {
-  return !document.hidden && !reduced.matches && scrollY <= innerHeight * .05;
+  return !mask?.hasAttribute('data-water-fallback') &&
+    !document.hidden && !reduced.matches && scrollY <= innerHeight * .05;
 }
 
 function syncScene() {
   const intro = window.oceanStory?.intro ?? 0;
-  const visible = !failed && !reduced.matches && intro < 1;
+  const visible = !failed && !mask?.hasAttribute('data-water-fallback') && !reduced.matches && intro < 1;
   if (scene.hidden === visible) scene.hidden = !visible;
   if (!canStartFish()) {
     clearTimeout(fishTimer);
@@ -25,7 +27,10 @@ function syncScene() {
       fishTimer = undefined;
       if (!canStartFish()) return;
       fishRequested = true;
-      import('./fish.js?v=20261121-touch-scroll').catch(error => console.warn('The animated shark is unavailable.', error));
+      import('./fish.js?v=opening-loading').catch(error => {
+        dispatchEvent(new CustomEvent('opening:asset-ready', {detail: 'fish'}));
+        console.warn('The animated shark is unavailable.', error);
+      });
     }, 350);
   }
   const active = visible && !document.hidden && intro < .65;
@@ -38,11 +43,12 @@ function syncScene() {
     clearTimeout(waterTimer);
     waterTimer = undefined;
   } else if (!app && !loading && active && waterTimer === undefined) {
-    // Visitors who scroll straight into the story can keep using the static water.
+    // Start water alongside the shark when the loading screen is waiting for it.
+    const waiting = mask && !mask.hidden && !mask.hasAttribute('data-revealed');
     waterTimer = setTimeout(() => {
       waterTimer = undefined;
       if (canStartWater()) loadScene();
-    }, 2600);
+    }, waiting ? 0 : 2600);
   }
 }
 
@@ -56,17 +62,24 @@ async function loadScene() {
     }
     const instance = new Application(scene);
     await instance.load('https://prod.spline.design/nKLH316Z3wAxXA5k/scene.splinecode');
+    if (mask?.hasAttribute('data-water-fallback')) {
+      instance.stop();
+      return;
+    }
     app = window.splineApp = instance;
     playing = true;
     syncScene();
+    dispatchEvent(new CustomEvent('opening:asset-ready', {detail: 'water'}));
   } catch (error) {
     failed = true;
     scene.hidden = true;
+    dispatchEvent(new CustomEvent('opening:asset-ready', {detail: 'water'}));
     console.warn('The animated water is unavailable.', error);
   }
 }
 
 addEventListener('opening:progress', syncScene);
+addEventListener('opening:asset-fallback', syncScene);
 addEventListener('scroll', syncScene, {passive: true});
 document.addEventListener('visibilitychange', syncScene);
 reduced.addEventListener('change', syncScene);

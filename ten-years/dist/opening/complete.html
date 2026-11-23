@@ -15,6 +15,7 @@
   <link rel="stylesheet" href="./timeline.css?v=reversible-scroll">
   <script type="importmap">{"imports":{"three":"../ocean/vendor/three.module.js"}}</script>
   <link rel="stylesheet" href="../style.css?v=yearly-columns">
+  <link rel="stylesheet" href="opening-loading.css?v=1">
   <link rel="stylesheet" href="../ocean/story.css?v=trade-scroll">
   <link rel="stylesheet" href="trade.css?v=continuous-trade">
   <link rel="stylesheet" href="trade-chapters.css?v=chapter-handoff">
@@ -22,6 +23,11 @@
   <link rel="stylesheet" href="finale-host.css?v=20261123-smooth1">
 </head>
 <body>
+<div id="opening-loading" class="dv-shell opening-loading" role="status" data-background="./assets/surface.webp">
+  <span>Loading the underwater scene…</span>
+</div>
+<noscript><style>#opening-loading{display:none}</style></noscript>
+<script src="opening-loading.js?v=1" onerror="document.getElementById('opening-loading').hidden=true"></script>
 <nav class="dv-shell opening-navigation" aria-label="Trade chapters">
   <a class="opening-skip" href="#annual-trade">Explore annual trade data <span aria-hidden="true">→</span></a>
   <a class="opening-next" href="#distribution-trade">Continue to the 3D globe <span aria-hidden="true">→</span></a>
@@ -94,7 +100,7 @@
 <canvas id="scene"></canvas>
 <canvas id="landing-claw" hidden aria-hidden="true" style="position:fixed;inset:0;width:100%;height:100%;z-index:3;pointer-events:none"></canvas>
 <canvas id="fish" aria-label="Animated scalloped hammerhead shark swimming freely underwater"></canvas>
-<script type="module" src="scene-loader.js?v=20261121-touch-scroll"></script>
+<script type="module" src="scene-loader.js?v=opening-loading"></script>
 <script type="module" src="bubbles.js?v=preview-motion"></script>
 <a class="scroll-cue" href="#meet-the-shark" aria-label="Meet the scalloped hammerhead"><svg viewBox="0 0 28 36" fill="none" aria-hidden="true"><path d="M14 5v24M5 20l9 9 9-9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
 <script src="../ocean/vendor/gsap.min.js"></script>

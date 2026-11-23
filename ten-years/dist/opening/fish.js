@@ -56,15 +56,20 @@ new GLTFLoader().load('../ocean/assets/scalloped_hammerhead_juvenile_low_poly.gl
  g.scene.traverse(o=>{if(o.isMesh){o.frustumCulled=false;o.material=o.material.clone();o.material.roughness=.45;o.material.metalness=0;o.castShadow=true;o.receiveShadow=true;}});
  mixer=new THREE.AnimationMixer(g.scene);g.animations.forEach((clip,i)=>{if(i===0)mixer.clipAction(clip).play();});const second=cloneSkeleton(normalized);fish2.add(second);mixer2=new THREE.AnimationMixer(second);if(g.animations.length){mixer2.clipAction(g.animations[0]).play();mixer2.update(.8);}ready=true;window.fishPreview={ready:true,animations:g.animations.map(x=>x.name),size:size.toArray()};
  syncRendering();
-},undefined,e=>{console.error(e);window.fishPreview={ready:false,error:String(e)};});
+},undefined,e=>{
+ console.error(e);window.fishPreview={ready:false,error:String(e)};
+ dispatchEvent(new CustomEvent('opening:asset-ready',{detail:'fish'}));
+});
 let drawLandingClaw, clawRequested = false, clawTimer;
 resize();addEventListener('resize',resize);
 const reduced = matchMedia('(prefers-reduced-motion: reduce)');
 const fallbackStory = {intro:0, entrance:0, exit:0};
-let frameId, last, elapsed=0;
+const openingMask = document.getElementById('opening-loading');
+let frameId, last, elapsed=0, firstFrame=true;
 function syncRendering() {
  const {intro, entrance, exit} = window.oceanStory || fallbackStory;
- const active = ready && !document.hidden && !reduced.matches && exit < 1 && (intro < 1 || entrance > 0);
+ const openingFallback = entrance <= 0 && openingMask?.hasAttribute('data-fish-fallback');
+ const active = ready && !openingFallback && !document.hidden && !reduced.matches && exit < 1 && (intro < 1 || entrance > 0);
  if (!active) renderer.domElement.hidden = true;
  if (active && frameId === undefined) frameId = requestAnimationFrame(frame);
  if (!active && frameId !== undefined) {
@@ -161,6 +166,10 @@ const layerOpacity=story.entrance>0
  : Math.pow(1-THREE.MathUtils.clamp(story.intro,0,1),Math.log2(5));
 renderer.domElement.style.opacity=String(layerOpacity);
 renderer.domElement.hidden=false;
+if(firstFrame){
+ firstFrame=false;
+ dispatchEvent(new CustomEvent('opening:asset-ready',{detail:'fish'}));
+}
 drawLandingClaw?.(dt,story.entrance<=0 && story.intro<1,layerOpacity);
 }
 
@@ -248,6 +257,7 @@ inspectionArea.addEventListener('keydown',event=>{
 });
 inspectionArea.addEventListener('dblclick',()=>inspectionOrientation.identity());
 addEventListener('opening:progress', syncRendering);
+addEventListener('opening:asset-fallback', syncRendering);
 document.addEventListener('visibilitychange', syncRendering);
 reduced.addEventListener('change', syncRendering);
 syncRendering();

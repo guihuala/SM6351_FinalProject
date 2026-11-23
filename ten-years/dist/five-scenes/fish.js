@@ -46,23 +46,30 @@ new GLTFLoader().load('./assets/scalloped_hammerhead_juvenile_low_poly.glb',g=>{
  const box=new THREE.Box3().setFromObject(g.scene),size=box.getSize(new THREE.Vector3());const normalized=new THREE.Group();g.scene.position.sub(box.getCenter(new THREE.Vector3()));normalized.add(g.scene);normalized.scale.setScalar(1/Math.max(size.x,size.y,size.z));fish.add(normalized);
  g.scene.traverse(o=>{if(o.isMesh){o.frustumCulled=false;o.material=o.material.clone();o.material.roughness=.45;o.material.metalness=0;o.castShadow=true;o.receiveShadow=true;}});
  mixer=new THREE.AnimationMixer(g.scene);g.animations.forEach((clip,i)=>{if(i===0)mixer.clipAction(clip).play();});const second=cloneSkeleton(normalized);fish2.add(second);mixer2=new THREE.AnimationMixer(second);if(g.animations.length){mixer2.clipAction(g.animations[0]).play();mixer2.update(.8);}ready=true;window.fishPreview={ready:true,animations:g.animations.map(x=>x.name),size:size.toArray()};
-},undefined,e=>{console.error(e);window.fishPreview={ready:false,error:String(e)};});
+},undefined,e=>{
+ console.error(e);window.fishPreview={ready:false,error:String(e)};
+ dispatchEvent(new CustomEvent('opening:asset-ready',{detail:'fish'}));
+});
 const drawLandingClaw=createLandingClaw();
 resize();addEventListener('resize',resize);
 const initialStory={intro:0,entrance:0,exit:0};
-let frameId=0,last,elapsed=0;
+const loadingMask=document.getElementById('opening-loading');
+const reduced=matchMedia('(prefers-reduced-motion: reduce)');
+let frameId=0,last,elapsed=0,firstFrame=true;
 function syncRendering(){
- const exited=window.oceanStory?.exit>=1;
- if(document.hidden||exited){
+ const story=window.oceanStory||initialStory;
+ const exited=story.exit>=1;
+ const openingFallback=story.entrance<=0&&loadingMask?.hasAttribute('data-fish-fallback');
+ if(document.hidden||exited||openingFallback||reduced.matches){
   if(frameId)cancelAnimationFrame(frameId);
   frameId=0;
   last=undefined;
-  if(exited){
+  if(exited||openingFallback||reduced.matches){
    renderer.domElement.style.visibility='hidden';
    inspectionArea.hidden=true;
    if(activePointer!==null)finishInspection();
    drawLandingClaw(0,false,0);
-   if(ready)Object.assign(window.fishPreview,{fishCount:0,exitProgress:1});
+   if(ready&&exited)Object.assign(window.fishPreview,{fishCount:0,exitProgress:1});
   }
  }else if(!frameId){
   frameId=requestAnimationFrame(frame);
@@ -144,6 +151,10 @@ const layerOpacity=story.entrance>0
  : Math.pow(1-THREE.MathUtils.clamp(story.intro,0,1),Math.log2(5));
 renderer.domElement.style.opacity=String(layerOpacity);
 renderer.domElement.style.visibility='visible';
+if(ready&&firstFrame){
+ firstFrame=false;
+ dispatchEvent(new CustomEvent('opening:asset-ready',{detail:'fish'}));
+}
 drawLandingClaw(frameSeconds,story.entrance<=0 && story.intro<1,layerOpacity);
 }
 
@@ -231,5 +242,7 @@ inspectionArea.addEventListener('keydown',event=>{
 });
 inspectionArea.addEventListener('dblclick',()=>inspectionOrientation.identity());
 window.addEventListener('opening:progress',syncRendering);
+window.addEventListener('opening:asset-fallback',syncRendering);
 document.addEventListener('visibilitychange',syncRendering);
+reduced.addEventListener('change',syncRendering);
 syncRendering();
