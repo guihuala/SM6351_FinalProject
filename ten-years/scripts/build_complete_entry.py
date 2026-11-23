@@ -20,7 +20,7 @@ finale = '''
   <!-- Final chapter: isolated styles and scripts; earlier chapter markup is retained. -->
   <section id="finale" class="finale-host" tabindex="-1" aria-label="Final chapter: beyond one species">
     <div class="finale-window">
-      <iframe id="finale-frame" class="finale-frame" data-src="../finale/index.html?integrated=1&amp;v=20261123-annual1" title="Final chapter: threatened marine species, products and CITES records" scrolling="no"></iframe>
+      <iframe id="finale-frame" class="finale-frame" data-src="../finale/index.html?integrated=1&amp;v=20261123-matrix1" title="Final chapter: threatened marine species, products and CITES records" scrolling="no"></iframe>
       <div class="finale-loading" role="status"><p>Loading the final chapter…</p><a href="../finale/index.html">Open the chapter separately</a></div>
     </div>
     <noscript><a class="finale-noscript" href="../finale/index.html">Open the final chapter</a></noscript>

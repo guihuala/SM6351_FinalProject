@@ -10,12 +10,17 @@ const clamp = (n, min = 0, max = 1) => Math.max(min, Math.min(max, n));
 const slug = {VU:'vulnerable', EN:'endangered', CR:'critically-endangered'};
 const riskColors = {VU:'#d5b877', EN:'#c98963', CR:'#d9746b'};
 const riskRamps = {VU:[[8,20,30],[139,110,43],[213,184,120]],EN:[[11,19,29],[155,101,66],[220,179,155]],CR:[[14,18,29],[171,89,83],[233,173,168]]};
-// Annual cells share one count-to-lightness curve. More of its contrast is
-// reserved for the densely populated 25–75 range; no row is normalised alone.
-const annualCountStops = [0,25,50,75,100,125,160];
-const annualLightness = [.18,.30,.50,.70,.78,.86,.96];
-const annualChroma = [.020,.055,.100,.120,.100,.070,.015];
-const annualHues = {VU:90,EN:50,CR:25};
+// Shared count bands keep the 1–32 entry cells legible beside the 176-entry
+// outlier. A band always has the same lightness, regardless of risk group.
+const matrixBands = [
+  {max:4,label:'1–4',lightness:.38,chroma:.05},
+  {max:9,label:'5–9',lightness:.49,chroma:.085},
+  {max:19,label:'10–19',lightness:.62,chroma:.12},
+  {max:39,label:'20–39',lightness:.75,chroma:.12},
+  {max:89,label:'40–89',lightness:.86,chroma:.07},
+  {max:180,label:'90–180',lightness:.96,chroma:.015}
+];
+const matrixHues = {VU:90,EN:50,CR:25};
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 const embedded = Boolean(globalThis.__MARINE_EMBEDDED) || (window.parent !== window && new URLSearchParams(location.search).get('integrated') === '1');
 const state = {data:null, images:[], speciesByID:new Map(), imageByName:new Map(), classStats:new Map(), groupStats:new Map(), trade:false, motion:!reducedMotion.matches, hostActive:!embedded || Boolean(globalThis.__MARINE_HOST_ACTIVE), extra:{}, limit:100, activeRisk:null};
@@ -78,43 +83,22 @@ function riskCellStyle(value,risk,max=250) {
   return `--cell-color:rgba(${colour.join(',')},.83);--cell-ink:${luminance>.18?'#061622':'#f6fcff'};--cell-tint:${riskColors[risk]}`;
 }
 
-function annualTone(value) {
-  const count=clamp(Number(value)||0,0,160);
-  const index=Math.min(annualCountStops.length-2,annualCountStops.findIndex((stop,i)=>i>0&&count<=stop)-1);
-  const position=(count-annualCountStops[index])/(annualCountStops[index+1]-annualCountStops[index]);
-  const blend=stops=>stops[index]+(stops[index+1]-stops[index])*position;
-  return {lightness:blend(annualLightness),chroma:blend(annualChroma)};
+function matrixBand(value) {
+  return matrixBands.find(band=>value<=band.max)||matrixBands[matrixBands.length-1];
 }
 
-function annualColour(value,risk) {
-  const tone=annualTone(value);
-  return `oklch(${(tone.lightness*100).toFixed(3)}% ${tone.chroma.toFixed(4)} ${annualHues[risk]} / .92)`;
+function matrixColour(band,risk) {
+  return `oklch(${band.lightness*100}% ${band.chroma} ${matrixHues[risk]} / .94)`;
 }
 
-function annualCellStyle(value,risk) {
-  const colour=annualColour(value,risk);
-  return `--annual-color:${colour};--cell-color:${colour};--cell-tint:${riskColors[risk]}`;
-}
-
-function annualKeyHTML() {
-  const ticks=[0,40,80,120,160];
-  return `<span class="legend-description">Colour identifies risk · lighter squares show more entries</span><div class="annual-risk-scales">${state.data.groups.map(group=>{
-    const gradient=annualCountStops.map(count=>`${annualColour(count,group.code)} ${count/160*100}%`).join(',');
-    return `<div class="annual-risk-scale"><span class="annual-scale-name" style="color:${riskColors[group.code]}">${escape(group.label)}</span><div class="annual-scale-bar" style="background:linear-gradient(90deg in oklch,${gradient})" aria-hidden="true"></div><div class="annual-scale-ticks" aria-hidden="true">${ticks.map(count=>`<span>${count}</span>`).join('')}</div></div>`;
-  }).join('')}</div><span class="scale-range">Shared count scale: 0–160 entries across all three risk groups</span>`;
+function matrixCellStyle(value,risk) {
+  return `--cell-color:${value>0?matrixColour(matrixBand(value),risk):'transparent'};--cell-tint:${riskColors[risk]}`;
 }
 
 function renderColourKeys() {
-  $$('.scale-swatches[data-scale],.heatmap-key>.scale-swatches').forEach(node=>{
-    const max=Number(node.dataset.scale||160),key=node.closest('.heatmap-key');
-    key.classList.add('risk-colour-key');
-    if(key.closest('.annual-chart')){
-      key.classList.add('annual-colour-key');
-      key.innerHTML=annualKeyHTML();
-      return;
-    }
-    key.innerHTML=`<span class="legend-description">Colour identifies risk · lighter shades show more entries</span><div class="risk-legend-items">${state.data.groups.map(group=>`<div class="risk-key-item"><span style="color:${riskColors[group.code]}">${escape(group.label)}</span><div class="scale-swatches" aria-hidden="true">${[0,.2,.4,.6,.8,1].map(t=>`<i style="background:rgba(${riskChannels(t*max,group.code,max).join(',')},.83)"></i>`).join('')}</div></div>`).join('')}</div><span class="scale-range">Shared count range: 0 — ${max}</span>`;
-  });
+  const key=$('#compare-groups .heatmap-key');
+  key.classList.add('matrix-count-key');
+  key.innerHTML=`<div class="matrix-key-heading"><span>Shared count bands · lighter shades mean more entries</span><span class="matrix-zero-key"><i aria-hidden="true"></i>0 matched entries</span></div><div class="matrix-band-scales">${state.data.groups.map(group=>`<div class="matrix-band-scale"><span class="matrix-scale-name" style="color:${riskColors[group.code]}">${escape(group.label)}</span><div class="matrix-band-swatches">${matrixBands.map(band=>`<span><i style="background:${matrixColour(band,group.code)}" aria-hidden="true"></i><span>${band.label}</span></span>`).join('')}</div></div>`).join('')}</div>`;
 }
 
 function toast(message) {
@@ -185,7 +169,7 @@ function buildTradeStatistics() {
 
 function matrixHTML() {
   const groups=state.data.groups, rows=state.data.classMatrix.displayRows;
-  return `<div class="matrix matrix-transposed" data-matrix-mode="identified" role="group" aria-label="Candidate entries with identified CITES records, 2015–2024: risk groups in rows and taxonomic classes in columns"><span class="matrix-corner"></span>${rows.map(row=>`<span class="matrix-column class-heading">${escape(row.label)}</span>`).join('')}${groups.map(group=>`<span class="matrix-risk-label" style="color:${riskColors[group.code]}">${escape(group.label)}</span>${rows.map(row=>{const counts=state.classStats.get(group.code).get(row.key),value=counts.recorded;return `<button class="matrix-cell" style="${riskCellStyle(value,group.code,180)}" data-count="${value}" data-candidate-total="${counts.total}" data-matrix-mode="identified" data-matrix-risk="${group.code}" data-matrix-class="${row.key}" title="${escape(group.label)} · ${escape(row.label)} · ${number(value)} of ${number(counts.total)} candidate entries with identified records" aria-label="${escape(row.label)}, ${escape(group.label)}: ${value} of ${counts.total} candidate entries have identified CITES records, 2015–2024. Explore recorded entries"></button>`;}).join('')}`).join('')}</div>`;
+  return `<div class="matrix matrix-transposed" data-matrix-mode="identified" role="group" aria-label="Candidate entries with identified CITES records, 2015–2024: risk groups in rows and taxonomic classes in columns"><span class="matrix-corner"></span>${rows.map(row=>`<span class="matrix-column class-heading">${escape(row.label)}</span>`).join('')}${groups.map(group=>`<span class="matrix-risk-label" style="color:${riskColors[group.code]}">${escape(group.label)}</span>${rows.map(row=>{const counts=state.classStats.get(group.code).get(row.key),value=counts.recorded;return `<button class="matrix-cell" style="${matrixCellStyle(value,group.code)}" data-count="${value}" data-candidate-total="${counts.total}" data-matrix-mode="identified" data-matrix-risk="${group.code}" data-matrix-class="${row.key}" title="${escape(group.label)} · ${escape(row.label)} · ${number(value)} of ${number(counts.total)} candidate entries with identified records" aria-label="${escape(row.label)}, ${escape(group.label)}: ${value} of ${counts.total} candidate entries have identified CITES records, 2015–2024. Explore recorded entries"></button>`;}).join('')}`).join('')}</div>`;
 }
 
 function compositionHTML(group) {
@@ -215,16 +199,10 @@ function renderZones() {
   const companions=companionNames.map(name=>state.imageByName.get(name)).filter(image=>image?.displayMode==='transparent');
   $('#hero-companions').innerHTML=companions.map(image=>imageHTML(image,'hero-companion',false)).join('');
   $('#risk-comparison').innerHTML=`<div class="matrix-glass">${matrixHTML()}</div><p class="matrix-scroll-hint">Swipe to compare all classes <span aria-hidden="true">&#8594;</span></p>`;
+  const coralCount=state.data.groups.reduce((sum,group)=>sum+state.classStats.get(group.code).get('ANTHOZOA').recorded,0);
+  $('#comparison-finding').innerHTML=`<strong>${number(coralCount)} of ${number(state.data.totals.tradeIdentifiedEntries)}</strong> entries with records are corals and anemones.`;
   $$('[data-matrix-risk]').forEach(cell=>cell.addEventListener('click',event=>showMatrixPreview(cell,event.detail===0)));
   $$('[data-explore-risk]').forEach(button=>button.addEventListener('click',()=>openCatalogue({risk:button.dataset.exploreRisk,trade:'identified'})));
-}
-
-function renderAnnual() {
-  const years=state.data.years;
-  const lastYear=years[years.length-1],lastCount=state.data.annualCoverage.total[years.length-1];
-  $('.annual-chart .chart-heading h3').textContent=`${number(lastCount)} study entries appear in the ${lastYear} reports.`;
-  $('#annual-heatmap').innerHTML=`<div class="annual-grid" role="group" aria-label="Annual counts of candidate entries with identified CITES records"><span class="annual-corner"></span>${years.map(y=>`<span class="year-label">${y}</span>`).join('')}${state.data.groups.map(g=>`<span class="annual-row-label" style="color:${riskColors[g.code]}">${escape(g.label)}</span>${state.data.annualCoverage[g.code].map((v,i)=>`<button class="annual-cell" style="${annualCellStyle(v,g.code)}" aria-label="${escape(g.label)}, ${years[i]}: ${v} distinct candidate entries with identified records. Explore entries" title="${g.label} · ${years[i]} · ${v} entries" data-annual-risk="${g.code}" data-annual-year="${years[i]}" data-count="${v}"></button>`).join('')}`).join('')}</div>`;
-  $$('.annual-cell').forEach(cell=>cell.addEventListener('click',event=>showAnnualPreview(cell,event.detail===0)));
 }
 
 function closePopover(restoreFocus=false) {
@@ -302,12 +280,6 @@ function showMatrixPreview(anchor,keyboard=false) {
   const identified=anchor.dataset.matrixMode==='identified',allMatches=previewMatches(risk,classKey);
   const matches=identified?allMatches.filter(s=>s.tradeIdentified):allMatches;
   showPopover(anchor,`<p class="popover-eyebrow">${identified?'ENTRIES WITH CITES RECORDS':'STUDY ENTRIES IN THIS CLASS'}</p><span class="risk-badge" style="--risk:${riskColors[risk]}">${escape(group.label)}</span><h3 id="popover-title">${escape(row.label)}</h3><p class="popover-count">${number(matches.length)}<small>${identified?`of ${number(allMatches.length)} study entries appear in CITES reports`:'study entries'}</small></p><p class="popover-footnote">CITES Appendix I–III · 2015–2024 · all reported purposes</p><p class="popover-samples">${matches.length?matches.slice(0,3).map(s=>`<em>${escape(s.scientificName)}</em>`).join('<br>'):'No study entries in this class have a confirmed match in this dataset.'}${matches.length>3?'<br><span>and more…</span>':''}</p><button class="popover-action" data-popover-list-risk="${risk}" data-popover-list-class="${classKey}" data-popover-list-trade="${identified?'identified':''}">${identified?'View entries with records':'View study entries'} <span aria-hidden="true">↗</span></button>`,keyboard);
-}
-
-function showAnnualPreview(anchor,keyboard=false) {
-  const risk=anchor.dataset.annualRisk,year=Number(anchor.dataset.annualYear),group=state.data.groups.find(g=>g.code===risk);
-  const matches=previewMatches(risk,null,year,true);
-  showPopover(anchor,`<p class="popover-eyebrow">CITES REPORTS · ${year}</p><span class="risk-badge" style="--risk:${riskColors[risk]}">${escape(group.label)}</span><h3 id="popover-title">The ${year} reports</h3><p class="popover-count">${number(matches.length)}<small>study entries with CITES records</small></p><p class="popover-footnote">An entry may appear in more than one year. Risk groups use IUCN 2026-1 throughout.</p><button class="popover-action" data-popover-list-risk="${risk}" data-popover-list-year="${year}">View entries for this year <span aria-hidden="true">↗</span></button>`,keyboard);
 }
 
 function showSpecies(id) {
@@ -457,7 +429,7 @@ async function init() {
     validateProductCases(state.data,state.imageByName);
     buildTradeStatistics();
     $('#pool-total').textContent=number(state.data.totals.candidateEntries);$('#trade-total').textContent=number(state.data.totals.tradeIdentifiedEntries);
-    renderZones();renderAnnual();renderCredits();
+    renderZones();renderCredits();
     $('#product-connections-content').innerHTML=productConnectionsHTML(state.data);
     // Risk sections are inserted from local data. Align an incoming fragment
     // after that layout exists, before text entrance triggers measure it.
@@ -481,7 +453,7 @@ async function init() {
       }
       const button=event.target.closest('[data-species]');
       if(button){if(button.closest('dialog'))showSpecies(button.dataset.species);else if(popoverAnchor===button)closePopover(false);else showSpeciesPreview(button.dataset.species,button,event.detail===0);return;}
-      if(!event.target.closest('#context-popover')&&!event.target.closest('[data-matrix-risk],[data-annual-risk]'))closePopover(false);
+      if(!event.target.closest('#context-popover')&&!event.target.closest('[data-matrix-risk]'))closePopover(false);
     });
     document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!$('#context-popover').hidden){event.preventDefault();event.stopPropagation();closePopover(true);}},true);
     $('#explore-recorded').addEventListener('click',()=>openCatalogue({trade:'identified'}));

@@ -1,0 +1,70 @@
+/* Only the final chapter's cross-class overview. The sea and earlier charts
+   keep their existing layers, motion and continuous count scales. */
+#compare-groups{padding-block:clamp(70px,11vh,120px);scroll-margin-top:28px}
+#compare-groups .comparison-header{display:grid;grid-template-columns:minmax(0,1fr) 200px;gap:48px;align-items:end;margin-bottom:28px}
+#compare-groups .comparison-copy{max-width:640px;margin:0}
+#compare-groups .comparison-copy .eyebrow{font-size:12px}
+#compare-groups .comparison-copy h2{font-size:clamp(32px,3.3vw,46px);margin-bottom:18px}
+#compare-groups .intro-text{font-size:16px;line-height:1.65;max-width:520px}
+.comparison-summary{border-left:1px solid rgb(213 231 240 / 15%);padding-left:24px}
+.comparison-summary>strong{display:block;font:500 56px/1 Manrope,sans-serif;letter-spacing:-.05em;color:#e1edf4}
+.comparison-summary>p{font-size:14px;line-height:1.5;color:#b7cdd8;margin:10px 0 6px}
+.comparison-summary>small{display:block;font-size:12px;color:#91adbd}
+.comparison-summary .text-link{font-size:13px;margin-top:12px;padding-block:7px}
+.comparison-finding{margin:0 0 22px;color:#a8c1ce;font-size:14px;line-height:1.65}
+.comparison-finding strong{font-weight:500;color:#e0edf3}
+#compare-groups .matrix-glass{padding:0 0 10px;scrollbar-color:#8da7b64d transparent}
+#compare-groups .matrix-transposed{grid-template-columns:155px repeat(7,minmax(82px,1fr));gap:20px 12px;min-width:840px;align-items:center}
+#compare-groups .class-heading{max-width:115px;font-size:13px;line-height:1.5;padding:0 2px 6px;color:#bdcfd9}
+#compare-groups .matrix-risk-label{font-size:14px;line-height:1.4;max-width:155px;padding-right:12px}
+#compare-groups .matrix-cell{
+  position:relative;width:32px;height:32px;min-height:32px;aspect-ratio:1;
+  padding:0;border-radius:5px;background:var(--cell-color);
+  border:1px solid color-mix(in oklch,var(--cell-color) 72%,white 28%);
+  box-shadow:inset 0 1px 0 rgb(255 255 255 / 8%),0 2px 6px rgb(0 0 0 / 12%);
+  opacity:1;filter:none;transition:border-color .2s,box-shadow .2s,transform .2s;
+}
+#compare-groups .matrix-cell[data-count="0"]{background:transparent;border:1px dashed rgb(176 199 212 / 40%);box-shadow:none}
+#compare-groups .matrix-cell[data-count="0"]::after{content:'';width:8px;height:1px;background:#8aa1af}
+#compare-groups .matrix-cell:hover,#compare-groups .matrix-cell[aria-expanded="true"]{border-color:#e1edf4;box-shadow:0 0 0 3px rgb(225 237 244 / 9%);filter:none;transform:translateY(-1px)}
+#compare-groups .matrix-cell:focus-visible{outline:2px solid #e1edf4;outline-offset:4px;border-radius:5px}
+#compare-groups .matrix-count-key{display:block;margin-top:24px}
+.matrix-key-heading{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;color:#aac1ce;font-size:13px;line-height:1.6;margin-bottom:14px}
+.matrix-zero-key{display:inline-flex;align-items:center;gap:9px;white-space:nowrap}
+.matrix-zero-key>i{display:inline-block;width:14px;height:14px;border:1px dashed rgb(176 199 212 / 50%);border-radius:3px}
+.matrix-band-scales{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:32px}
+.matrix-scale-name{display:block;font-size:13px;line-height:1.4;margin-bottom:10px}
+.matrix-band-swatches{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:5px}
+.matrix-band-swatches>span{display:flex;flex-direction:column;gap:7px;align-items:center;min-width:0}
+.matrix-band-swatches i{display:block;width:100%;height:11px;border-radius:3px;border:1px solid rgb(225 237 244 / 15%)}
+.matrix-band-swatches>span>span{font-size:12px;line-height:1.4;color:#a8c1ce;font-variant-numeric:tabular-nums;white-space:nowrap}
+#compare-groups .chart-note{font-size:13px;line-height:1.7;max-width:800px;margin-top:20px;color:#8daab9}
+@media(max-width:1050px){
+  #compare-groups .comparison-header{grid-template-columns:minmax(0,1fr) 170px;gap:24px}
+  .comparison-summary{padding-left:18px}
+  #compare-groups .matrix-scroll-hint{display:block;font-size:12px;margin-top:12px;color:#91adbd}
+  .matrix-band-scales{gap:20px}
+  .matrix-band-swatches>span>span{font-size:10px}
+}
+@media(max-width:700px){
+  #compare-groups{padding-block:60px 70px}
+  #compare-groups .comparison-header{display:block;margin-bottom:30px}
+  #compare-groups .comparison-copy h2{font-size:32px}
+  #compare-groups .intro-text{font-size:16px}
+  .comparison-summary{margin-top:26px;padding:0;border:0;display:grid;grid-template-columns:auto 1fr;gap:4px 18px;align-items:center}
+  .comparison-summary>strong{grid-row:1/3;font-size:44px}
+  .comparison-summary>p{margin:0;font-size:14px}
+  .comparison-summary>p br{display:none}
+  .comparison-summary>small{grid-column:2;font-size:12px}
+  .comparison-summary .text-link{grid-column:1/-1;justify-self:start;margin-top:6px;font-size:14px}
+  .comparison-finding{font-size:14px;margin-bottom:22px}
+  #compare-groups .matrix-transposed{min-width:790px;grid-template-columns:130px repeat(7,minmax(80px,1fr));gap:20px 10px}
+  #compare-groups .matrix-risk-label{position:sticky;left:0;z-index:2;background:#061621f2;border-radius:5px;font-size:13px;padding-block:5px}
+  #compare-groups .class-heading{font-size:13px}
+  #compare-groups .matrix-cell{width:30px;height:30px;min-height:30px}
+  .matrix-band-scales{grid-template-columns:1fr;gap:20px}
+  .matrix-band-scale{max-width:390px}
+  .matrix-band-swatches>span>span{font-size:12px}
+  #compare-groups .chart-note{font-size:13px;margin-top:22px}
+}
+@media(prefers-reduced-motion:reduce){#compare-groups .matrix-cell{transition:none}}

@@ -25,9 +25,9 @@
   <link rel="stylesheet" href="./css/trade-v2.css?v=20261119-trade1">
   <link rel="stylesheet" href="./css/product-stories.css?v=20261119-copy1">
   <link rel="stylesheet" href="./css/integration.css?v=20261123-fixedsea1">
-  <link rel="stylesheet" href="./css/annual-contrast.css?v=20261123-annual1">
+  <link rel="stylesheet" href="./css/matrix-overview.css?v=20261123-matrix1">
   <script type="module" src="./js/integration.js?v=20261123-fixedsea2"></script>
-  <script type="module" src="./js/app.js?v=20261123-annual1"></script>
+  <script type="module" src="./js/app.js?v=20261123-matrix1"></script>
 </head>
 <body>
   <a class="skip-link" href="#wider-story">Skip the introduction</a>
@@ -46,7 +46,7 @@
     <a href="#vulnerable" data-risk="VU"><i></i><span>Vulnerable<small>High risk</small></span></a>
     <a href="#endangered" data-risk="EN"><i></i><span>Endangered<small>Very high risk</small></span></a>
     <a href="#critically-endangered" data-risk="CR"><i></i><span>Critically<br>Endangered<small>Extremely high risk</small></span></a>
-    <a href="#trade-reveal" class="trade-nav-link">Trade records <span aria-hidden="true">↓</span></a>
+    <a href="#compare-groups" class="trade-nav-link">Trade records <span aria-hidden="true">↓</span></a>
   </nav>
   <main>
     <section class="hero" id="surface" aria-labelledby="hero-title">
@@ -73,12 +73,11 @@
       <div id="product-connections-content"></div>
     </section>
     <section class="comparison-stop page-width" id="compare-groups" aria-labelledby="comparison-title">
-      <div class="comparison-copy"><p class="eyebrow">CITES RECORDS BY ANIMAL GROUP</p><h2 id="comparison-title">Which groups appear<br>in CITES reports?</h2><p class="intro-text">Each square counts entries in our study list with at least one CITES record. Select a square to see the matching entries.</p></div>
-      <div class="comparison-viz"><div id="risk-comparison"></div><div class="heatmap-key"><span>Fewer entries</span><div class="scale-swatches" data-scale="180" aria-hidden="true"></div><span>More entries</span><span class="scale-range">0 &mdash; 180</span></div><p class="chart-note">Each study entry is counted once per square. CITES Appendix I–III · 2015–2024 · commercial and non-commercial purposes. This chart counts entries, not animals or trade volume.</p></div>
-    </section>
-    <section class="trade-reveal page-width" id="trade-reveal" aria-label="Annual CITES record coverage">
-      <div class="coverage-heading"><div><strong id="trade-total">387</strong><p>study entries with CITES records<br><small>2015–2024 · CITES Appendix I–III</small></p></div><button class="text-link" id="explore-recorded">View entries with records <span aria-hidden="true">↗</span></button></div>
-      <div class="annual-chart"><div class="chart-heading"><h3>Entries recorded each year</h3><p>Each square counts study entries with a CITES record in that year. All years use IUCN 2026-1 risk groups; the chart does not show changes in conservation status.</p></div><div id="annual-heatmap" class="annual-glass"></div><div class="heatmap-key"><span>Fewer entries</span><div class="scale-swatches" aria-hidden="true"></div><span>More entries</span><span class="scale-range">0 — 160</span></div><p class="chart-note">An entry may appear in more than one year. Select a square to see its entries. The counts do not measure trade volume.</p></div>
+      <div class="comparison-header">
+        <div class="comparison-copy"><p class="eyebrow">CITES RECORDS BY ANIMAL GROUP</p><h2 id="comparison-title">Which groups appear<br>in CITES reports?</h2><p class="intro-text">Compare entries with CITES records by risk group and animal class. Select a square for exact counts and names.</p></div>
+        <div class="comparison-summary"><strong id="trade-total">387</strong><p>study entries with<br>CITES records</p><small>2015–2024 · Appendix I–III</small><button class="text-link" id="explore-recorded">Browse these entries</button></div>
+      </div>
+      <div class="comparison-viz"><p id="comparison-finding" class="comparison-finding"></p><div id="risk-comparison"></div><div class="heatmap-key"></div><p class="chart-note">Each study entry is counted once. Includes commercial and non-commercial reports. Counts describe entries in this study, not animals or trade volume. No matched entry does not establish an absence of trade.</p></div>
     </section>
     <section class="closing closing-epilogue page-width" id="epilogue" aria-labelledby="closing-title">
       <div class="epilogue-copy">
@@ -95,13 +94,11 @@
 <p>Twelve entries have ambiguous taxonomic links. After excluding them, 1,596 entries remained eligible for matching to CITES data. We found at least one record for 387 entries in the study period.</p>
 <h3>Reading the charts</h3>
 <p>Gold, copper and coral mark Vulnerable, Endangered and Critically Endangered. In the square charts, lighter shades mean more study entries. Each chart uses one count scale across its risk groups.</p>
-<p>The class charts compare all study entries with the subset having CITES records, on a shared 0–250 scale. The overview counts entries with records on a 0–180 scale. A study entry is counted once in each relevant group.</p>
+<p>The class charts compare all study entries with the subset having CITES records, on a shared 0–250 scale. The overview counts entries with records using shared count bands: 0, 1–4, 5–9, 10–19, 20–39, 40–89 and 90–180. The same bands and lightness levels apply to all three risk groups. An outlined square marks zero matched entries. A study entry is counted once in each relevant group.</p>
 <p>The small coverage bars show entries with records divided by all entries in that risk group. These ratios describe the dataset match, not trade intensity or the share of wild populations being traded.</p>
 <h3>CITES scope and matching</h3>
 <p>We use the full CITES Trade Database, version 2026.1, for 2015–2024 and Appendix I–III. Commercial and non-commercial purposes are included, such as research and personal use. A confirmed match requires an unambiguous species identity and at least one positive-quantity source record. Importer and exporter reports are checked; quantities from the two sides are not added.</p>
 <p>We found records for 387 study entries. Two further candidates appear only in N-coded records and are outside the Appendix I–III subset. A missing match does not prove no trade. A record alone does not show illegality or establish why a species is threatened.</p>
-<h3>Annual counts</h3>
-<p>Each annual square counts distinct study entries with a matched record that year. An entry can occur in several years, so adding annual cells does not give a unique ten-year total. Risk groups use IUCN 2026-1 throughout; they do not reconstruct historical risk assessments.</p>
 <p>Counts describe entries, not animals, shipments or trade volume. The full-database snapshot can differ from live queries used in the preceding chapter. The two sources should not be combined as one quantity series.</p>
 <h3>Product and material examples</h3>
 <p>The product examples use brand ingredient statements and museum documentation. They identify materials and source species; they are not individual transactions matched in the CITES data. Product information was checked in November 2026 and does not establish sales during 2015–2024.</p>
