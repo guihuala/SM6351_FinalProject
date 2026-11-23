@@ -1,5 +1,5 @@
 import {autoUpdate, computePosition, flip, offset, shift} from '../vendor/floating-ui.dom.js';
-import {setupChapterMotion} from './motion.js?v=20261123-scroll2';
+import {setupChapterMotion} from './motion.js?v=20261123-fixedsea1';
 import {PRODUCT_CASES, productForRisk, productByID, validateProductCases, productStoryHTML, productConnectionsHTML, productPreviewHTML, productSourceCreditsHTML} from './product-stories.js?v=20261119-copy1';
 
 const $ = (selector, root = document) => root.querySelector(selector);
@@ -369,7 +369,6 @@ function updateScroll() {
 
   // Apply only changed values after all layout reads have completed.
   setStyleProperty(hero,'--hero-progress',p.toFixed(3));
-  setStyleProperty(ocean,'--entry-ocean-alpha',(embedded?smooth(y/Math.max(1,vh*.85)):1).toFixed(3));
   if(preview){
     setStyleProperty(preview,'--risk-preview',previewReveal.toFixed(3));
     const visible=previewReveal>.01;
@@ -453,7 +452,7 @@ async function init() {
     document.addEventListener('scroll',requestScroll,{passive:true});window.addEventListener('resize',requestScroll,{passive:true});
     document.addEventListener('visibilitychange',()=>{updateMotion();requestScroll();});
     if(matchMedia('(pointer:fine)').matches)document.addEventListener('pointermove',event=>{if(state.motion&&state.hostActive)setStyleProperty(getScrollNodes().ocean,'--light-x',`${48+(event.clientX/innerWidth)*5}%`);},{passive:true});
-    try{const module=await import('./shark.js?v=20261119-model-static1');shark=module.mountShark($('#shark-canvas'),{onReady:result=>{if(!result.ok){document.body.classList.add('no-model');const fallback=state.imageByName.get('Sphyrna lewini');if(fallback)$('#hero-companions').insertAdjacentHTML('beforeend',imageHTML(fallback,'model-fallback',false));}}});updateMotion();}catch(error){console.warn('The model is unavailable:',error);document.body.classList.add('no-model');}
+    try{const module=await import('./shark.js?v=20261123-fixedsea1');shark=module.mountShark($('#shark-canvas'),{onReady:result=>{if(!result.ok){document.body.classList.add('no-model');const fallback=state.imageByName.get('Sphyrna lewini');if(fallback)$('#hero-companions').insertAdjacentHTML('beforeend',imageHTML(fallback,'model-fallback',false));}}});updateMotion();}catch(error){console.warn('The model is unavailable:',error);document.body.classList.add('no-model');}
     updateScroll();
     window.marineChapter={getState:()=>({version:'20261119-copy1',productExamples:PRODUCT_CASES.length,risk:state.activeRisk,tradeRevealed:state.trade,motion:state.motion,hostActive:state.hostActive,candidateEntries:state.data.totals.candidateEntries,tradeIdentifiedEntries:state.data.totals.tradeIdentifiedEntries}),showCatalogue:openCatalogue,setHostActive,setTradeRevealed:()=>{}};
     document.dispatchEvent(new Event('marine:ready'));

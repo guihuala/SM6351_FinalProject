@@ -1,6 +1,8 @@
 /* Additive integration styles. No selectors target an earlier chapter. */
 @font-face{font-family:'Finale Bridge Inter';src:url('../fonts/inter-400.ttf') format('truetype');font-weight:400;font-style:normal;font-display:swap}
 #finale.finale-host{position:relative;isolation:isolate;z-index:10;min-height:100svh;margin:0;padding:0;background:transparent;overflow:visible;scroll-margin-top:0}
+/* The chapter itself is only a programmatic target; controls keep their focus rings. */
+#finale.finale-host:focus{outline:none}
 /* Let the page compositor pin the viewport as it scrolls through the chapter. */
 body:has(#finale.finale-host){overflow-x:clip}
 #finale .finale-window{position:sticky;top:0;width:100%;height:100svh;margin:0;overflow:hidden;background:transparent}

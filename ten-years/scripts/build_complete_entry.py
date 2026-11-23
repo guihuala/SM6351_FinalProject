@@ -5,7 +5,7 @@ import sys
 DIST = Path(__file__).resolve().parents[1] / 'dist'
 source = (DIST / 'opening/index.html').read_text(encoding='utf-8')
 head = '''  <link rel="stylesheet" href="globe-host.css?v=globe-edge-fade">
-  <link rel="stylesheet" href="finale-host.css?v=shared-water">
+  <link rel="stylesheet" href="finale-host.css?v=20261123-fixedsea1">
 '''
 trade_chapters = '  <div class="opening-chapters decade-story-page ocean-page">\n'
 next_link = '  <a class="opening-next" href="#trade-intro">Continue to annual trade data <span aria-hidden="true">→</span></a>\n'
@@ -20,14 +20,14 @@ finale = '''
   <!-- Final chapter: isolated styles and scripts; earlier chapter markup is retained. -->
   <section id="finale" class="finale-host" tabindex="-1" aria-label="Final chapter: beyond one species">
     <div class="finale-window">
-      <iframe id="finale-frame" class="finale-frame" data-src="../finale/index.html?integrated=1&amp;v=20261123-scroll2" title="Final chapter: threatened marine species, products and CITES records" scrolling="no"></iframe>
+      <iframe id="finale-frame" class="finale-frame" data-src="../finale/index.html?integrated=1&amp;v=20261123-fixedsea1" title="Final chapter: threatened marine species, products and CITES records" scrolling="no"></iframe>
       <div class="finale-loading" role="status"><p>Loading the final chapter…</p><a href="../finale/index.html">Open the chapter separately</a></div>
     </div>
     <noscript><a class="finale-noscript" href="../finale/index.html">Open the final chapter</a></noscript>
   </section>
 '''
 script = '''<script type="module" src="globe-host.js?v=20261121-render"></script>
-<script type="module" src="finale-host.js?v=20261123-scroll2"></script>
+<script type="module" src="finale-host.js?v=20261123-fixedsea1"></script>
 '''
 assert all(source.count(part) == 1 for part in ('</head>', '</main>', '</body>', trade_chapters, next_link))
 assert 'id="distribution-trade"' not in source and 'id="finale"' not in source, 'The team entry already contains an integrated chapter.'

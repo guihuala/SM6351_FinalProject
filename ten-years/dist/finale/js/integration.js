@@ -95,13 +95,22 @@ if (embedded) {
     });
   }, {passive: true});
 
+  // A click on a chart or dialog control takes over from any wheel tail before
+  // the app opens a panel. Events inside an iframe do not bubble to its host.
+  document.addEventListener('pointerdown', () => send('cancel-scroll'), {passive: true});
+
   document.addEventListener('wheel', event => {
     if (event.defaultPrevented || event.ctrlKey || event.metaKey || nativeControl(event.target)) return;
     const delta = event.deltaY * (event.deltaMode === 1 ? 18 : event.deltaMode === 2 ? innerHeight : 1);
     if (!delta || event.shiftKey || Math.abs(event.deltaX) > Math.abs(event.deltaY)) return;
     if (canScrollLocally(event.target, delta)) return;
     if (event.cancelable) event.preventDefault();
-    if (!modalOpen()) send('scroll', {delta});
+    // Only ease stepped mouse wheels. Precision trackpads retain their native
+    // small deltas; touch panning and keyboard input remain immediate.
+    const size = Math.abs(event.deltaY);
+    const stepped = event.deltaMode !== 0 ||
+      (Number.isInteger(size) && size >= 80 && (size % 40 === 0 || size === 100 || size === 150));
+    if (!modalOpen()) send('scroll', {delta, smooth: stepped});
   }, {passive: false});
 
   document.addEventListener('touchstart', event => {

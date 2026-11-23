@@ -53,23 +53,25 @@ export async function setupChapterMotion() {
     media.add({desktop:'(min-width: 701px)', mobile:'(max-width: 700px)'}, context => {
       const desktop = context.conditions.desktop;
       document.querySelectorAll('.data-stop, .annual-chart').forEach(node => {
-        gsap.fromTo(node, {y:desktop?26:15, opacity:.38}, {
+        gsap.fromTo(node, {y:desktop?18:10, opacity:.38}, {
           y:0, opacity:1, ease:'none',
-          scrollTrigger:{trigger:node, start:'top 94%', end:'top 68%', scrub:.55, invalidateOnRefresh:true}
+          scrollTrigger:{trigger:node, start:'top 94%', end:'top 68%', scrub:.16, invalidateOnRefresh:true}
         });
       });
       document.querySelectorAll('.risk-zone .specimen').forEach((node,index) => {
-        const distance = desktop ? (index % 3 === 0 ? 36 : 22) : 12;
+        const distance = desktop ? (index % 3 === 0 ? 24 : 16) : 8;
         gsap.fromTo(node, {y:distance}, {
           y:-distance, ease:'none',
-          scrollTrigger:{trigger:node, start:'top bottom', end:'bottom top', scrub:.8, invalidateOnRefresh:true}
+          scrollTrigger:{trigger:node, start:'top bottom', end:'bottom top', scrub:.22, invalidateOnRefresh:true}
         });
       });
       document.querySelectorAll('.product-story').forEach(section => {
-        const timeline=gsap.timeline({scrollTrigger:{trigger:section,start:'top 84%',end:'top 25%',scrub:.65,invalidateOnRefresh:true}});
-        timeline.fromTo(section.querySelector('.product-good'),{autoAlpha:.06,y:desktop?25:14,filter:'blur(7px)'},{autoAlpha:1,y:0,filter:'blur(0px)',duration:.65,ease:'power1.out'},0);
+        const timeline=gsap.timeline({scrollTrigger:{trigger:section,start:'top 84%',end:'top 25%',scrub:.18,invalidateOnRefresh:true}});
+        // Keep the large cutouts on transform/opacity layers. Text retains its
+        // separate repeatable BlurText reveal; images need no live blur pass.
+        timeline.fromTo(section.querySelector('.product-good'),{autoAlpha:.06,y:desktop?18:10},{autoAlpha:1,y:0,duration:.65,ease:'power1.out'},0);
         timeline.fromTo(section.querySelector('.product-material'),{autoAlpha:0},{autoAlpha:1,duration:.5,ease:'none'},.2);
-        timeline.fromTo(section.querySelector('.product-life'),{autoAlpha:.08,x:desktop?24:10,filter:'blur(6px)'},{autoAlpha:1,x:0,filter:'blur(0px)',duration:.7,ease:'power1.out'},.3);
+        timeline.fromTo(section.querySelector('.product-life'),{autoAlpha:.08,x:desktop?16:8},{autoAlpha:1,x:0,duration:.7,ease:'power1.out'},.3);
       });
     });
   }

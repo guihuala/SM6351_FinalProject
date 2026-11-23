@@ -2,7 +2,8 @@ import * as THREE from '../vendor/three.module.js';
 import { GLTFLoader } from '../vendor/GLTFLoader.js';
 
 const MODEL_URL = new URL('../../ocean/assets/scalloped_hammerhead_juvenile_low_poly.glb', import.meta.url).href;
-const FRAME_MS = 1000 / 30;
+const SCROLL_FRAME_MS = 1000 / 60;
+const IDLE_FRAME_MS = 1000 / 30;
 
 /**
  * A local, transparent 3D layer for the hand-off from one shark to the group.
@@ -71,11 +72,15 @@ export function mountShark(canvas, { onReady } = {}) {
   let targetProgress = 0;
   let elapsed = 0;
   let last = 0;
+  let nextRenderAt = 0;
+  let followUntil = 0;
+  let dirty = true;
   let frameId = 0;
   let width = 0;
   let height = 0;
   let worldWidth = 12;
   let initialLength = 5;
+  let pixelRatio = Math.min(window.devicePixelRatio || 1, 1.5);
 
   function visible() {
     return !destroyed && !contextLost && inViewport && !document.hidden && width > 0 && height > 0;
@@ -105,26 +110,49 @@ export function mountShark(canvas, { onReady } = {}) {
     if (!ready || !visible()) return;
     pose();
     renderer.render(scene, camera);
+    dirty = false;
   }
 
   function stop() {
     if (frameId) cancelAnimationFrame(frameId);
     frameId = 0;
     last = 0;
+    nextRenderAt = 0;
   }
 
   function frame(now) {
     frameId = 0;
-    if (!ready || !visible() || !active || reducedMotion) return;
-    frameId = requestAnimationFrame(frame);
-    if (last && now - last < FRAME_MS) return;
-    const dt = last ? Math.min((now - last) / 1000, 0.08) : 1 / 30;
+    if (!ready || !visible()) return;
+    const moving = active && !reducedMotion;
+    if (!moving && !dirty) return;
+    // Follow the page at up to 60fps while the pose is changing. Slow idle
+    // swimming keeps its 30fps budget; neither path runs outside the viewport.
+    const following = now < followUntil || Math.abs(progress - targetProgress) > 0.0001;
+    const interval = following ? SCROLL_FRAME_MS : IDLE_FRAME_MS;
+    if (moving && now + 0.5 < nextRenderAt) {
+      frameId = requestAnimationFrame(frame);
+      return;
+    }
+    const dt = last ? Math.min((now - last) / 1000, 0.08) : 1 / 60;
     last = now;
-    elapsed += dt;
-    progress += (targetProgress - progress) * (1 - Math.exp(-dt / 0.13));
-    if (Math.abs(progress - targetProgress) < 0.0001) progress = targetProgress;
-    mixer?.update(dt * 0.85);
+    if (moving) {
+      elapsed += dt;
+      progress += (targetProgress - progress) * (1 - Math.exp(-dt / 0.09));
+      if (Math.abs(progress - targetProgress) < 0.0001) progress = targetProgress;
+      mixer?.update(dt * 0.85);
+    } else progress = targetProgress;
     draw();
+    if (moving) {
+      // Advance the deadline rather than rounding every frame's delta. This
+      // avoids an occasional extra display interval at the 30fps boundary.
+      nextRenderAt = nextRenderAt && now - nextRenderAt < interval
+        ? nextRenderAt + interval
+        : now + interval;
+      frameId = requestAnimationFrame(frame);
+    } else {
+      last = 0;
+      nextRenderAt = 0;
+    }
   }
 
   function resume() {
@@ -133,13 +161,15 @@ export function mountShark(canvas, { onReady } = {}) {
       return;
     }
     if (!active || reducedMotion) {
-      stop();
       progress = targetProgress;
-      draw();
-      return;
+      if (!dirty) {
+        stop();
+        return;
+      }
     }
     if (!frameId) {
       last = 0;
+      nextRenderAt = 0;
       frameId = requestAnimationFrame(frame);
     }
   }
@@ -147,8 +177,12 @@ export function mountShark(canvas, { onReady } = {}) {
   function resize() {
     if (destroyed) return;
     const bounds = canvas.getBoundingClientRect();
-    width = Math.round(bounds.width);
-    height = Math.round(bounds.height);
+    const nextWidth = Math.round(bounds.width);
+    const nextHeight = Math.round(bounds.height);
+    const nextPixelRatio = Math.min(window.devicePixelRatio || 1, 1.5);
+    if (nextWidth === width && nextHeight === height && nextPixelRatio === pixelRatio) return;
+    width = nextWidth;
+    height = nextHeight;
     if (!width || !height) {
       stop();
       return;
@@ -161,28 +195,35 @@ export function mountShark(canvas, { onReady } = {}) {
     camera.updateProjectionMatrix();
     const mobile = width / height < 0.85;
     initialLength = Math.min(6.4, worldWidth * (mobile ? 0.70 : 0.43));
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
+    if (nextPixelRatio !== pixelRatio) {
+      pixelRatio = nextPixelRatio;
+      renderer.setPixelRatio(pixelRatio);
+    }
     renderer.setSize(width, height, false);
-    draw();
+    dirty = true;
+    nextRenderAt = 0;
     resume();
   }
 
   const resizeObserver = new ResizeObserver(resize);
   resizeObserver.observe(canvas);
   const intersectionObserver = new IntersectionObserver(([entry]) => {
+    if (inViewport === entry.isIntersecting) return;
     inViewport = entry.isIntersecting;
     if (inViewport) {
-      draw();
+      dirty = true;
       resume();
     } else stop();
   }, { threshold: 0 });
   intersectionObserver.observe(canvas);
 
-  function onVisibilityChange() { resume(); }
+  function onVisibilityChange() { dirty = true; resume(); }
   function onMotionChange(event) {
+    if (reducedMotion === event.matches) return;
     reducedMotion = event.matches;
     progress = targetProgress;
-    draw();
+    dirty = true;
+    nextRenderAt = 0;
     resume();
   }
   function onContextLost(event) {
@@ -192,8 +233,8 @@ export function mountShark(canvas, { onReady } = {}) {
   }
   function onContextRestored() {
     contextLost = false;
+    pixelRatio = 0;
     resize();
-    resume();
   }
   document.addEventListener('visibilitychange', onVisibilityChange);
   media.addEventListener('change', onMotionChange);
@@ -250,8 +291,8 @@ export function mountShark(canvas, { onReady } = {}) {
         mixer.update(0.35);
       }
       ready = true;
+      dirty = true;
       resize();
-      draw();
       resume();
       report({ ok: true, animations: gltf.animations.map((clip) => clip.name) });
     } catch (error) {
@@ -268,24 +309,25 @@ export function mountShark(canvas, { onReady } = {}) {
     setProgress(value) {
       const next = Number(value);
       if (destroyed || !Number.isFinite(next)) return;
-      targetProgress = THREE.MathUtils.clamp(next, 0, 1);
+      const clamped = THREE.MathUtils.clamp(next, 0, 1);
+      if (clamped === targetProgress) return;
+      targetProgress = clamped;
+      dirty = true;
       if (reducedMotion || !active || !inViewport || document.hidden) progress = targetProgress;
-      if (reducedMotion || !active) draw();
+      followUntil = performance.now() + 180;
+      if (nextRenderAt) nextRenderAt = Math.min(nextRenderAt, performance.now() + SCROLL_FRAME_MS);
       resume();
     },
     setActive(value) {
-      if (destroyed) return;
-      active = Boolean(value);
+      const next = Boolean(value);
+      if (destroyed || next === active) return;
+      active = next;
+      dirty = true;
+      nextRenderAt = 0;
       if (!active) {
-        stop();
         progress = targetProgress;
-        draw();
       }
-      else {
-        progress = targetProgress;
-        draw();
-        resume();
-      }
+      resume();
     },
     destroy() {
       if (destroyed) return;
