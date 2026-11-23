@@ -10,6 +10,12 @@ const clamp = (n, min = 0, max = 1) => Math.max(min, Math.min(max, n));
 const slug = {VU:'vulnerable', EN:'endangered', CR:'critically-endangered'};
 const riskColors = {VU:'#d5b877', EN:'#c98963', CR:'#d9746b'};
 const riskRamps = {VU:[[8,20,30],[139,110,43],[213,184,120]],EN:[[11,19,29],[155,101,66],[220,179,155]],CR:[[14,18,29],[171,89,83],[233,173,168]]};
+// Annual cells share one count-to-lightness curve. More of its contrast is
+// reserved for the densely populated 25–75 range; no row is normalised alone.
+const annualCountStops = [0,25,50,75,100,125,160];
+const annualLightness = [.18,.30,.50,.70,.78,.86,.96];
+const annualChroma = [.020,.055,.100,.120,.100,.070,.015];
+const annualHues = {VU:90,EN:50,CR:25};
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 const embedded = Boolean(globalThis.__MARINE_EMBEDDED) || (window.parent !== window && new URLSearchParams(location.search).get('integrated') === '1');
 const state = {data:null, images:[], speciesByID:new Map(), imageByName:new Map(), classStats:new Map(), groupStats:new Map(), trade:false, motion:!reducedMotion.matches, hostActive:!embedded || Boolean(globalThis.__MARINE_HOST_ACTIVE), extra:{}, limit:100, activeRisk:null};
@@ -72,10 +78,41 @@ function riskCellStyle(value,risk,max=250) {
   return `--cell-color:rgba(${colour.join(',')},.83);--cell-ink:${luminance>.18?'#061622':'#f6fcff'};--cell-tint:${riskColors[risk]}`;
 }
 
+function annualTone(value) {
+  const count=clamp(Number(value)||0,0,160);
+  const index=Math.min(annualCountStops.length-2,annualCountStops.findIndex((stop,i)=>i>0&&count<=stop)-1);
+  const position=(count-annualCountStops[index])/(annualCountStops[index+1]-annualCountStops[index]);
+  const blend=stops=>stops[index]+(stops[index+1]-stops[index])*position;
+  return {lightness:blend(annualLightness),chroma:blend(annualChroma)};
+}
+
+function annualColour(value,risk) {
+  const tone=annualTone(value);
+  return `oklch(${(tone.lightness*100).toFixed(3)}% ${tone.chroma.toFixed(4)} ${annualHues[risk]} / .92)`;
+}
+
+function annualCellStyle(value,risk) {
+  const colour=annualColour(value,risk);
+  return `--annual-color:${colour};--cell-color:${colour};--cell-tint:${riskColors[risk]}`;
+}
+
+function annualKeyHTML() {
+  const ticks=[0,40,80,120,160];
+  return `<span class="legend-description">Colour identifies risk · lighter squares show more entries</span><div class="annual-risk-scales">${state.data.groups.map(group=>{
+    const gradient=annualCountStops.map(count=>`${annualColour(count,group.code)} ${count/160*100}%`).join(',');
+    return `<div class="annual-risk-scale"><span class="annual-scale-name" style="color:${riskColors[group.code]}">${escape(group.label)}</span><div class="annual-scale-bar" style="background:linear-gradient(90deg in oklch,${gradient})" aria-hidden="true"></div><div class="annual-scale-ticks" aria-hidden="true">${ticks.map(count=>`<span>${count}</span>`).join('')}</div></div>`;
+  }).join('')}</div><span class="scale-range">Shared count scale: 0–160 entries across all three risk groups</span>`;
+}
+
 function renderColourKeys() {
   $$('.scale-swatches[data-scale],.heatmap-key>.scale-swatches').forEach(node=>{
     const max=Number(node.dataset.scale||160),key=node.closest('.heatmap-key');
     key.classList.add('risk-colour-key');
+    if(key.closest('.annual-chart')){
+      key.classList.add('annual-colour-key');
+      key.innerHTML=annualKeyHTML();
+      return;
+    }
     key.innerHTML=`<span class="legend-description">Colour identifies risk · lighter shades show more entries</span><div class="risk-legend-items">${state.data.groups.map(group=>`<div class="risk-key-item"><span style="color:${riskColors[group.code]}">${escape(group.label)}</span><div class="scale-swatches" aria-hidden="true">${[0,.2,.4,.6,.8,1].map(t=>`<i style="background:rgba(${riskChannels(t*max,group.code,max).join(',')},.83)"></i>`).join('')}</div></div>`).join('')}</div><span class="scale-range">Shared count range: 0 — ${max}</span>`;
   });
 }
@@ -186,7 +223,7 @@ function renderAnnual() {
   const years=state.data.years;
   const lastYear=years[years.length-1],lastCount=state.data.annualCoverage.total[years.length-1];
   $('.annual-chart .chart-heading h3').textContent=`${number(lastCount)} study entries appear in the ${lastYear} reports.`;
-  $('#annual-heatmap').innerHTML=`<div class="annual-grid" role="group" aria-label="Annual counts of candidate entries with identified CITES records"><span class="annual-corner"></span>${years.map(y=>`<span class="year-label">${y}</span>`).join('')}${state.data.groups.map(g=>`<span class="annual-row-label" style="color:${riskColors[g.code]}">${escape(g.label)}</span>${state.data.annualCoverage[g.code].map((v,i)=>`<button class="annual-cell" style="${riskCellStyle(v,g.code,160)}" aria-label="${escape(g.label)}, ${years[i]}: ${v} distinct candidate entries with identified records. Explore entries" title="${g.label} · ${years[i]} · ${v} entries" data-annual-risk="${g.code}" data-annual-year="${years[i]}" data-count="${v}"></button>`).join('')}`).join('')}</div>`;
+  $('#annual-heatmap').innerHTML=`<div class="annual-grid" role="group" aria-label="Annual counts of candidate entries with identified CITES records"><span class="annual-corner"></span>${years.map(y=>`<span class="year-label">${y}</span>`).join('')}${state.data.groups.map(g=>`<span class="annual-row-label" style="color:${riskColors[g.code]}">${escape(g.label)}</span>${state.data.annualCoverage[g.code].map((v,i)=>`<button class="annual-cell" style="${annualCellStyle(v,g.code)}" aria-label="${escape(g.label)}, ${years[i]}: ${v} distinct candidate entries with identified records. Explore entries" title="${g.label} · ${years[i]} · ${v} entries" data-annual-risk="${g.code}" data-annual-year="${years[i]}" data-count="${v}"></button>`).join('')}`).join('')}</div>`;
   $$('.annual-cell').forEach(cell=>cell.addEventListener('click',event=>showAnnualPreview(cell,event.detail===0)));
 }
 
