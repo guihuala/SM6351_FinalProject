@@ -131,7 +131,6 @@ button {
   text-shadow: 0 2px 28px rgba(0, 10, 17, 0.72);
 }
 
-.eyebrow,
 .panel-kicker,
 .legend-heading,
 .hover-kicker {
@@ -143,7 +142,7 @@ button {
 }
 
 .brand h1 {
-  margin: 12px 0 13px;
+  margin: 0 0 13px;
   color: #eef7f6;
   font-weight: 300;
   letter-spacing: -0.04em;
@@ -181,11 +180,6 @@ button {
   border-radius: 50%;
   background: var(--coral);
   box-shadow: 0 0 0 4px rgba(209, 81, 76, 0.12), 0 0 13px rgba(209, 81, 76, 0.55);
-}
-
-.status-line small {
-  color: #648994;
-  font-size: 7px;
 }
 
 .view-switch {
@@ -301,24 +295,13 @@ button {
   top: 35px;
   left: 50%;
   transform: translateX(-50%);
-  color: #92b4b9;
-  pointer-events: none;
-  text-align: center;
-}
-
-.mode-label span {
-  font-size: 8px;
-  font-weight: 700;
-  letter-spacing: 0.19em;
-  text-transform: uppercase;
-}
-
-.mode-label p {
-  margin: 5px 0 0;
+  margin: 0;
   color: #6e929b;
   font-size: 9px;
   font-weight: 300;
   letter-spacing: 0.02em;
+  pointer-events: none;
+  text-align: center;
 }
 
 .legend {
@@ -475,27 +458,6 @@ button {
   font-weight: 300;
   line-height: 1.4;
   white-space: nowrap;
-}
-
-.source-foot {
-  position: absolute;
-  z-index: 5;
-  right: 36px;
-  bottom: 30px;
-  display: flex;
-  gap: 12px;
-  color: rgba(143, 179, 183, 0.42);
-  font-size: 7px;
-  font-weight: 500;
-  letter-spacing: 0.05em;
-  pointer-events: none;
-  text-transform: uppercase;
-}
-
-.source-foot span + span::before {
-  margin-right: 12px;
-  color: rgba(143, 179, 183, 0.25);
-  content: "·";
 }
 
 .selection-tag {
@@ -980,10 +942,6 @@ button {
   .data-ribbon {
     min-width: 420px;
   }
-
-  .source-foot {
-    display: none;
-  }
 }
 
 @media (max-width: 760px) {
@@ -997,12 +955,8 @@ button {
     width: 215px;
   }
 
-  .eyebrow {
-    font-size: 7px;
-  }
-
   .brand h1 {
-    margin: 7px 0 8px;
+    margin-bottom: 8px;
   }
 
   .brand h1 em {
@@ -1015,10 +969,6 @@ button {
 
   .status-line {
     font-size: 8px;
-  }
-
-  .status-line small {
-    display: none;
   }
 
   .view-switch {
@@ -1098,8 +1048,7 @@ button {
     display: none;
   }
 
-  .selection-tag,
-  .source-foot {
+  .selection-tag {
     display: none;
   }
 }

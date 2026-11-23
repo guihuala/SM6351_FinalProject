@@ -470,7 +470,6 @@ export default function App() {
       <div className="grain" aria-hidden="true" />
 
       <header className="brand">
-        <span className="eyebrow">Species ledger · 2015–2024</span>
         <h1>
           <em>Sphyrna lewini</em>
           <span>Scalloped hammerhead</span>
@@ -478,7 +477,6 @@ export default function App() {
         <div className="status-line">
           <i />
           Critically Endangered
-          <small>IUCN Red List 2026-1</small>
         </div>
       </header>
 
@@ -523,14 +521,11 @@ export default function App() {
         </select>
       </section>
 
-      <div className="mode-label" aria-live="polite">
-        <span>{mode === 'distribution' ? '01 / Distribution' : '02 / Trade flow'}</span>
-        <p>
-          {mode === 'distribution'
-            ? 'Where the species has been recorded'
-            : 'How reported trade connects countries'}
-        </p>
-      </div>
+      <p className="mode-label" aria-live="polite">
+        {mode === 'distribution'
+          ? 'Where the species has been recorded'
+          : 'How reported trade connects countries'}
+      </p>
 
       <aside className={`legend ${mode === 'trade' ? 'trade-legend' : ''}`}>
         <span className="legend-heading">
@@ -619,12 +614,6 @@ export default function App() {
       {hover && (
         <HoverCard hover={hover} data={data} year={year} mode={mode} position={pointer} />
       )}
-
-      <footer className="source-foot">
-        <span>CITES 2026.1</span>
-        <span>IUCN 2026-1</span>
-        <span>GBIF species 2418789</span>
-      </footer>
     </main>
   );
 }

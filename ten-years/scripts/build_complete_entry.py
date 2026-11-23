@@ -12,7 +12,7 @@ next_link = '  <a class="opening-next" href="#trade-intro">Continue to annual tr
 globe_link = '  <a class="opening-next" href="#distribution-trade">Continue to the 3D globe <span aria-hidden="true">→</span></a>\n'
 globe = '''
   <section id="distribution-trade" class="dv-shell globe-chapter" tabindex="-1" aria-label="Distribution and trade flow">
-    <iframe class="globe-frame" src="../trade/index.html?integrated=1&amp;v=transparent-ocean" loading="lazy" title="Interactive 3D globe showing scalloped hammerhead distribution and reported trade flows"></iframe>
+    <iframe class="globe-frame" src="../trade/index.html?integrated=1&amp;v=map-copy" loading="lazy" title="Interactive 3D globe showing scalloped hammerhead distribution and reported trade flows"></iframe>
   </section>
 
 '''
