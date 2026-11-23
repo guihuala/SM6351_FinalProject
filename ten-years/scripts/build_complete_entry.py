@@ -5,7 +5,7 @@ import sys
 DIST = Path(__file__).resolve().parents[1] / 'dist'
 source = (DIST / 'opening/index.html').read_text(encoding='utf-8')
 head = '''  <link rel="stylesheet" href="globe-host.css?v=globe-edge-fade">
-  <link rel="stylesheet" href="finale-host.css?v=20261123-scroll2">
+  <link rel="stylesheet" href="finale-host.css?v=shared-water">
 '''
 trade_chapters = '  <div class="opening-chapters decade-story-page ocean-page">\n'
 next_link = '  <a class="opening-next" href="#trade-intro">Continue to annual trade data <span aria-hidden="true">→</span></a>\n'
