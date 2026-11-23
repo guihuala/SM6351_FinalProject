@@ -49,7 +49,7 @@
     "unit": "kg"
   },
   "conventions": [
-    "FIN, DFN and FFN are separate selectable products; never summed together.",
+    "FIN, DFN and FFN are kept as separate source terms. Fin trade totals their reported kg within each year, reporting side and selected source filter.",
     "Only explicitly reported kg rows are retained. No unit conversion is applied.",
     "Blank and Number of specimens units, g and cm3 are excluded from the kg series.",
     "Importer and exporter quantities are split into independent rows; absent side quantities are omitted, not zero-filled.",

@@ -908,6 +908,10 @@ button {
   background: transparent;
 }
 
+:root[data-shared-ocean] {
+  color-scheme: light;
+}
+
 :root[data-shared-ocean] :is(.deep-water, .vignette, .grain) {
   display: none;
 }

@@ -31,3 +31,6 @@ CSS masks leave the center of the teammate's deep-blue background unobstructed.
 The island freezes movement for reduced-motion and the page's Motion-off state,
 continues to reflect palette changes in a static frame, and fully pauses when
 the document is hidden or the risk palette has zero weight.
+
+The bundled renderer caps each decorative canvas at approximately 260,000
+drawing pixels. The CSS positions, dimensions, masks and shader are unchanged.

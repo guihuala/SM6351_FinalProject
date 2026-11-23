@@ -1,5 +1,5 @@
 import {autoUpdate, computePosition, flip, offset, shift} from '../vendor/floating-ui.dom.js';
-import {setupChapterMotion} from './motion.js?v=20261123-smooth1';
+import {setupChapterMotion} from './motion.js?v=20261123-scroll2';
 import {PRODUCT_CASES, productForRisk, productByID, validateProductCases, productStoryHTML, productConnectionsHTML, productPreviewHTML, productSourceCreditsHTML} from './product-stories.js?v=20261119-copy1';
 
 const $ = (selector, root = document) => root.querySelector(selector);
@@ -51,7 +51,7 @@ function setSharkActive(value) {
 
 function getScrollNodes() {
   if(!scrollNodes)scrollNodes={
-    root:document.documentElement,
+    ocean:$('.ocean'),progressBar:$('.page-progress'),
     hero:$('#surface'),preview:$('.hero .risk-strip'),zones:$$('.risk-zone'),
     nav:$('.risk-nav'),navLinks:$$('.risk-nav a[data-risk]'),epilogue:$('#epilogue')
   };
@@ -313,7 +313,9 @@ function renderCredits() {
 }
 
 function updateMotion() {
-  const active = state.motion && state.hostActive && !reducedMotion.matches;
+  const enabled = state.motion && !reducedMotion.matches;
+  const active = enabled && state.hostActive;
+  setClassValue(document.body,'motion-disabled',!enabled);
   setClassValue(document.body,'motion-off',!active);
   const toggle=$('#motion-toggle'),label=$('.motion-label');
   setAttributeValue(toggle,'aria-pressed',state.motion);
@@ -333,14 +335,14 @@ function setHostActive(value) {
 
 function updateScroll() {
   framePending=false;
-  const {root,hero,preview,zones,nav,navLinks,epilogue}=getScrollNodes();
+  const {ocean,progressBar,hero,preview,zones,nav,navLinks,epilogue}=getScrollNodes();
   const vh=innerHeight,y=scrollY;
   // Read the complete frame's geometry before changing inherited properties.
   // Reuse the zone rectangles for depth, palette, and navigation calculations.
   const heroRect=hero.getBoundingClientRect();
   const zoneRects=zones.map(zone=>zone.getBoundingClientRect());
   const epilogueTop=epilogue.getBoundingClientRect().top;
-  const scrollRange=Math.max(1,root.scrollHeight-vh);
+  const scrollRange=progressBar.hidden?1:Math.max(1,document.documentElement.scrollHeight-vh);
   const smooth=value=>{const t=clamp(value);return t*t*(3-2*t);};
   const p=clamp(-heroRect.top/Math.max(1,heroRect.height-vh));
   const previewStep=clamp((p-.12)/.28);
@@ -366,10 +368,10 @@ function updateScroll() {
   }
 
   // Apply only changed values after all layout reads have completed.
-  setStyleProperty(root,'--hero-progress',p.toFixed(3));
-  setStyleProperty(root,'--risk-preview',previewReveal.toFixed(3));
-  setStyleProperty(root,'--entry-ocean-alpha',(embedded?smooth(y/Math.max(1,vh*.85)):1).toFixed(3));
+  setStyleProperty(hero,'--hero-progress',p.toFixed(3));
+  setStyleProperty(ocean,'--entry-ocean-alpha',(embedded?smooth(y/Math.max(1,vh*.85)):1).toFixed(3));
   if(preview){
+    setStyleProperty(preview,'--risk-preview',previewReveal.toFixed(3));
     const visible=previewReveal>.01;
     if(preview.inert===visible)preview.inert=!visible;
     setAttributeValue(preview,'aria-hidden',!visible);
@@ -379,8 +381,8 @@ function updateScroll() {
   setSharkActive(state.motion&&state.hostActive&&!reducedMotion.matches&&heroRect.bottom>0&&heroRect.top<vh&&!document.hidden);
   const roundedDepth=Number(depth.toFixed(3)),roundedMix=ambience.map(value=>Number(value.toFixed(3)));
   if(zones.length){
-    setStyleProperty(root,'--ocean-depth',depth.toFixed(3));
-    ['vu','en','cr'].forEach((key,index)=>setStyleProperty(root,`--ambient-${key}`,ambience[index].toFixed(3)));
+    setStyleProperty(ocean,'--ocean-depth',depth.toFixed(3));
+    ['vu','en','cr'].forEach((key,index)=>setStyleProperty(ocean,`--ambient-${key}`,ambience[index].toFixed(3)));
     if(activeRisk!==state.activeRisk){
       state.activeRisk=activeRisk;
       navLinks.forEach(link=>{
@@ -397,7 +399,7 @@ function updateScroll() {
     setAttributeValue(nav,'aria-hidden',!visible);
     if(nav.inert===visible)nav.inert=!visible;
   }
-  setStyleProperty(root,'--page-progress',clamp(y/scrollRange).toFixed(4));
+  if(!progressBar.hidden)setStyleProperty(progressBar,'--page-progress',clamp(y/scrollRange).toFixed(4));
   document.dispatchEvent(new CustomEvent('marine:visual-update',{
     detail:{depth:roundedDepth,mix:roundedMix}
   }));
@@ -450,7 +452,7 @@ async function init() {
     ['catalogue-search','catalogue-risk','catalogue-trade'].forEach(id=>document.getElementById(id).addEventListener(id==='catalogue-search'?'input':'change',()=>{state.limit=100;renderCatalogue();}));
     document.addEventListener('scroll',requestScroll,{passive:true});window.addEventListener('resize',requestScroll,{passive:true});
     document.addEventListener('visibilitychange',()=>{updateMotion();requestScroll();});
-    if(matchMedia('(pointer:fine)').matches)document.addEventListener('pointermove',event=>{if(state.motion&&state.hostActive)setStyleProperty(document.documentElement,'--light-x',`${48+(event.clientX/innerWidth)*5}%`);},{passive:true});
+    if(matchMedia('(pointer:fine)').matches)document.addEventListener('pointermove',event=>{if(state.motion&&state.hostActive)setStyleProperty(getScrollNodes().ocean,'--light-x',`${48+(event.clientX/innerWidth)*5}%`);},{passive:true});
     try{const module=await import('./shark.js?v=20261119-model-static1');shark=module.mountShark($('#shark-canvas'),{onReady:result=>{if(!result.ok){document.body.classList.add('no-model');const fallback=state.imageByName.get('Sphyrna lewini');if(fallback)$('#hero-companions').insertAdjacentHTML('beforeend',imageHTML(fallback,'model-fallback',false));}}});updateMotion();}catch(error){console.warn('The model is unavailable:',error);document.body.classList.add('no-model');}
     updateScroll();
     window.marineChapter={getState:()=>({version:'20261119-copy1',productExamples:PRODUCT_CASES.length,risk:state.activeRisk,tradeRevealed:state.trade,motion:state.motion,hostActive:state.hostActive,candidateEntries:state.data.totals.candidateEntries,tradeIdentifiedEntries:state.data.totals.tradeIdentifiedEntries}),showCatalogue:openCatalogue,setHostActive,setTradeRevealed:()=>{}};

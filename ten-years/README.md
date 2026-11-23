@@ -4,9 +4,9 @@ The [main site](dist/opening/index.html) opens with the underwater scenes and tr
 
 ## Current chart layout
 
-The annual chart shows one column per year. Hovering over a column selects its year and displays the exact weight above the chart. Focusing a column previews its value, and keyboard or touch activation selects it. The selected column has an underline, and the displayed weight fades into place when the year changes. The chart opens on 2024. Wheel and swipe also browse years.
+The annual chart shows one column per year for the combined reported weight of FIN, DFN and FFN. Hovering over a column selects its year and displays the exact weight above the chart. Focusing a column previews its value, and keyboard or touch activation selects it. The selected column has an underline, and the displayed weight fades into place when the year changes. The chart opens on 2015. Wheel and swipe also browse years.
 
-Use **Product forms** or continue scrolling to reach the next chapter. The three specimens identify FIN, DFN and FFN. Their bars use one kilogram scale for the selected year, with exact weights by each name. An observed zero is marked at the origin and a missing observation reads “No records.” Both chapters share the year, including changes made with the **Year** selector on the product page. Hovering over a product image or activating its button selects that product in the annual chart while preserving the year. The standalone charts open on exporter-reported data for all sources. The embedding API can change the reporting side and source together for both charts.
+Use **Product forms** or continue scrolling to reach the next chapter. The three specimens identify FIN, DFN and FFN. Their bars use one kilogram scale for the selected year, with exact weights by each name. An observed zero is marked at the origin and a missing observation reads “No records.” Both chapters share the year, including changes made with the **Year** selector on the product page. The standalone charts open on exporter-reported data for all sources. The embedding API can change the reporting side and source together for both charts.
 
 `window.decadeView` is the shared standalone instance. The previous `window.decadeChapters.annual` and `.forms` handles both refer to that instance. Link to the charts with `#annual-trade` or `#product-forms`. The unconfigured `MarineDecade.mount` API still supports the original two-scene mode for embedders.
 
@@ -59,17 +59,17 @@ The official [interpretation guide](https://trade.cites.org/cites_trade_guidelin
 
 ## Displayed scope
 
-Default: **fins (FIN), kg, exporter-reported, all sources**.
+The annual chapter defaults to **all three fin terms, kg, exporter-reported, all sources**. The original two-scene embedding mode defaults to FIN.
 
-The Filters panel offers three separate fin products:
+Product forms presents three separate fin products:
 
 | Official term | Code | Handling |
 | --- | --- | --- |
-| fins | FIN | Default series |
+| fins | FIN | Unspecified fins |
 | fin (dried) | DFN | Separate series |
 | fin (wet) | FFN | Separate series |
 
-These products are never summed. The frozen extract first records DFN in 2022 and FFN in 2024. This does not establish the introduction date of a code or the start of that trade. A change in FIN alone does not describe all fin forms.
+The annual total adds the reported kg for these three terms within each year and reporting side. The frozen extract first records DFN in 2022 and FFN in 2024. This does not establish the introduction date of a code or the start of that trade. A change in FIN alone does not describe all fin forms.
 
 Only rows explicitly reported in **kg** and Appendix I–III are retained; all retained rows happen to be Appendix II. Other units are excluded, not converted. Of 245 fin-product comparative rows:
 

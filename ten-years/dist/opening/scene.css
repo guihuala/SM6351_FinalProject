@@ -224,6 +224,10 @@ html[data-shared-ocean] body {
   background: transparent;
 }
 
+html[data-shared-ocean] {
+  color-scheme: light;
+}
+
 html[data-shared-ocean] body::before,
 html[data-shared-ocean] .deep-background {
   display: none;

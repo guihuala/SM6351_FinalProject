@@ -6,7 +6,8 @@ const pane=host?.querySelector('.finale-window');
 
 if(host&&frame&&pane){
   document.title='The Global Trade of Sphyrna lewini — Complete project';
-  let loaded=false,started=false,active=false,pinned=false,frameHeight=innerHeight,pending=0,lastY=null,lastActive=null;
+  let loaded=false,started=false,active=false,frameHeight=innerHeight,pending=0,lastY=null,lastActive=null;
+  let pendingScroll=0;
   let inViewport=!('IntersectionObserver' in window);
   const finite=value=>typeof value==='number'&&Number.isFinite(value);
   const clamp=(value,min,max)=>Math.max(min,Math.min(max,value));
@@ -16,17 +17,14 @@ if(host&&frame&&pane){
   function sync(){
     pending=0;
     if(!loaded)return;
+    if(pendingScroll){
+      const delta=pendingScroll;
+      pendingScroll=0;
+      scrollBy({top:delta,behavior:'instant'});
+    }
     const rect=host.getBoundingClientRect();
     active=rect.top<innerHeight&&rect.bottom>0;
     const y=clamp(-rect.top,0,Math.max(0,frameHeight-innerHeight));
-    // Keep the viewport stationary once entered. Moving the entire iframe on
-    // every scroll used to race its own scroll and produced visible judder.
-    const nextPinned=rect.top<=0&&rect.bottom>=innerHeight-1;
-    if(nextPinned!==pinned){
-      pinned=nextPinned;
-      pane.classList.toggle('is-pinned',pinned);
-      pane.style.transform=pinned?'none':`translate3d(0,${y}px,0)`;
-    }else if(!pinned&&y!==lastY)pane.style.transform=`translate3d(0,${y}px,0)`;
     if(y===lastY&&active===lastActive)return;
     lastY=y;lastActive=active;
     // Both documents are same-origin: apply both positions in the same frame,
@@ -63,8 +61,12 @@ if(host&&frame&&pane){
     if(!loaded||!active)return;
     if(message.type==='scroll'&&finite(message.delta)){
       const delta=clamp(message.delta,-innerHeight*2,innerHeight*2);
-      scrollBy({top:delta,behavior:'instant'});
-    }else if(message.type==='navigate'&&finite(message.y)){
+      pendingScroll+=delta;
+      requestSync();
+      return;
+    }
+    pendingScroll=0;
+    if(message.type==='navigate'&&finite(message.y)){
       const target=sectionTop()+clamp(message.y,0,Math.max(0,frameHeight-innerHeight));
       scrollTo({top:target,behavior:'instant'});
     }else if(message.type==='previous'){

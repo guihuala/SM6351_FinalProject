@@ -12,6 +12,7 @@ const frame = document.createElement('iframe');
 frame.title = 'Distribution, trade flows and subsequent chapters';
 frame.inert = true;
 frame.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;border:0;z-index:5;visibility:hidden;pointer-events:none';
+frame.style.colorScheme = 'light';
 document.body.append(frame);
 const style = document.createElement('style');
 style.textContent = `
@@ -54,7 +55,7 @@ function render() {
   const progress = clamp((scrollY-start)/spacer.offsetHeight);
   if (!loaded && scrollY >= start-2*innerHeight) {
     loaded=true;
-    frame.src='../opening/complete.html?sharedOcean=1#distribution-trade';
+    frame.src='../opening/complete.html?sharedOcean=1&v=transparent-ocean#distribution-trade';
   }
   if(progress===lastProgress)return;
   lastProgress=progress;

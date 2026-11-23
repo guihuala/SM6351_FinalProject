@@ -8,7 +8,7 @@ const finale=document.getElementById('finale');
 const reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
 const sharedFlow=!!window.MarineDecadeFlow;
 const chapterScroll=window.MarineChapterScroll?.create();
-const api=MarineDecade.mount(root,{linked:true,year:2015,progressiveColumns:true,progressiveForms:true,releaseAtBoundary:true,sharedFlow,intro:!!intro,showChapterBack:!tradeIntro,alignChapter:chapterScroll?.to,headingTarget:tradeIntro?.querySelector('.dv-trade-intro-content'),imageBase:root.dataset?.imageBase,productTarget});
+const api=MarineDecade.mount(root,{linked:true,annualFinTotal:true,year:2015,progressiveColumns:true,progressiveForms:true,releaseAtBoundary:true,sharedFlow,intro:!!intro,showChapterBack:!tradeIntro,alignChapter:chapterScroll?.to,headingTarget:tradeIntro?.querySelector('.dv-trade-intro-content'),imageBase:root.dataset?.imageBase,productTarget});
 if(sharedFlow){
  const canvas=document.createElement('canvas');
  canvas.className='dv-story-flow';

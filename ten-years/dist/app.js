@@ -13,7 +13,7 @@ const markup = `
   <div class="dv-footer"><nav class="dv-navigation" aria-label="Select year"><div class="dv-years" data-role="years"></div></nav><div class="dv-transport" aria-label="Timeline controls"><button class="dv-nav-arrow" data-action="previous" aria-label="Previous year"><span aria-hidden="true">←</span> Previous</button><button class="dv-play" data-action="play" aria-pressed="false" aria-label="Play timeline"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 1L11 6 3 11Z"/></svg><span>Play</span></button><button class="dv-nav-arrow" data-action="next" aria-label="Next year">Next <span aria-hidden="true">→</span></button></div></div>
   <div class="dv-bottom"><span class="dv-explore-mark" aria-hidden="true">↓</span><span class="dv-explore-copy"><span data-role="navigation-hint">Scroll or swipe to explore</span><span class="dv-explore-alternative">Year buttons and arrow keys also work</span></span><span class="dv-explore-scene" data-role="explore-scene">01 / 02</span></div>
 </div>
-<dialog class="dv-dialog" data-role="data-dialog" aria-label="Data & methods"><div class="dv-dialog-header"><h2>Data & methods</h2><button class="dv-close" data-action="close" aria-label="Close data panel">×</button></div><div class="dv-settings"><label data-role="product-setting"><span>Product</span><select data-role="term" aria-label="Product"><option value="fins">Fins (FIN)</option><option value="fin (dried)">Dried fins (DFN)</option><option value="fin (wet)">Wet fins (FFN)</option></select></label><label><span>Reporting side</span><select data-role="reporter" aria-label="Reporting side"><option value="E">Exporter-reported</option><option value="I">Importer-reported</option></select></label><label><span>Source</span><select data-role="source" aria-label="Specimen source"><option value="all">All sources</option><option value="W">Wild (W)</option></select></label><span class="dv-unit"><b>kg</b> / I–III</span></div><p>Annual quantity shows one product; Product forms compares FIN, DFN and FFN separately on a common kg scale. Specimen source and reporting side apply to both views within Appendices I–III. Product weights are not equivalent biomass; no product totals or animal estimates are calculated. Importer and exporter reports are analysed separately. Data rows are not transactions, shipments or animals.</p><p>Years without matching records remain missing. A reported zero stays zero.</p><p class="dv-data-meta"><span data-role="coverage"></span> · <span data-role="bottom-note">Official comparative tabulation; direct trade and re-exports included.</span></p><div data-role="provenance"><h3>Source</h3><p><a href="https://trade.cites.org/en/cites_trade" target="_blank" rel="noopener noreferrer">CITES Trade Database</a>. Compiled by UNEP-WCMC for the CITES Secretariat. Accessed 4 November 2026. Live-query comparative tabulation for <i>Sphyrna lewini</i>, 2015–2024.</p><p>FIN, DFN and FFN remain separate. This extract first records dried fins (DFN) in 2022 on the importer side and 2023 on the exporter side; changes in FIN alone do not describe all fin forms. Only explicit kg records are included. Blank/count units, g and cm³ are excluded; no unit conversion or animal-count estimate is made.</p><p><a href="data/cites-sphyrna-lewini-2015-2024-comptab.csv" download>Official CSV extract</a> · <a href="data/provenance.json" download>Provenance & exclusions</a> · <a href="https://trade.cites.org/cites_trade_guidelines/en-CITES_Trade_Database_Guide.pdf" target="_blank" rel="noopener noreferrer">CITES interpretation guide</a></p></div><p>Baseline: Appendix II took effect on <a href="https://cites.org/sites/default/files/eng/cop/17/WorkingDocs/E-CoP17-56-01.pdf" target="_blank" rel="noopener noreferrer">14 September 2014</a>, before this decade. Party reservations and national rules require separate checks.</p><h3>Import replacement data</h3><p>UTF-8 CSV: Year, Quantity, Unit, Term, Reporter.type, Taxon, Importer, Exporter, Source, Appendix. Imported files stay in this browser; reloading restores the bundled CITES extract.</p><div class="dv-import-actions"><label class="dv-file">Import CSV<input data-role="csv-input" type="file" accept=".csv,text/csv"></label><a href="template.csv" download>CSV template</a><button class="dv-quiet-button" data-action="table">View data table</button></div><h3>Management context</h3><p>Import JSON with original documents, effective dates and applicable scope. Six selected records are bundled: national measures reported to CITES, a review decision and suspension recommendations. Country scopes are shown as context, never as global restrictions. Empty years do not imply no measures. <a href="data/cites-management-events.json" download>Download event register</a>.</p><label class="dv-file">Import events JSON<input data-role="events-input" type="file" accept=".json,application/json"></label><p class="dv-feedback" data-role="feedback" aria-live="polite"></p><p class="dv-statement">Trade trends alone do not establish population change or policy effectiveness. Later-year totals may change as reports are added or revised.</p></dialog>
+<dialog class="dv-dialog" data-role="data-dialog" aria-label="Data & methods"><div class="dv-dialog-header"><h2>Data & methods</h2><button class="dv-close" data-action="close" aria-label="Close data panel">×</button></div><div class="dv-settings"><label data-role="product-setting"><span>Product</span><select data-role="term" aria-label="Product"><option value="fins">Fins (FIN)</option><option value="fin (dried)">Dried fins (DFN)</option><option value="fin (wet)">Wet fins (FFN)</option></select></label><label><span>Reporting side</span><select data-role="reporter" aria-label="Reporting side"><option value="E">Exporter-reported</option><option value="I">Importer-reported</option></select></label><label><span>Source</span><select data-role="source" aria-label="Specimen source"><option value="all">All sources</option><option value="W">Wild (W)</option></select></label><span class="dv-unit"><b>kg</b> / I–III</span></div><p data-role="quantity-method">Annual quantity shows one product; Product forms compares FIN, DFN and FFN separately on a common kg scale. Specimen source and reporting side apply to both views within Appendices I–III. Product weights are not equivalent biomass; no product totals or animal estimates are calculated. Importer and exporter reports are analysed separately. Data rows are not transactions, shipments or animals.</p><p>Years without matching records remain missing. A reported zero stays zero.</p><p class="dv-data-meta"><span data-role="coverage"></span> · <span data-role="bottom-note">Official comparative tabulation; direct trade and re-exports included.</span></p><div data-role="provenance"><h3>Source</h3><p><a href="https://trade.cites.org/en/cites_trade" target="_blank" rel="noopener noreferrer">CITES Trade Database</a>. Compiled by UNEP-WCMC for the CITES Secretariat. Accessed 4 November 2026. Live-query comparative tabulation for <i>Sphyrna lewini</i>, 2015–2024.</p><p>The source records keep FIN, DFN and FFN as separate terms. This extract first records dried fins (DFN) in 2022 on the importer side and 2023 on the exporter side; changes in FIN alone do not describe all fin forms. Only explicit kg records are included. Blank/count units, g and cm³ are excluded; no unit conversion or animal-count estimate is made.</p><p><a href="data/cites-sphyrna-lewini-2015-2024-comptab.csv" download>Official CSV extract</a> · <a href="data/provenance.json" download>Provenance & exclusions</a> · <a href="https://trade.cites.org/cites_trade_guidelines/en-CITES_Trade_Database_Guide.pdf" target="_blank" rel="noopener noreferrer">CITES interpretation guide</a></p></div><p>Baseline: Appendix II took effect on <a href="https://cites.org/sites/default/files/eng/cop/17/WorkingDocs/E-CoP17-56-01.pdf" target="_blank" rel="noopener noreferrer">14 September 2014</a>, before this decade. Party reservations and national rules require separate checks.</p><h3>Import replacement data</h3><p>UTF-8 CSV: Year, Quantity, Unit, Term, Reporter.type, Taxon, Importer, Exporter, Source, Appendix. Imported files stay in this browser; reloading restores the bundled CITES extract.</p><div class="dv-import-actions"><label class="dv-file">Import CSV<input data-role="csv-input" type="file" accept=".csv,text/csv"></label><a href="template.csv" download>CSV template</a><button class="dv-quiet-button" data-action="table">View data table</button></div><h3>Management context</h3><p>Import JSON with original documents, effective dates and applicable scope. Six selected records are bundled: national measures reported to CITES, a review decision and suspension recommendations. Country scopes are shown as context, never as global restrictions. Empty years do not imply no measures. <a href="data/cites-management-events.json" download>Download event register</a>.</p><label class="dv-file">Import events JSON<input data-role="events-input" type="file" accept=".json,application/json"></label><p class="dv-feedback" data-role="feedback" aria-live="polite"></p><p class="dv-statement">Trade trends alone do not establish population change or policy effectiveness. Later-year totals may change as reports are added or revised.</p></dialog>
 <dialog class="dv-dialog" data-role="table-dialog" aria-label="Annual data"><div class="dv-dialog-header"><h2>Annual data</h2><button class="dv-close" data-action="close" aria-label="Close data table">×</button></div><table><caption data-role="table-caption"></caption><thead><tr><th>Year</th><th>Product</th><th>Quantity / kg</th><th>Data rows</th></tr></thead><tbody data-role="table-body"></tbody></table><div class="dv-table-actions"><button class="dv-quiet-button" data-action="export">Export filtered CSV</button><button class="dv-quiet-button" data-action="back-data">Back to methods</button></div></dialog><dialog class="dv-dialog" data-role="event-dialog" aria-label="Policy source and scope"><div class="dv-dialog-header"><span>Policy context</span><button class="dv-close" data-action="close" aria-label="Close policy details">×</button></div><div data-role="event-detail"></div></dialog>`;
 
 // Decorative only: finite, input-driven motion with no connection to the timeline.
@@ -63,6 +63,7 @@ function attachAtmosphere(root){
 function mount(root, options = {}) {
   if (!(root instanceof HTMLElement)) throw Error('Provide a chapter container element.');
   const linked = options.linked === true;
+  const annualFinTotal = linked && options.annualFinTotal === true;
   const progressiveColumns = linked && options.progressiveColumns === true;
   let revealedThrough = 2015;
   const productTarget = linked && options.productTarget instanceof HTMLElement ? options.productTarget : null;
@@ -97,7 +98,8 @@ function mount(root, options = {}) {
   const instructions=document.createElement('p');
   instructions.id=`${uid}-instructions`;instructions.className='dv-sr-only';
   instructions.textContent=linked
-    ?'Move across the years or use the arrow keys to update the product forms. Hover over a product image or activate its button to show its annual trend.'
+    ?'Move across the years or use the arrow keys to update the product forms.'+
+      (annualFinTotal?'':' Hover over a product image or activate its button to show its annual trend.')
     :'Scroll or swipe through years. Select a year, use arrow keys, or use Play. Use the chapter arrow to move between Annual trade and Product forms.';
   root.prepend(instructions);root.setAttribute('aria-describedby',instructions.id);
   const chartLabel=root.querySelector('[data-role="chart-label"]');
@@ -105,6 +107,7 @@ function mount(root, options = {}) {
   let productChart, productYear;
   const q = name => root.querySelector(`[data-role="${name}"]`) ?? productTarget?.querySelector(`[data-role="${name}"]`);
   const action = name => root.querySelector(`[data-action="${name}"]`);
+  if(annualFinTotal)q('quantity-method').textContent='Annual quantity sums the reported kilograms for FIN, DFN and FFN within each year. Product forms shows those three weights separately. Both chapters use the same reporting side and source filters. Product weights are not equivalent biomass or counts of animals.';
   if(linked){
     root.setAttribute('aria-label',productTarget?'Annual fin trade, 2015–2024':'Annual trade and product forms, 2015–2024');
     const heading=document.createElement('h2');
@@ -186,11 +189,12 @@ function mount(root, options = {}) {
   const termNames = {fins:'Fins (FIN)', 'fin (dried)':'Dried fins (DFN)', 'fin (wet)':'Wet fins (FFN)'};
   const terms=Object.keys(termNames);
   const productName=term=>term==='fins'?'Unspecified fins (FIN)':termNames[term];
-  const filters = () => ({term:q('term').value,reporter:q('reporter').value,source:q('source').value});
+  const annualName=term=>annualFinTotal?'Total reported fin weight':linked?productName(term):termNames[term];
+  const filters = () => ({term:annualFinTotal?'all':q('term').value,reporter:q('reporter').value,source:q('source').value});
   const caption=(next,includeAllSources=true)=>{
     const {term,reporter,source}=filters();
     const parts=[reporter==='E'?'Exporter-reported':'Importer-reported'];
-    if(next==='annual')parts.unshift(linked?productName(term):termNames[term]);
+    if(next==='annual')parts.unshift(annualName(term));
     if(source==='W')parts.push('Wild (W)');
     else if(includeAllSources)parts.push('All sources');
     return parts.join(' · ');
@@ -214,7 +218,9 @@ function mount(root, options = {}) {
     hideInspect();
     const activeFilters=filters();
     if(!reuseForms)formSeries=terms.map(term=>({term,values:D.summarize(rows,{...activeFilters,term})}));
-    data=formSeries.find(series=>series.term===activeFilters.term).values;
+    data=annualFinTotal
+      ? D.summarize(rows,{...activeFilters,term:terms})
+      : formSeries.find(series=>series.term===activeFilters.term).values;
     draw();
     if(!reuseForms)drawForms();
     update(false);renderMotion();
@@ -403,7 +409,7 @@ function mount(root, options = {}) {
   }
   function updateAmount(entry){
     const {term}=filters();
-    const name=linked?productName(term):termNames[term];
+    const name=annualName(term);
     q('quantity').textContent=entry.value===null?'No records':D.fmt(entry.value);
     q('quantity-unit').hidden=entry.value===null;
     q('amount-label').textContent=`${selected} · ${name}`;
@@ -443,15 +449,17 @@ function mount(root, options = {}) {
         g.fill.hidden=entry.value===0;
       }
       g.row.classList.toggle('is-missing',missing);
-      g.row.setAttribute('aria-label',`${g.name}, ${selected}: ${weight}. View annual trend`);
-      if(productTarget)g.row.setAttribute('aria-pressed',String(g.row.dataset.product===activeProduct));
+      if(!annualFinTotal){
+        g.row.setAttribute('aria-label',`${g.name}, ${selected}: ${weight}. View annual trend`);
+        if(productTarget)g.row.setAttribute('aria-pressed',String(g.row.dataset.product===activeProduct));
+      }
       if(!linked||!missing)g.zero.hidden=entry.value!==0;
     });
   }
   function update(animate) {
     root.dataset.view=view;
     action('view-annual').setAttribute('aria-pressed',String(view==='annual'));action('view-forms').setAttribute('aria-pressed',String(view==='forms'));
-    q('product-setting').hidden=view==='forms';
+    q('product-setting').hidden=annualFinTotal||view==='forms';
     const entry = data[selected - 2015], previous = data[selected - 2016];
     root.dataset.year = String(selected);
     if(!linked)updateAmount(entry);
@@ -545,7 +553,7 @@ function mount(root, options = {}) {
         return productTarget?hideInspect():inspectYear(year);
       }
       const image=event.target.closest('.dv-product-image');
-      if(image)inspectProduct(image.closest('[data-product]').dataset.product,'hover');
+      if(image&&!annualFinTotal)inspectProduct(image.closest('[data-product]').dataset.product,'hover');
       return hideInspect();
     }
     const yearButton=event.target.closest('.dv-years [data-year]');
@@ -558,7 +566,7 @@ function mount(root, options = {}) {
     if(point&&(!progressiveColumns||+point.dataset.year<=revealedThrough))inspectYear(+point.dataset.year,true);
   }
   function inspectProduct(term,origin='activate'){
-    if(!terms.includes(term))return;
+    if(annualFinTotal||!terms.includes(term))return;
     if(linked){
       if(filters().term===term)return;
       setFilters({term});
@@ -639,8 +647,9 @@ function mount(root, options = {}) {
     const host=q('forms-chart');
     if(linked){
       linkedFormsCeiling=0;
+      const rowTag=annualFinTotal?'div':'button';
       host.innerHTML=`<div class="dv-products" data-role="product-bars" role="group">${formSeries.map(({term})=>`
-        <button type="button" class="dv-product" data-action="inspect-product" data-product="${D.esc(term)}">
+        <${rowTag} class="dv-product"${annualFinTotal?'':` type="button" data-action="inspect-product" data-product="${D.esc(term)}"`}>
           <img class="dv-product-image" src="${D.esc(options.imageBase ?? 'images/')}${productImages[term]}.webp" alt="" draggable="false">
           <span class="dv-product-data">
             <span class="dv-product-heading"><span class="dv-bar-label">${D.esc(productName(term))}</span><strong class="dv-bar-value"></strong></span>
@@ -648,11 +657,11 @@ function mount(root, options = {}) {
               <span class="dv-product-fill"></span><span class="dv-product-zero" hidden></span>
             </span>
           </span>
-        </button>`).join('')}
+        </${rowTag}>`).join('')}
         <div class="dv-product-scale" aria-hidden="true"><span>0</span><span data-role="forms-scale-max"></span></div>
       </div>`;
       formGeometry=Array.from(host.querySelectorAll('.dv-product'),row=>({
-        row,name:productName(row.dataset.product),value:row.querySelector('.dv-bar-value'),
+        row,name:row.querySelector('.dv-bar-label').textContent,value:row.querySelector('.dv-bar-value'),
         fill:row.querySelector('.dv-product-fill'),zero:row.querySelector('.dv-product-zero')
       }));
       return;
@@ -884,10 +893,11 @@ function mount(root, options = {}) {
     root.dispatchEvent(new CustomEvent('decade:events-change',{bubbles:true,detail:{events:raw}}));
   }
   function setFilters(next={}){
-    for(const [name,allowed] of [['term',terms],['reporter',['E','I']],['source',['all','W']]]){
+    for(const [name,allowed] of [['term',annualFinTotal?['all',...terms]:terms],['reporter',['E','I']],['source',['all','W']]]){
       if(next[name]!==undefined&&!allowed.includes(next[name]))throw Error(`Invalid ${name} filter.`);
     }
-    pause();for(const name of ['term','reporter','source'])if(next[name]!==undefined)q(name).value=next[name];
+    if(annualFinTotal&&next.reporter===undefined&&next.source===undefined)return;
+    pause();for(const name of (annualFinTotal?['reporter','source']:['term','reporter','source']))if(next[name]!==undefined)q(name).value=next[name];
     const onlyProduct=linked&&next.term!==undefined&&next.reporter===undefined&&next.source===undefined;
     eventIndex=0;rebuild(onlyProduct);
     root.dispatchEvent(new CustomEvent('decade:filters-change',{bubbles:true,detail:{filters:filters()}}));
@@ -919,7 +929,7 @@ function mount(root, options = {}) {
   if(linked)reduced.addEventListener('change',cancelLinkedYearAnimation);
   productTarget?.addEventListener('click',click);
   productTarget?.addEventListener('change',change);
-  productTarget?.addEventListener('pointermove',previewMove,{passive:true});
+  if(!annualFinTotal)productTarget?.addEventListener('pointermove',previewMove,{passive:true});
   if(productTimeline){
     productTarget.addEventListener('wheel',wheel,{passive:false,signal:productTimeline.signal});
     productTarget.addEventListener('keydown',keydown,{signal:productTimeline.signal});

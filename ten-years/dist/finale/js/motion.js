@@ -2,7 +2,7 @@
 export async function setupChapterMotion() {
   let effects;
   document.documentElement.dataset.readyEffects = 'loading';
-  try { effects = await import('./ready-effects.js?v=20261120-closing1'); }
+  try { effects = await import('./ready-effects.js?v=20261123-scroll2'); }
   catch(error) { document.documentElement.dataset.readyEffects='fallback';console.warn('Decorative effects are unavailable:',error);return; }
   const {gsap,ScrollTrigger,mountReadyLight,mountReadyText,mountReadyHeadings} = effects;
   gsap.registerPlugin(ScrollTrigger);
@@ -11,10 +11,10 @@ export async function setupChapterMotion() {
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
   const lightContainer = document.querySelector('#ready-light');
   const textContainer = document.querySelector('#closing-title');
-  const rootStyle=document.documentElement.style;
+  const oceanStyle=document.querySelector('.ocean').style;
   let visual={
-    depth:Number(rootStyle.getPropertyValue('--ocean-depth'))||0,
-    mix:['vu','en','cr'].map(key=>Number(rootStyle.getPropertyValue(`--ambient-${key}`))||0)
+    depth:Number(oceanStyle.getPropertyValue('--ocean-depth'))||0,
+    mix:['vu','en','cr'].map(key=>Number(oceanStyle.getPropertyValue(`--ambient-${key}`))||0)
   };
   let appliedDepth=null,appliedMix=null,appliedActive=null;
   const updateLight = () => {
@@ -41,8 +41,10 @@ export async function setupChapterMotion() {
   });
   function sync() {
     updateLight();
-    const enabled=!document.body.classList.contains('motion-off')&&!reduced.matches;
+    const enabled=!document.body.classList.contains('motion-disabled')&&!reduced.matches;
     if(enabled===motionEnabled)return;
+    // Prepare the effects on first entry and keep their measurements on exit.
+    if(enabled&&document.body.classList.contains('motion-off'))return;
     motionEnabled=enabled;
     media?.revert();
     media = null;
@@ -76,7 +78,6 @@ export async function setupChapterMotion() {
     sync();
     document.fonts.ready.then(() => requestAnimationFrame(() => {
       if(document.body.classList.contains('motion-off') || reduced.matches)return;
-      ScrollTrigger.refresh();
       headings?.replay();closingText?.replay();
     }));
   });

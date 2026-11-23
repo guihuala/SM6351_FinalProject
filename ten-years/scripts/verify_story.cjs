@@ -15,6 +15,7 @@ const sandbox={
 };
 vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../dist/story.js'),'utf8'),sandbox);
 assert.equal(mountOptions.linked,true);
+assert.equal(mountOptions.annualFinTotal,true);
 assert.equal(mountOptions.year,2015);
 assert.equal(mountOptions.progressiveColumns,true);
 assert.equal(mountOptions.releaseAtBoundary,true);
@@ -110,11 +111,11 @@ const stage={
     querySelector:selector=>selector==='.dv-year-indicator'?indicator:column,
     querySelectorAll:()=>futureColumns.filter(point=>'data-unrevealed' in point.attributes)
   },
-  D:{fmt:String}, data:annual, filters:()=>({term:'fins'}), productName:()=>'Unspecified fins (FIN)', formGeometry:[geometry,dried],
+  D:{fmt:String}, data:annual, filters:()=>({term:'fins'}), annualName:()=>'Unspecified fins (FIN)', formGeometry:[geometry,dried],
   formSeries:[{values:annual},{values:[40,40,10,10,null].map(value=>({value}))}]
 };
 vm.runInNewContext(`
-  const linked=true,progressiveColumns=true,productTarget={},linkedYearAnimations=[],options={};
+  const linked=true,annualFinTotal=false,progressiveColumns=true,productTarget={},linkedYearAnimations=[],options={};
   let selected=2015,linkedFormsCeiling=0,revealedThrough=2015;
   ${presentation}
   globalThis.select=year=>{const previous=selected;selected=year;updateLinkedYear(previous);};
