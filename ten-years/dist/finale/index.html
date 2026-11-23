@@ -18,9 +18,9 @@
   <link rel="stylesheet" href="./css/popover-glass.css?v=20261118-glass3">
   <link rel="stylesheet" href="./css/trade-v2.css?v=20261119-trade1">
   <link rel="stylesheet" href="./css/product-stories.css?v=20261119-copy1">
-  <link rel="stylesheet" href="./css/integration.css?v=20261123-chrome1">
-  <script type="module" src="./js/integration.js"></script>
-  <script type="module" src="./js/app.js?v=20261123-epilogue1"></script>
+  <link rel="stylesheet" href="./css/integration.css?v=20261123-smooth1">
+  <script type="module" src="./js/integration.js?v=20261123-smooth1"></script>
+  <script type="module" src="./js/app.js?v=20261123-smooth1"></script>
 </head>
 <body>
   <a class="skip-link" href="#wider-story">Skip the introduction</a>
@@ -45,9 +45,9 @@
     <section class="hero" id="surface" aria-labelledby="hero-title">
       <div class="hero-sticky">
         <canvas id="shark-canvas" aria-label="A scalloped hammerhead joins a wider group of marine lives"></canvas>
-        <div class="hero-copy"><p class="eyebrow">FINAL CHAPTER</p><h1 id="hero-title">Beyond<br>one species.</h1><p class="hero-lead">The hammerhead is one example.</p></div>
+        <div class="hero-copy"><h1 id="hero-title">Beyond<br>one species.</h1></div>
         <div id="hero-companions" class="hero-companions" aria-hidden="true"></div>
-        <div class="hero-bottom"><a class="scroll-cue" href="#wider-story" aria-label="Scroll to the product examples">↓</a><p class="scroll-note">EXPLORE THE SPECIES AND MATERIALS</p><div class="risk-strip" inert aria-hidden="true"><span class="risk-strip-label">Increasing extinction risk <span aria-hidden="true">→</span></span><a href="#vulnerable">Vulnerable<small>High risk</small></a><a href="#endangered">Endangered<small>Very high risk</small></a><a href="#critically-endangered">Critically Endangered<small>Extremely high risk</small></a><div class="risk-line"></div></div></div>
+        <div class="hero-bottom"><a class="scroll-cue" href="#wider-story" aria-label="Scroll to the product examples">↓</a><div class="risk-strip" inert aria-hidden="true"><span class="risk-strip-label">Increasing extinction risk <span aria-hidden="true">→</span></span><a href="#vulnerable">Vulnerable<small>High risk</small></a><a href="#endangered">Endangered<small>Very high risk</small></a><a href="#critically-endangered">Critically Endangered<small>Extremely high risk</small></a><div class="risk-line"></div></div></div>
       </div>
     </section>
     <section class="wider-story page-width" id="wider-story" aria-labelledby="wider-title">
@@ -69,11 +69,7 @@
       <div class="comparison-copy"><p class="eyebrow">CITES RECORDS BY ANIMAL GROUP</p><h2 id="comparison-title">Which groups appear<br>in CITES reports?</h2><p class="intro-text">Each square counts entries in our study list with at least one CITES record. Select a square to see the matching entries.</p></div>
       <div class="comparison-viz"><div id="risk-comparison"></div><div class="heatmap-key"><span>Fewer entries</span><div class="scale-swatches" data-scale="180" aria-hidden="true"></div><span>More entries</span><span class="scale-range">0 &mdash; 180</span></div><p class="chart-note">Each study entry is counted once per square. CITES Appendix I–III · 2015–2024 · commercial and non-commercial purposes. This chart counts entries, not animals or trade volume.</p></div>
     </section>
-    <section class="trade-reveal page-width" id="trade-reveal" aria-labelledby="trade-title">
-      <p class="eyebrow">SPECIES IN THE CITES REPORTS</p><h2 id="trade-title">Which of these species<br>have CITES records?</h2>
-      <p class="intro-text">Highlight the species in this selection with a matched CITES record. A missing match does not establish an absence of trade.</p>
-      <div class="reveal-actions"><button id="reveal-trade" class="primary-button" aria-pressed="false"><span class="reveal-icon" aria-hidden="true">◐</span><span>Highlight species with records</span></button><span class="reveal-status" id="reveal-status" role="status">Showing all selected species</span></div>
-      <div id="reveal-community" class="reveal-community" aria-label="A selection from the three risk groups"></div>
+    <section class="trade-reveal page-width" id="trade-reveal" aria-label="Annual CITES record coverage">
       <div class="coverage-heading"><div><strong id="trade-total">387</strong><p>study entries with CITES records<br><small>2015–2024 · CITES Appendix I–III</small></p></div><button class="text-link" id="explore-recorded">View entries with records <span aria-hidden="true">↗</span></button></div>
       <div class="annual-chart"><div class="chart-heading"><h3>Entries recorded each year</h3><p>Each square counts study entries with a CITES record in that year. All years use IUCN 2026-1 risk groups; the chart does not show changes in conservation status.</p></div><div id="annual-heatmap" class="annual-glass"></div><div class="heatmap-key"><span>Fewer entries</span><div class="scale-swatches" aria-hidden="true"></div><span>More entries</span><span class="scale-range">0 — 160</span></div><p class="chart-note">An entry may appear in more than one year. Select a square to see its entries. The counts do not measure trade volume.</p></div>
     </section>

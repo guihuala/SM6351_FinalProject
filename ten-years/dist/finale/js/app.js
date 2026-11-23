@@ -1,5 +1,5 @@
 import {autoUpdate, computePosition, flip, offset, shift} from '../vendor/floating-ui.dom.js';
-import {setupChapterMotion} from './motion.js?v=20261120-closing1';
+import {setupChapterMotion} from './motion.js?v=20261123-smooth1';
 import {PRODUCT_CASES, productForRisk, productByID, validateProductCases, productStoryHTML, productConnectionsHTML, productPreviewHTML, productSourceCreditsHTML} from './product-stories.js?v=20261119-copy1';
 
 const $ = (selector, root = document) => root.querySelector(selector);
@@ -15,6 +15,48 @@ const embedded = Boolean(globalThis.__MARINE_EMBEDDED) || (window.parent !== win
 const state = {data:null, images:[], speciesByID:new Map(), imageByName:new Map(), classStats:new Map(), groupStats:new Map(), trade:false, motion:!reducedMotion.matches, hostActive:!embedded || Boolean(globalThis.__MARINE_HOST_ACTIVE), extra:{}, limit:100, activeRisk:null};
 let shark = null, framePending = false, statusTimer;
 let popoverAnchor=null, popoverCleanup=null, popoverPositionVersion=0;
+let scrollNodes=null, controlledShark=null, sharkProgress=null, sharkActive=null;
+
+function setStyleProperty(node,name,value) {
+  const text=String(value);
+  if(node.style.getPropertyValue(name)!==text)node.style.setProperty(name,text);
+}
+
+function setAttributeValue(node,name,value) {
+  const text=String(value);
+  if(node.getAttribute(name)!==text)node.setAttribute(name,text);
+}
+
+function setClassValue(node,name,value) {
+  const enabled=Boolean(value);
+  if(node.classList.contains(name)!==enabled)node.classList.toggle(name,enabled);
+}
+
+function prepareSharkControl() {
+  if(!shark)return false;
+  if(controlledShark!==shark){controlledShark=shark;sharkProgress=null;sharkActive=null;}
+  return true;
+}
+
+function setSharkProgress(value) {
+  if(!prepareSharkControl()||sharkProgress===value)return;
+  sharkProgress=value;shark.setProgress(value);
+}
+
+function setSharkActive(value) {
+  const next=Boolean(value);
+  if(!prepareSharkControl()||sharkActive===next)return;
+  sharkActive=next;shark.setActive(next);
+}
+
+function getScrollNodes() {
+  if(!scrollNodes)scrollNodes={
+    root:document.documentElement,
+    hero:$('#surface'),preview:$('.hero .risk-strip'),zones:$$('.risk-zone'),
+    nav:$('.risk-nav'),navLinks:$$('.risk-nav a[data-risk]'),epilogue:$('#epilogue')
+  };
+  return scrollNodes;
+}
 
 function riskChannels(value,risk,max=250) {
   const stops=riskRamps[risk],t=clamp(value/max),segment=t<.5?0:1;
@@ -122,6 +164,7 @@ function groupFinding(group) {
 }
 
 function renderZones() {
+  scrollNodes=null;
   $('#risk-zones').innerHTML = state.data.groups.map((group,index)=>{
     const finding=groupFinding(group), product=productForRisk(group.code), pairs=specimensForGroup(group).filter(pair=>pair.species.scientificName!==product.species),totals=state.groupStats.get(group.code);
     return `<section class="risk-zone" id="${slug[group.code]}" data-risk="${group.code}" aria-labelledby="title-${group.code}"><header class="zone-header"><p class="eyebrow">${String(index+1).padStart(2,'0')} / RISK GROUP</p><h2 class="zone-title" id="title-${group.code}">${escape(group.label)}</h2><p class="risk-description">${escape(group.riskDescription)}</p><p class="zone-count"><strong>${number(totals.recorded)} of ${number(totals.total)}</strong> entries in our study list have CITES records</p><p class="field-instruction">Select a species for details.</p></header><div class="specimen-field" style="--field-count:${pairs.length}" aria-label="A selection of ${escape(group.label.toLowerCase())} marine candidates">${pairs.map((p,i)=>specimenHTML(p.species,p.image,i,pairs.length)).join('')}</div>${productStoryHTML(group,state.imageByName)}<div class="data-stop"><div class="chart-heading"><div><span class="chart-kicker">STUDY ENTRIES BY ANIMAL GROUP</span><h3>${escape(finding.heading)}</h3></div><p>The neutral bar shows all study entries in each class. The coloured segment shows entries with CITES records. The count scale is 0–250 in all three chapters.</p></div>${compositionHTML(group)}<p class="chart-note">CITES Appendix I–III · 2015–2024. Includes commercial and non-commercial reports. Counts are study entries, not sales or animals. “Other classes” combines the remaining classes. Select a row to view entries with records.</p><div class="matrix-group-action"><button class="text-link" data-explore-risk="${group.code}">View ${number(totals.recorded)} entries with records <span aria-hidden="true">↗</span></button></div></div></section>`;
@@ -145,23 +188,6 @@ function renderAnnual() {
   $('.annual-chart .chart-heading h3').textContent=`${number(lastCount)} study entries appear in the ${lastYear} reports.`;
   $('#annual-heatmap').innerHTML=`<div class="annual-grid" role="group" aria-label="Annual counts of candidate entries with identified CITES records"><span class="annual-corner"></span>${years.map(y=>`<span class="year-label">${y}</span>`).join('')}${state.data.groups.map(g=>`<span class="annual-row-label" style="color:${riskColors[g.code]}">${escape(g.label)}</span>${state.data.annualCoverage[g.code].map((v,i)=>`<button class="annual-cell" style="${riskCellStyle(v,g.code,160)}" aria-label="${escape(g.label)}, ${years[i]}: ${v} distinct candidate entries with identified records. Explore entries" title="${g.label} · ${years[i]} · ${v} entries" data-annual-risk="${g.code}" data-annual-year="${years[i]}" data-count="${v}"></button>`).join('')}`).join('')}</div>`;
   $$('.annual-cell').forEach(cell=>cell.addEventListener('click',event=>showAnnualPreview(cell,event.detail===0)));
-}
-
-function renderCommunity() {
-  const pairs=state.data.groups.flatMap(group=>{
-    const list=specimensForGroup(group);
-    const recorded=list.find(p=>p.species.tradeIdentified&&p.image.displayMode==='transparent')||list.find(p=>p.species.tradeIdentified), other=list.find(p=>!p.species.tradeIdentified);
-    return [recorded,other||list.find(p=>p!==recorded)].filter(Boolean);
-  });
-  $('#reveal-community').innerHTML=pairs.map((p,i)=>specimenHTML(p.species,p.image,i,pairs.length,true)).join('');
-}
-
-function applyTrade() {
-  document.body.classList.toggle('trade-mode',state.trade);
-  $$('.specimen').forEach(el=>el.classList.toggle('is-muted',state.trade && el.dataset.recorded!=='true'));
-  $('#reveal-trade').setAttribute('aria-pressed',String(state.trade));
-  $('#reveal-trade span:last-child').textContent=state.trade?'Show all selected species':'Highlight species with records';
-  $('#reveal-status').textContent=state.trade?'Species with matched CITES records are highlighted':'Showing all selected species';
 }
 
 function closePopover(restoreFocus=false) {
@@ -288,11 +314,13 @@ function renderCredits() {
 
 function updateMotion() {
   const active = state.motion && state.hostActive && !reducedMotion.matches;
-  document.body.classList.toggle('motion-off',!active);
-  $('#motion-toggle').setAttribute('aria-pressed',String(state.motion));
-  $('.motion-label').textContent=state.motion?'Motion on':'Motion off';
-  $('#motion-toggle').title=state.motion?'Pause background and specimen motion':'Resume background and specimen motion';
-  shark?.setActive(active&&$('#surface').getBoundingClientRect().bottom>0&&!document.hidden);
+  setClassValue(document.body,'motion-off',!active);
+  const toggle=$('#motion-toggle'),label=$('.motion-label');
+  setAttributeValue(toggle,'aria-pressed',state.motion);
+  const text=state.motion?'Motion on':'Motion off';
+  if(label.textContent!==text)label.textContent=text;
+  setAttributeValue(toggle,'title',state.motion?'Pause background and specimen motion':'Resume background and specimen motion');
+  if(shark)setSharkActive(active&&$('#surface').getBoundingClientRect().bottom>0&&!document.hidden);
 }
 
 function setHostActive(value) {
@@ -305,49 +333,74 @@ function setHostActive(value) {
 
 function updateScroll() {
   framePending=false;
-  const hero=$('#surface'), heroRect=hero.getBoundingClientRect(), vh=innerHeight;
+  const {root,hero,preview,zones,nav,navLinks,epilogue}=getScrollNodes();
+  const vh=innerHeight,y=scrollY;
+  // Read the complete frame's geometry before changing inherited properties.
+  // Reuse the zone rectangles for depth, palette, and navigation calculations.
+  const heroRect=hero.getBoundingClientRect();
+  const zoneRects=zones.map(zone=>zone.getBoundingClientRect());
+  const epilogueTop=epilogue.getBoundingClientRect().top;
+  const scrollRange=Math.max(1,root.scrollHeight-vh);
+  const smooth=value=>{const t=clamp(value);return t*t*(3-2*t);};
   const p=clamp(-heroRect.top/Math.max(1,heroRect.height-vh));
-  document.documentElement.style.setProperty('--hero-progress',p.toFixed(3));
-  const preview=$('.hero .risk-strip');
   const previewStep=clamp((p-.12)/.28);
   const previewReveal=previewStep*previewStep*(3-2*previewStep);
-  document.documentElement.style.setProperty('--risk-preview',previewReveal.toFixed(3));
-  if(preview){
-    const visible=previewReveal>.01;
-    preview.inert=!visible;
-    preview.setAttribute('aria-hidden',String(!visible));
-    preview.classList.toggle('is-revealed',visible);
-  }
-  shark?.setProgress(p);shark?.setActive(state.motion&&state.hostActive&&!reducedMotion.matches&&heroRect.bottom>0&&heroRect.top<vh&&!document.hidden);
-  const zones=$$('.risk-zone');
+  let depth=0,ambience=[0,0,0],activeRisk,navAlpha=0;
   if(zones.length){
-    const start=zones[0].getBoundingClientRect().top+scrollY;
-    const last=zones[zones.length-1], end=last.getBoundingClientRect().bottom+scrollY;
-    const depth=clamp((scrollY-start)/(end-start));document.documentElement.style.setProperty('--ocean-depth',depth.toFixed(3));
-    // Blend decorative edge light between categories without tinting the data or specimens.
-    const smooth=value=>{const t=clamp(value);return t*t*(3-2*t);};
-    const readingPosition=scrollY+vh*.45;
+    const start=zoneRects[0].top+y,end=zoneRects[zoneRects.length-1].bottom+y;
+    depth=clamp((y-start)/(end-start));
+    const readingPosition=y+vh*.45;
     const enter=smooth((readingPosition-start+vh*.22)/(vh*.44));
-    const ambience=[enter,0,0];
-    zones.slice(1).forEach((zone,index)=>{
-      const boundary=zone.getBoundingClientRect().top+scrollY;
-      const mix=smooth((readingPosition-boundary+vh*.16)/(vh*.32));
+    ambience=[enter,0,0];
+    zoneRects.slice(1).forEach((rect,index)=>{
+      const mix=smooth((readingPosition-(rect.top+y)+vh*.16)/(vh*.32));
       ambience[index]*=1-mix;ambience[index+1]=enter*mix;
     });
     const leave=1-smooth((readingPosition-end)/(vh*.85));
-    ['vu','en','cr'].forEach((key,index)=>document.documentElement.style.setProperty(`--ambient-${key}`,(ambience[index]*leave).toFixed(3)));
-    let active=zones.find(z=>{const r=z.getBoundingClientRect();return r.top<vh*.45&&r.bottom>vh*.45;})?.dataset.risk;
-    if(active!==state.activeRisk){state.activeRisk=active;$$('.risk-nav a[data-risk]').forEach(a=>{a.classList.toggle('active',a.dataset.risk===active);if(a.dataset.risk===active)a.setAttribute('aria-current','step');else a.removeAttribute('aria-current');});}
-    const nav=$('.risk-nav');
-    const fadeIn=clamp((scrollY-(start-vh*.65))/Math.max(160,vh*.23));
-    const epilogueTop=$('#epilogue').getBoundingClientRect().top;
+    ambience=ambience.map(value=>value*leave);
+    const activeIndex=zoneRects.findIndex(rect=>rect.top<vh*.45&&rect.bottom>vh*.45);
+    activeRisk=activeIndex<0?undefined:zones[activeIndex].dataset.risk;
+    const fadeIn=clamp((y-(start-vh*.65))/Math.max(160,vh*.23));
     const fadeOut=smooth((epilogueTop-vh*.4)/(vh*.45));
-    const navAlpha=Math.min(fadeIn,fadeOut);
-    nav.hidden=false;nav.style.setProperty('--nav-alpha',navAlpha.toFixed(3));
-    nav.classList.toggle('is-visible',navAlpha>.01);
-    nav.setAttribute('aria-hidden',String(navAlpha<=.01));nav.inert=navAlpha<=.01;
+    navAlpha=Math.min(fadeIn,fadeOut);
   }
-  const progress=clamp(scrollY/Math.max(1,document.documentElement.scrollHeight-vh));document.documentElement.style.setProperty('--page-progress',progress.toFixed(4));
+
+  // Apply only changed values after all layout reads have completed.
+  setStyleProperty(root,'--hero-progress',p.toFixed(3));
+  setStyleProperty(root,'--risk-preview',previewReveal.toFixed(3));
+  setStyleProperty(root,'--entry-ocean-alpha',(embedded?smooth(y/Math.max(1,vh*.85)):1).toFixed(3));
+  if(preview){
+    const visible=previewReveal>.01;
+    if(preview.inert===visible)preview.inert=!visible;
+    setAttributeValue(preview,'aria-hidden',!visible);
+    setClassValue(preview,'is-revealed',visible);
+  }
+  setSharkProgress(p);
+  setSharkActive(state.motion&&state.hostActive&&!reducedMotion.matches&&heroRect.bottom>0&&heroRect.top<vh&&!document.hidden);
+  const roundedDepth=Number(depth.toFixed(3)),roundedMix=ambience.map(value=>Number(value.toFixed(3)));
+  if(zones.length){
+    setStyleProperty(root,'--ocean-depth',depth.toFixed(3));
+    ['vu','en','cr'].forEach((key,index)=>setStyleProperty(root,`--ambient-${key}`,ambience[index].toFixed(3)));
+    if(activeRisk!==state.activeRisk){
+      state.activeRisk=activeRisk;
+      navLinks.forEach(link=>{
+        const selected=link.dataset.risk===activeRisk;
+        setClassValue(link,'active',selected);
+        if(selected)setAttributeValue(link,'aria-current','step');
+        else if(link.hasAttribute('aria-current'))link.removeAttribute('aria-current');
+      });
+    }
+    if(nav.hidden)nav.hidden=false;
+    setStyleProperty(nav,'--nav-alpha',navAlpha.toFixed(3));
+    const visible=navAlpha>.01;
+    setClassValue(nav,'is-visible',visible);
+    setAttributeValue(nav,'aria-hidden',!visible);
+    if(nav.inert===visible)nav.inert=!visible;
+  }
+  setStyleProperty(root,'--page-progress',clamp(y/scrollRange).toFixed(4));
+  document.dispatchEvent(new CustomEvent('marine:visual-update',{
+    detail:{depth:roundedDepth,mix:roundedMix}
+  }));
 }
 
 function requestScroll() { if(!framePending){framePending=true;requestAnimationFrame(updateScroll);} }
@@ -366,7 +419,7 @@ async function init() {
     validateProductCases(state.data,state.imageByName);
     buildTradeStatistics();
     $('#pool-total').textContent=number(state.data.totals.candidateEntries);$('#trade-total').textContent=number(state.data.totals.tradeIdentifiedEntries);
-    renderZones();renderAnnual();renderCommunity();renderCredits();applyTrade();
+    renderZones();renderAnnual();renderCredits();
     $('#product-connections-content').innerHTML=productConnectionsHTML(state.data);
     // Risk sections are inserted from local data. Align an incoming fragment
     // after that layout exists, before text entrance triggers measure it.
@@ -393,15 +446,14 @@ async function init() {
       if(!event.target.closest('#context-popover')&&!event.target.closest('[data-matrix-risk],[data-annual-risk]'))closePopover(false);
     });
     document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!$('#context-popover').hidden){event.preventDefault();event.stopPropagation();closePopover(true);}},true);
-    $('#reveal-trade').addEventListener('click',()=>{state.trade=!state.trade;applyTrade();});
     $('#explore-recorded').addEventListener('click',()=>openCatalogue({trade:'identified'}));
     ['catalogue-search','catalogue-risk','catalogue-trade'].forEach(id=>document.getElementById(id).addEventListener(id==='catalogue-search'?'input':'change',()=>{state.limit=100;renderCatalogue();}));
     document.addEventListener('scroll',requestScroll,{passive:true});window.addEventListener('resize',requestScroll,{passive:true});
     document.addEventListener('visibilitychange',()=>{updateMotion();requestScroll();});
-    if(matchMedia('(pointer:fine)').matches)document.addEventListener('pointermove',event=>{if(state.motion&&state.hostActive)document.documentElement.style.setProperty('--light-x',`${48+(event.clientX/innerWidth)*5}%`);},{passive:true});
+    if(matchMedia('(pointer:fine)').matches)document.addEventListener('pointermove',event=>{if(state.motion&&state.hostActive)setStyleProperty(document.documentElement,'--light-x',`${48+(event.clientX/innerWidth)*5}%`);},{passive:true});
     try{const module=await import('./shark.js?v=20261119-model-static1');shark=module.mountShark($('#shark-canvas'),{onReady:result=>{if(!result.ok){document.body.classList.add('no-model');const fallback=state.imageByName.get('Sphyrna lewini');if(fallback)$('#hero-companions').insertAdjacentHTML('beforeend',imageHTML(fallback,'model-fallback',false));}}});updateMotion();}catch(error){console.warn('The model is unavailable:',error);document.body.classList.add('no-model');}
     updateScroll();
-    window.marineChapter={getState:()=>({version:'20261119-copy1',productExamples:PRODUCT_CASES.length,risk:state.activeRisk,tradeRevealed:state.trade,motion:state.motion,hostActive:state.hostActive,candidateEntries:state.data.totals.candidateEntries,tradeIdentifiedEntries:state.data.totals.tradeIdentifiedEntries}),showCatalogue:openCatalogue,setHostActive,setTradeRevealed:enabled=>{state.trade=Boolean(enabled);applyTrade();}};
+    window.marineChapter={getState:()=>({version:'20261119-copy1',productExamples:PRODUCT_CASES.length,risk:state.activeRisk,tradeRevealed:state.trade,motion:state.motion,hostActive:state.hostActive,candidateEntries:state.data.totals.candidateEntries,tradeIdentifiedEntries:state.data.totals.tradeIdentifiedEntries}),showCatalogue:openCatalogue,setHostActive,setTradeRevealed:()=>{}};
     document.dispatchEvent(new Event('marine:ready'));
   }catch(error){console.error(error);$('#risk-zones').innerHTML='<p class="loading-copy">The local data could not load. Please open this chapter using the local preview link, then reload.</p>';toast('The verified chapter data could not be loaded.');}
 }

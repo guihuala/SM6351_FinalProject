@@ -6,7 +6,7 @@ const pane=host?.querySelector('.finale-window');
 
 if(host&&frame&&pane){
   document.title='The Global Trade of Sphyrna lewini — Complete project';
-  let loaded=false,started=false,active=false,frameHeight=innerHeight,pending=0,lastY=null,lastActive=null;
+  let loaded=false,started=false,active=false,pinned=false,frameHeight=innerHeight,pending=0,lastY=null,lastActive=null;
   const finite=value=>typeof value==='number'&&Number.isFinite(value);
   const clamp=(value,min,max)=>Math.max(min,Math.min(max,value));
   const sectionTop=()=>host.getBoundingClientRect().top+scrollY;
@@ -18,12 +18,21 @@ if(host&&frame&&pane){
     const rect=host.getBoundingClientRect();
     active=rect.top<innerHeight&&rect.bottom>0;
     const y=clamp(-rect.top,0,Math.max(0,frameHeight-innerHeight));
-    // The earlier page has overflow-x:hidden on body, which captures sticky
-    // positioning. Keep only this viewport aligned with the document scroll.
+    // Keep the viewport stationary once entered. Moving the entire iframe on
+    // every scroll used to race its own scroll and produced visible judder.
+    const nextPinned=rect.top<=0&&rect.bottom>=innerHeight-1;
+    if(nextPinned!==pinned){
+      pinned=nextPinned;
+      pane.classList.toggle('is-pinned',pinned);
+      pane.style.transform=pinned?'none':`translate3d(0,${y}px,0)`;
+    }else if(!pinned&&y!==lastY)pane.style.transform=`translate3d(0,${y}px,0)`;
     if(y===lastY&&active===lastActive)return;
-    if(y!==lastY)pane.style.transform=`translate3d(0,${y}px,0)`;
     lastY=y;lastActive=active;
-    emit({type:'viewport',y,active});
+    // Both documents are same-origin: apply both positions in the same frame,
+    // with postMessage retained for an independently opened chapter.
+    const receive=frame.contentWindow?.SM6351FinaleViewport;
+    if(typeof receive==='function')receive({y,active});
+    else emit({type:'viewport',y,active});
   }
 
   function requestSync(){if(loaded&&!pending)pending=requestAnimationFrame(sync);}
@@ -37,9 +46,8 @@ if(host&&frame&&pane){
     frame.src=frame.dataset.src;
   }
 
-  function onMessage(event){
-    if(event.source!==frame.contentWindow||event.origin!==location.origin)return;
-    const message=event.data;
+  function receive(source,message){
+    if(source!==frame.contentWindow)return;
     if(!message||message.channel!==CHANNEL)return;
     if(message.type==='ready'||message.type==='resize'){
       if(!finite(message.height)||message.height<1||message.height>300000)return;
@@ -65,6 +73,9 @@ if(host&&frame&&pane){
       scrollTo({top:sectionTop()+Math.max(0,frameHeight-innerHeight),behavior:'instant'});
     }
     requestSync();
+  }
+  function onMessage(event){
+    if(event.origin===location.origin)receive(event.source,event.data);
   }
 
   const annual=document.getElementById('annual-trade');
@@ -100,12 +111,13 @@ if(host&&frame&&pane){
   if('IntersectionObserver' in window){
     const observer=new IntersectionObserver(entries=>{
       if(entries.some(entry=>entry.isIntersecting)){start();observer.disconnect();}
-    },{rootMargin:'1200px 0px',threshold:0});
+    },{rootMargin:'2200px 0px',threshold:0});
     observer.observe(host);
   }else start();
   resizePane();
   window.SM6351Integration=Object.freeze({
     getState:()=>({loaded,started,active,chapterHeight:frameHeight,childScroll:lastY}),
+    receive,
     enter(){start();host.scrollIntoView({behavior:'instant',block:'start'});requestSync();}
   });
 }

@@ -11,20 +11,34 @@ export async function setupChapterMotion() {
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
   const lightContainer = document.querySelector('#ready-light');
   const textContainer = document.querySelector('#closing-title');
+  const rootStyle=document.documentElement.style;
+  let visual={
+    depth:Number(rootStyle.getPropertyValue('--ocean-depth'))||0,
+    mix:['vu','en','cr'].map(key=>Number(rootStyle.getPropertyValue(`--ambient-${key}`))||0)
+  };
+  let appliedDepth=null,appliedMix=null,appliedActive=null;
   const updateLight = () => {
     const active = !document.body.classList.contains('motion-off') && !reduced.matches;
-    water?.setDepth(Number(document.documentElement.style.getPropertyValue('--ocean-depth')) || 0);
-    water?.setPaletteMix(...['vu','en','cr'].map(key=>Number(document.documentElement.style.getPropertyValue(`--ambient-${key}`))||0));
-    water?.setActive(active);
-    closingText?.setActive(active);
-    headings?.setActive(active);
+    if(appliedDepth!==visual.depth){water?.setDepth(visual.depth);appliedDepth=visual.depth;}
+    if(!appliedMix||visual.mix.some((value,index)=>value!==appliedMix[index])){
+      water?.setPaletteMix(...visual.mix);appliedMix=visual.mix.slice();
+    }
+    if(appliedActive!==active){
+      water?.setActive(active);closingText?.setActive(active);headings?.setActive(active);
+      appliedActive=active;
+    }
   };
   if(lightContainer) water=mountReadyLight(lightContainer);
   if(textContainer) closingText=mountReadyText(textContainer);
   headings=mountReadyHeadings(document.querySelectorAll('#hero-title,#wider-title,.risk-zone .zone-title,.product-story-title,#product-connections-title,#comparison-title,#trade-title'));
   updateLight();
   document.documentElement.dataset.readyEffects = 'ready';
-  new MutationObserver(updateLight).observe(document.documentElement,{attributes:true,attributeFilter:['style']});
+  document.addEventListener('marine:visual-update',event=>{
+    const next=event.detail;
+    if(!next||!Number.isFinite(next.depth)||!Array.isArray(next.mix)||next.mix.length!==3||!next.mix.every(Number.isFinite))return;
+    visual=next;
+    updateLight();
+  });
   function sync() {
     updateLight();
     const enabled=!document.body.classList.contains('motion-off')&&!reduced.matches;

@@ -8,21 +8,36 @@ if (embedded) {
   globalThis.__MARINE_HOST_ACTIVE = false;
   let active = false, lastExternalY = 0, lastNavigationY = null;
   let heightFrame = 0, scrollFrame = 0, readySent = false, lastHeight = 0, touch = null;
+  let maximumScroll = 0;
 
-  const send = (type, detail = {}) => window.parent.postMessage({channel, type, ...detail}, origin);
-  const maximumY = () => Math.max(0, document.documentElement.scrollHeight - innerHeight);
-  const clampY = value => Math.max(0, Math.min(Number(value) || 0, maximumY()));
+  const send = (type, detail = {}) => {
+    const message = {channel, type, ...detail};
+    // Use the existing same-origin bridge without an extra event-loop hop for
+    // every wheel tick. The host still validates the sending frame.
+    try {
+      const receive = window.parent.SM6351Integration?.receive;
+      if (typeof receive === 'function') { receive(window, message); return; }
+    } catch { /* An independent host can use the message fallback below. */ }
+    window.parent.postMessage(message, origin);
+  };
+  const maximumY = () => maximumScroll;
+  const clampY = value => Math.max(0, Math.min(Number(value) || 0, maximumScroll));
   const element = target => target?.nodeType === 1 ? target : target?.parentElement;
   const nativeControl = target => Boolean(element(target)?.closest('input,select,textarea,[contenteditable="true"],[role="slider"]'));
   const modalOpen = () => Boolean(document.querySelector('dialog[open]'));
 
   function canScrollLocally(target, delta, axis = 'y') {
+    // Only dialogs/popovers scroll inside this chapter. Avoid walking and
+    // measuring every ancestor for every wheel event over ordinary content.
+    const container = element(target)?.closest('dialog,.context-popover');
+    if (!container) return false;
     for (let node = element(target); node && node !== document.body && node !== document.documentElement; node = node.parentElement) {
       const style = getComputedStyle(node), horizontal = axis === 'x';
       if (!/(auto|scroll|overlay)/.test(horizontal ? style.overflowX : style.overflowY)) continue;
       const position = horizontal ? node.scrollLeft : node.scrollTop;
       const range = horizontal ? node.scrollWidth - node.clientWidth : node.scrollHeight - node.clientHeight;
       if (range > 1 && (delta < 0 ? position > 1 : position < range - 1)) return true;
+      if (node === container) break;
     }
     return false;
   }
@@ -30,6 +45,7 @@ if (embedded) {
   function reportHeight() {
     heightFrame = 0;
     const height = Math.ceil(Math.max(document.documentElement.scrollHeight, document.body?.scrollHeight || 0, innerHeight));
+    maximumScroll = Math.max(0, height - innerHeight);
     if (!readySent) {
       readySent = true; lastHeight = height;
       send('ready', {height});
@@ -47,21 +63,24 @@ if (embedded) {
     const api = window.marineChapter;
     if (!api?.setHostActive) return false;
     api.setHostActive(active);
-    requestHeight();
     return true;
   }
 
-  window.addEventListener('message', event => {
-    if (event.source !== window.parent || event.origin !== origin) return;
-    const message = event.data;
-    if (!message || message.channel !== channel || message.type !== 'viewport' ||
+  function receiveViewport(message) {
+    if (!message ||
         typeof message.y !== 'number' || !Number.isFinite(message.y) || typeof message.active !== 'boolean') return;
     active = message.active;
     globalThis.__MARINE_HOST_ACTIVE = active;
     lastExternalY = clampY(message.y);
     lastNavigationY = null;
-    window.scrollTo({top: lastExternalY, behavior: 'instant'});
+    if (Math.abs(window.scrollY - lastExternalY) > .5) window.scrollTo({top: lastExternalY, behavior: 'instant'});
     connectChapter();
+  }
+  window.SM6351FinaleViewport = receiveViewport;
+  window.addEventListener('message', event => {
+    if (event.source !== window.parent || event.origin !== origin) return;
+    const message = event.data;
+    if (message?.channel === channel && message.type === 'viewport') receiveViewport(message);
   });
 
   document.addEventListener('scroll', () => {

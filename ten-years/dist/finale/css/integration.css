@@ -11,6 +11,21 @@
 html[data-integrated="true"] { scrollbar-width: none; }
 html[data-integrated="true"]::-webkit-scrollbar { width: 0; height: 0; }
 
+/* Enter through the team's existing fixed sea, then gently deepen into this
+   chapter's own water. A second, differently cropped image must not start at
+   the iframe's moving top edge. Standalone chapters keep their normal sea. */
+html[data-integrated="true"],
+html[data-integrated="true"] body { background: transparent; }
+/* Match the embedding page's scheme so Chromium does not insert its opaque
+   dark canvas behind an otherwise transparent iframe. Controls are styled. */
+html[data-integrated="true"] { color-scheme: light; }
+html[data-integrated="true"] .ocean {
+  opacity: var(--entry-ocean-alpha, 0);
+}
+
+/* Keep the cue clear of the risk caption after removing its extra tagline. */
+.hero .scroll-cue { margin-bottom: 32px; }
+
 .site-footer {
   justify-content: center;
   align-items: center;
