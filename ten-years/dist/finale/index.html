@@ -4,6 +4,11 @@
   <meta charset="utf-8">
   <meta name="local-project" content="beyond-one-species-trade-v2">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>
+    if (window.parent !== window && new URLSearchParams(location.search).get('integrated') === '1') {
+      document.documentElement.dataset.integrated = 'true';
+    }
+  </script>
   <meta name="color-scheme" content="dark">
   <meta name="theme-color" content="#041421">
   <meta name="description" content="Perfume, prepared food and jewellery: three material connections to threatened marine species, alongside a study of reported CITES trade.">
@@ -20,7 +25,7 @@
   <link rel="stylesheet" href="./css/trade-v2.css?v=20261119-trade1">
   <link rel="stylesheet" href="./css/product-stories.css?v=20261119-copy1">
   <link rel="stylesheet" href="./css/integration.css?v=20261123-fixedsea1">
-  <script type="module" src="./js/integration.js?v=20261123-fixedsea1"></script>
+  <script type="module" src="./js/integration.js?v=20261123-fixedsea2"></script>
   <script type="module" src="./js/app.js?v=20261123-fixedsea1"></script>
 </head>
 <body>
