@@ -17,7 +17,7 @@
   <link rel="stylesheet" href="../style.css?v=yearly-columns">
   <link rel="stylesheet" href="../ocean/story.css?v=trade-scroll">
   <link rel="stylesheet" href="trade.css?v=continuous-trade">
-  <link rel="stylesheet" href="trade-chapters.css?v=chapter-shark">
+  <link rel="stylesheet" href="trade-chapters.css?v=chapter-handoff">
   <link rel="stylesheet" href="globe-host.css?v=20261121-parent-chrome-free">
   <link rel="stylesheet" href="finale-host.css?v=20261123-smooth1">
 </head>
@@ -43,7 +43,7 @@
   <section id="trade-products" aria-label="Trade by product"></section>
 
   <section id="distribution-trade" class="dv-shell globe-chapter" tabindex="-1" aria-label="Distribution and trade flow">
-    <iframe class="globe-frame" src="../trade/index.html?v=20261121-controls-restored" loading="lazy" title="Interactive 3D globe showing scalloped hammerhead distribution and reported trade flows"></iframe>
+    <iframe class="globe-frame" src="../trade/index.html?v=scroll-performance" loading="lazy" title="Interactive 3D globe showing scalloped hammerhead distribution and reported trade flows"></iframe>
   </section>
 
   <div class="opening-chapters decade-story-page ocean-page">
@@ -54,8 +54,7 @@
           <h2>Fin trade</h2>
           <p class="dv-trade-intro-copy">CITES records trace how much fin trade was reported each year and in what form.</p>
         </div>
-        <canvas class="dv-trade-shark" aria-hidden="true" hidden></canvas>
-        <a class="dv-trade-continue" href="#annual-trade" aria-label="Explore annual trade data"><svg viewBox="0 0 28 36" fill="none" aria-hidden="true"><path d="M14 5v24M5 20l9 9 9-9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        <canvas class="dv-trade-shark" aria-hidden="true"></canvas>
       </div>
     </section>
     <section id="annual-trade" class="dv-shell opening-trade-chapter" tabindex="0" aria-label="Annual fin trade, 2015–2024" data-image-base="../images/">
@@ -79,7 +78,7 @@
   </div>
 
   <!-- Final chapter: isolated styles and scripts; earlier chapter markup is retained. -->
-  <section id="finale" class="finale-host" aria-label="Final chapter: beyond one species">
+  <section id="finale" class="finale-host" tabindex="-1" aria-label="Final chapter: beyond one species">
     <div class="finale-window">
       <iframe id="finale-frame" class="finale-frame" data-src="../finale/index.html?integrated=1&amp;v=20261123-smooth1" title="Final chapter: threatened marine species, products and CITES records" scrolling="no"></iframe>
       <div class="finale-loading" role="status"><p>Loading the final chapter…</p><a href="../finale/index.html">Open the chapter separately</a></div>
@@ -114,10 +113,10 @@
   </div>
   <div class="trade-number"><span></span><strong>221,294.79 kg</strong><small></small></div>
 </section>
-<script type="module" src="trade.js?v=shared-assets"></script>
-<script type="module" src="annual-trade-loader.js?v=product-year-scroll"></script>
-<script type="module" src="chapter-motion.js?v=chapter-shark"></script>
+<script type="module" src="trade.js?v=scroll-performance"></script>
+<script type="module" src="annual-trade-loader.js?v=chapter-handoff"></script>
+<script type="module" src="chapter-motion.js?v=chapter-handoff"></script>
 <script type="module" src="globe-host.js?v=20261121-render"></script>
-<script type="module" src="finale-host.js?v=20261123-smooth1"></script>
+<script type="module" src="finale-host.js?v=scroll-performance"></script>
 </body>
 </html>

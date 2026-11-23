@@ -4,10 +4,11 @@ const root=document.getElementById('annual-trade');
 const intro=document.getElementById('ocean-intro');
 const tradeIntro=document.getElementById('trade-intro');
 const productTarget=document.getElementById('product-forms');
+const finale=document.getElementById('finale');
 const reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
 const sharedFlow=!!window.MarineDecadeFlow;
-const api=MarineDecade.mount(root,{linked:true,year:2015,progressiveColumns:true,progressiveForms:true,releaseAtBoundary:true,sharedFlow,intro:!!intro,headingTarget:tradeIntro?.querySelector('.dv-trade-intro-content'),imageBase:root.dataset?.imageBase,productTarget});
 const chapterScroll=window.MarineChapterScroll?.create();
+const api=MarineDecade.mount(root,{linked:true,year:2015,progressiveColumns:true,progressiveForms:true,releaseAtBoundary:true,sharedFlow,intro:!!intro,showChapterBack:!tradeIntro,alignChapter:chapterScroll?.to,headingTarget:tradeIntro?.querySelector('.dv-trade-intro-content'),imageBase:root.dataset?.imageBase,productTarget});
 if(sharedFlow){
  const canvas=document.createElement('canvas');
  canvas.className='dv-story-flow';
@@ -20,8 +21,7 @@ function followChapter(event,target){
  if(!target||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;
  event.preventDefault();
  if(target===productTarget&&api.getState().year===2024)api.setYear(2015);
- if(event.detail?.origin==='wheel')target.scrollIntoView({behavior:'instant'});
- else if(chapterScroll)chapterScroll.to(target);
+ if(chapterScroll)chapterScroll.to(target,{direction:event.detail?.origin==='wheel'?event.detail.direction:0});
  else target.scrollIntoView({behavior:reduced.matches?'instant':'smooth'});
  target.focus({preventScroll:true});
  const hash='#'+target.id;
@@ -40,8 +40,13 @@ root.querySelector('a[href="#product-forms"]')?.addEventListener('click',event=>
 productTarget?.querySelector('a[href="#annual-trade"]')?.addEventListener('click',event=>followChapter(event,root));
 if(tradeIntro||intro||productTarget){
  root.addEventListener('decade:boundary',event=>{
-  const {origin,direction}=event.detail;
-  if(origin==='touch'||(origin==='wheel'&&direction>0))followChapter(event,direction<0?(tradeIntro||intro):productTarget);
+  const {origin,direction,year}=event.detail;
+  if(origin==='keyboard'&&year===(direction>0?2024:2015)){
+   const onProducts=productTarget?.contains(document.activeElement);
+   followChapter(event,onProducts?(direction>0?finale:root):(direction<0?(tradeIntro||intro):productTarget));
+  }else if(origin==='touch'||(origin==='wheel'&&direction>0)){
+   followChapter(event,direction<0?(tradeIntro||intro):productTarget);
+  }
  });
 }
 productTarget?.addEventListener('decade:boundary',event=>{

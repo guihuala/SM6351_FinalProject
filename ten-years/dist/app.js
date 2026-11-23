@@ -108,7 +108,7 @@ function mount(root, options = {}) {
   if(linked){
     root.setAttribute('aria-label',productTarget?'Annual fin trade, 2015–2024':'Annual trade and product forms, 2015–2024');
     const heading=document.createElement('h2');
-    if(options.intro){
+    if(options.intro && options.showChapterBack!==false){
       const link=document.createElement('a');
       link.className='dv-chapter-link';
       link.href='#ocean-intro';
@@ -757,7 +757,11 @@ function mount(root, options = {}) {
       const released=surface.dispatchEvent(new CustomEvent('decade:boundary',{bubbles:true,cancelable:!!chapterView||!!productTimeline,detail:{direction,year:selected,view,origin:'wheel'}}));if(!released)event.preventDefault();return;
     }
     event.preventDefault();
-    if(needsAlignment)surface.scrollIntoView({behavior:'instant',block:alignEnd?'end':'start'});
+    if(needsAlignment){
+      const block=alignEnd?'end':'start';
+      if(options.alignChapter)options.alignChapter(surface,{direction,block});
+      else surface.scrollIntoView({behavior:'instant',block});
+    }
     scrub(Math.sign(delta)*Math.min(Math.abs(delta),180)/(options.wheelPixelsPerYear??180),'wheel');
   }
   function keydown(event) {
@@ -803,6 +807,7 @@ function mount(root, options = {}) {
     suppressProductClick=false;
     const product=event.target.closest('[data-action="inspect-product"]');
     if(event.touches.length!==1||(!product&&event.target.closest('dialog,select,input,button,a'))){touchStart=null;return;}
+    if(options.alignChapter&&Math.abs(root.getBoundingClientRect().top)>32){touchStart=null;return;}
     pause();clearTimeout(settleTimer);settleTimer=null;
     touchStart={x:event.touches[0].clientX,y:event.touches[0].clientY,lastY:event.touches[0].clientY,product:!!product,startProgress:targetProgress};
   }
@@ -810,6 +815,7 @@ function mount(root, options = {}) {
     if(!touchStart||event.touches.length!==1)return;
     const point=event.touches[0],dx=touchStart.x-point.clientX,dy=touchStart.y-point.clientY;
     if(Math.abs(dy)<6||Math.abs(dx)>Math.abs(dy))return;
+    if(options.alignChapter&&!event.cancelable){touchStart=null;return;}
     event.preventDefault();
     if(touchStart.product)suppressProductClick=true;
     const direction=Math.sign(touchStart.lastY-point.clientY);

@@ -4,8 +4,6 @@
   --dv-text: #edf7fb;
   --dv-muted: #a8c3cc;
   --dv-accent: #3ddcd0;
-  --trade-cue-ink: #cdefff;
-  --trade-cue-line: #83ceff;
   background: color-mix(in srgb, var(--dv-bg) 32%, transparent);
 }
 
@@ -21,8 +19,7 @@
 .dv-shell.opening-trade-chapter .dv-trade-intro-layout {
   height: auto;
   min-height: 100svh;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  row-gap: 24px;
+  grid-template: 1fr / repeat(2, minmax(0, 1fr));
   padding-inline: 7%;
 }
 
@@ -61,27 +58,12 @@
   line-height: 1.6;
 }
 
-.dv-shell.opening-trade-chapter :is(.dv-trade-continue, .dv-chapter-link) {
-  color: var(--trade-cue-ink);
-  border: 1px solid var(--trade-cue-line);
-  border-radius: 50%;
-  box-shadow: 0 0 10px color-mix(in srgb, var(--trade-cue-line) 27%, transparent);
+#annual-trade.opening-trade-chapter {
+  touch-action: pan-y pinch-zoom;
 }
 
-.dv-shell.opening-trade-chapter :is(.dv-trade-continue, .dv-chapter-link):hover {
-  color: var(--dv-ink);
-  background: color-mix(in srgb, var(--trade-cue-line) 14%, transparent);
-}
-
-.dv-shell.opening-trade-chapter .dv-trade-continue {
-  grid-area: 2 / 2;
-  width: 52px;
-  height: 52px;
-}
-
-.dv-shell.opening-trade-chapter .dv-trade-continue svg {
-  width: 24px;
-  height: 30px;
+#annual-trade.opening-trade-chapter .dv-linked-summary {
+  padding-inline-end: 0;
 }
 
 .dv-shell.opening-trade-chapter.dv-linked {
@@ -218,9 +200,9 @@
 }
 
 @media (max-width: 700px) {
-  .dv-shell.opening-trade-chapter .dv-trade-intro-layout:has(.dv-trade-shark:not([hidden])) {
+  .dv-shell.opening-trade-chapter .dv-trade-intro-layout:has(.dv-trade-shark) {
     grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: 1fr auto auto 1fr auto;
+    grid-template-rows: 1fr auto auto 1fr;
     row-gap: 12px;
   }
 
@@ -228,7 +210,7 @@
     grid-column: 1 / -1;
   }
 
-  .dv-shell.opening-trade-chapter .dv-trade-intro-layout:has(.dv-trade-shark:not([hidden])) .dv-trade-intro-content {
+  .dv-shell.opening-trade-chapter .dv-trade-intro-layout:has(.dv-trade-shark) .dv-trade-intro-content {
     grid-row: 2;
   }
 
@@ -237,53 +219,39 @@
     height: clamp(105px, 25svh, 220px);
   }
 
-  .dv-shell.opening-trade-chapter .dv-trade-intro-layout:has(.dv-trade-shark:not([hidden])) .dv-trade-continue {
-    grid-area: 5 / 1;
-  }
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .dv-shell.opening-trade-chapter[data-intro-motion] .dv-trade-shark {
+  .dv-shell.opening-trade-chapter .dv-trade-shark {
     opacity: calc(.84 * var(--trade-shark-progress, 1));
     transform: translateX(calc(24px * (1 - var(--trade-shark-progress, 1))));
   }
 
-  .dv-shell.opening-trade-chapter[data-intro-motion] .dv-trade-period {
+  .dv-shell.opening-trade-chapter .dv-trade-period {
     opacity: var(--trade-period-progress, 1);
     transform: translateY(calc(12px * (1 - var(--trade-period-progress, 1))));
   }
 
-  .dv-shell.opening-trade-chapter[data-intro-motion] .dv-trade-intro-content h2 {
+  .dv-shell.opening-trade-chapter .dv-trade-intro-content h2 {
     opacity: var(--trade-title-progress, 1);
     transform: translateY(calc(24px * (1 - var(--trade-title-progress, 1))));
   }
 
-  .dv-shell.opening-trade-chapter[data-intro-motion] .dv-trade-intro-copy {
+  .dv-shell.opening-trade-chapter .dv-trade-intro-copy {
     opacity: var(--trade-copy-progress, 1);
     transform: translateY(calc(18px * (1 - var(--trade-copy-progress, 1))));
   }
 
-  .dv-shell.opening-trade-chapter[data-chart-entered] :is(.dv-linked-summary, .dv-chart-stage, .dv-toolbar),
-  .dv-shell.dv-product-scene[data-chart-entered] :is(.dv-product-scene-header, .dv-forms-chart, .dv-product-scene-footer) {
-    animation: trade-reveal .6s cubic-bezier(.22,.65,.24,1) both;
+  .opening-trade-chapter :is(.dv-trade-intro-layout, .dv-layout, .dv-product-scene-layout) {
+    opacity: var(--trade-scene-opacity, 1);
   }
 
-  .dv-shell.opening-trade-chapter[data-chart-entered] .dv-chart-stage,
-  .dv-shell.dv-product-scene[data-chart-entered] .dv-forms-chart {
-    animation-delay: .12s;
+  .opening-trade-chapter :is(.dv-layout, .dv-product-scene-layout) {
+    transform: translateY(calc(16px * var(--trade-scene-offset, 0)));
   }
 
-  .dv-shell.opening-trade-chapter[data-chart-entered] .dv-toolbar,
-  .dv-shell.dv-product-scene[data-chart-entered] .dv-product-scene-footer {
-    animation-delay: .22s;
+  .opening-trade-chapter :is(.dv-layout, .dv-product-scene-layout):has(:focus-visible) {
+    opacity: 1;
+    transform: none;
   }
-
-  .dv-shell.opening-trade-chapter :is(.dv-linked-summary, .dv-chart-stage, .dv-toolbar, .dv-forms-chart, .dv-product-scene-header, .dv-product-scene-footer):focus-within {
-    animation: none;
-  }
-}
-
-@keyframes trade-reveal {
-  from { opacity: 0; transform: translateY(16px); }
-  to { opacity: 1; transform: translateY(0); }
 }

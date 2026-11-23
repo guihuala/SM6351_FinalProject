@@ -3,58 +3,66 @@ const chart = document.querySelector('#annual-trade');
 const products = document.querySelector('#product-forms');
 const shark = intro.querySelector('.dv-trade-shark');
 const reduced = matchMedia('(prefers-reduced-motion: reduce)');
-let frame, drawShark, sharkRequested = false, introVisible = false;
+const visible = new Set();
+let frame, drawShark;
 
 function ease(progress) {
   const t = Math.max(0, Math.min(1, progress));
   return t * t * (3 - 2 * t);
 }
 
-function renderIntro() {
+function render() {
   frame = undefined;
-  if (!introVisible) return;
-  const {top, bottom} = intro.getBoundingClientRect();
-  if (top > innerHeight || bottom < 0) return;
-  const progress = (innerHeight - top) / innerHeight;
-  drawShark?.(reduced.matches ? .7 : ease((progress - .48) / .82));
-  if (reduced.matches) return;
-  intro.style.setProperty('--trade-period-progress', ease((progress - .22) / .34));
-  intro.style.setProperty('--trade-title-progress', ease((progress - .37) / .42));
-  intro.style.setProperty('--trade-copy-progress', ease((progress - .67) / .52));
-  intro.style.setProperty('--trade-shark-progress', ease((progress - .48) / .49));
-  intro.dataset.introMotion = '';
+  const height = innerHeight;
+  const scenes = Array.from(visible, scene => [scene, scene.getBoundingClientRect()]);
+  for (const [scene, {top, bottom}] of scenes) {
+    const enter = (height - top) / height;
+    const remaining = bottom / height;
+    const reveal = ease((enter - .1) / .52);
+    const leave = ease(remaining / .45);
+    scene.style.setProperty('--trade-scene-opacity', reveal * leave);
+    scene.style.setProperty('--trade-scene-offset', 1 - reveal);
+    if (scene !== intro) continue;
+    const sharkProgress = ease((enter - .48) / .82);
+    drawShark?.(reduced.matches ? .7 : sharkProgress);
+    intro.style.setProperty('--trade-period-progress', ease((enter - .22) / .34));
+    intro.style.setProperty('--trade-title-progress', ease((enter - .37) / .42));
+    intro.style.setProperty('--trade-copy-progress', ease((enter - .67) / .52));
+    intro.style.setProperty('--trade-shark-progress', ease((enter - .48) / .49));
+  }
 }
 
-function requestIntro() {
-  if (introVisible && frame === undefined) frame = requestAnimationFrame(renderIntro);
+function requestRender() {
+  if (visible.size && frame === undefined) frame = requestAnimationFrame(render);
 }
 
 const observer = new IntersectionObserver(entries => {
   for (const entry of entries) {
-    if (entry.target === intro) {
-      introVisible = entry.isIntersecting;
-      if (introVisible && shark && !sharkRequested) {
-        sharkRequested = true;
-        import('./chapter-shark.js').then(({loadChapterShark}) => loadChapterShark(shark)).then(draw => {
-          drawShark = draw;
-          shark.hidden = false;
-          new ResizeObserver(requestIntro).observe(shark);
-          requestIntro();
-        }).catch(error => console.warn('The Fin trade shark could not load.', error));
-      }
-      requestIntro();
-    } else if (!entry.isIntersecting) {
-      delete entry.target.dataset.chartEntered;
-    } else if (entry.intersectionRatio >= .24) {
-      entry.target.dataset.chartEntered = '';
-    }
+    if (entry.isIntersecting) visible.add(entry.target);
+    else visible.delete(entry.target);
   }
-}, {threshold: [0, .24]});
-observer.observe(intro);
-observer.observe(chart);
-if (products) observer.observe(products);
+  requestRender();
+});
+for (const scene of [intro, chart, products]) {
+  if (scene) observer.observe(scene);
+}
 
-addEventListener('scroll', requestIntro, {passive: true});
-addEventListener('resize', requestIntro);
-addEventListener('pageshow', requestIntro);
-reduced.addEventListener('change', requestIntro);
+if (shark) {
+  const preload = new IntersectionObserver(entries => {
+    if (!entries.some(entry => entry.isIntersecting)) return;
+    preload.disconnect();
+    import('./chapter-shark.js').then(({loadChapterShark}) => loadChapterShark(shark)).then(draw => {
+      drawShark = draw;
+      // Prepare the first frame before the model scrolls into view.
+      if (!visible.has(intro)) draw(reduced.matches ? .7 : 0);
+      new ResizeObserver(requestRender).observe(shark);
+      requestRender();
+    }).catch(error => console.warn('The Fin trade shark could not load.', error));
+  }, {rootMargin: '100% 0px'});
+  preload.observe(intro);
+}
+
+addEventListener('scroll', requestRender, {passive: true});
+addEventListener('resize', requestRender);
+addEventListener('pageshow', requestRender);
+reduced.addEventListener('change', requestRender);

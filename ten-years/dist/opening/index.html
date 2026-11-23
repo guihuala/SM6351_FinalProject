@@ -17,7 +17,7 @@
   <link rel="stylesheet" href="../style.css?v=yearly-columns">
   <link rel="stylesheet" href="../ocean/story.css?v=trade-scroll">
   <link rel="stylesheet" href="trade.css?v=continuous-trade">
-  <link rel="stylesheet" href="trade-chapters.css?v=chapter-shark">
+  <link rel="stylesheet" href="trade-chapters.css?v=chapter-handoff">
 </head>
 <body>
 <nav class="dv-shell opening-navigation" aria-label="Trade chapters">
@@ -47,8 +47,7 @@
           <h2>Fin trade</h2>
           <p class="dv-trade-intro-copy">CITES records trace how much fin trade was reported each year and in what form.</p>
         </div>
-        <canvas class="dv-trade-shark" aria-hidden="true" hidden></canvas>
-        <a class="dv-trade-continue" href="#annual-trade" aria-label="Explore annual trade data"><svg viewBox="0 0 28 36" fill="none" aria-hidden="true"><path d="M14 5v24M5 20l9 9 9-9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        <canvas class="dv-trade-shark" aria-hidden="true"></canvas>
       </div>
     </section>
     <section id="annual-trade" class="dv-shell opening-trade-chapter" tabindex="0" aria-label="Annual fin trade, 2015–2024" data-image-base="../images/">
@@ -98,8 +97,8 @@
   </div>
   <div class="trade-number"><span></span><strong>221,294.79 kg</strong><small></small></div>
 </section>
-<script type="module" src="trade.js?v=shared-assets"></script>
-<script type="module" src="annual-trade-loader.js?v=product-year-scroll"></script>
-<script type="module" src="chapter-motion.js?v=chapter-shark"></script>
+<script type="module" src="trade.js?v=scroll-performance"></script>
+<script type="module" src="annual-trade-loader.js?v=chapter-handoff"></script>
+<script type="module" src="chapter-motion.js?v=chapter-handoff"></script>
 </body>
 </html>

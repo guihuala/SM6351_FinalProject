@@ -12,7 +12,7 @@ const summary=el('.trade-summary'), number=el('.trade-number'), ring=el('.trade-
 const oldCopy=document.querySelector('.scene-three-copy'), oldTimeline=document.querySelector('.rating-timeline');
 const totalsSection = document.querySelector('#trade-total');
 const productsSection = document.querySelector('#trade-products');
-let selected=-1, hover=-1, enabled=false, requested=false, drawModel, ringProgress=0;
+let selected=-1, hover=-1, enabled=false, requested=false, drawModel, ringProgress;
 const pieces=[];
 const year = summary.querySelector('p');
 const explanation = summary.querySelector('h2');
@@ -167,30 +167,42 @@ products.forEach(([name,weight,color],i)=>{
 });
 const clamp=x=>Math.max(0,Math.min(1,x));
 function ramp(x){x=clamp(x);return x*x*(3-2*x)}
-let updateFrame, ringRect;
+let updateFrame, ringRect, geometry, lastPosition;
+function position() {
+  return Math.max(0, Math.min(geometry.end, scrollY - geometry.start));
+}
 function requestUpdate(){
-  if(updateFrame!==undefined)return;
+  if(updateFrame!==undefined || position()===lastPosition)return;
   updateFrame=requestAnimationFrame(()=>{
     updateFrame=undefined;
-    update();
+    if(position()!==lastPosition)update();
   });
 }
 function refreshGeometry(){
+  const totalHeight=totalsSection.offsetHeight;
+  const productsHeight=productsSection.offsetHeight;
+  const handoffHeight=innerHeight*.65;
+  geometry={
+    start:totalsSection.offsetTop-innerHeight,
+    totalHeight,productsHeight,handoffHeight,
+    end:totalHeight+productsHeight+handoffHeight,
+  };
   ringRect=undefined;
+  lastPosition=undefined;
   requestUpdate();
 }
 function update(){
-  const distance = scrollY + innerHeight - totalsSection.offsetTop;
-  const productsHeight = productsSection.offsetHeight;
-  const handoff = ramp((distance - totalsSection.offsetHeight - productsHeight) / (innerHeight * .65));
+  const distance=lastPosition=position();
+  const {totalHeight,productsHeight,handoffHeight,end}=geometry;
+  const handoff = ramp((distance - totalHeight - productsHeight) / handoffHeight);
   // The summary occupies one animation unit over its full section height.
   // Map the product section's scroll distance to the two existing animation units.
-  const t = distance <= totalsSection.offsetHeight
-    ? distance / totalsSection.offsetHeight
-    : 1 + 2 * (distance - totalsSection.offsetHeight) / productsHeight;
-  const visible=t>0 && handoff<1;
+  const t = distance <= totalHeight
+    ? distance / totalHeight
+    : 1 + 2 * (distance - totalHeight) / productsHeight;
+  const visible=distance>0 && distance<end;
   updateSequence(t);
-  stage.hidden=!visible;
+  if(stage.hidden===visible)stage.hidden=!visible;
   document.body.classList.toggle('opening-handoff',handoff>0);
   oldCopy.style.opacity=oldTimeline.style.opacity=t>0?String(1-ramp(t/.36)):'';
   if(!visible){
@@ -211,12 +223,15 @@ function update(){
   counter.style.color = travel === 1 ? '' : stage.dataset.editorColor || '';
   model.style.opacity=travel;
   list.style.opacity=showList;
-  ringProgress=clamp((t-2)/.6);
-  pieces.forEach(({circle,start,fraction})=>{
-    const length=Math.min(fraction,Math.max(0,ringProgress-start));
-    circle.style.visibility=length?'visible':'hidden';
-    circle.setAttribute('stroke-dasharray',length+' '+(1-length));
-  });
+  const nextRingProgress=clamp((t-2)/.6);
+  if(nextRingProgress!==ringProgress){
+    ringProgress=nextRingProgress;
+    pieces.forEach(({circle,start,fraction})=>{
+      const length=Math.min(fraction,Math.max(0,ringProgress-start));
+      circle.style.visibility=length?'visible':'hidden';
+      circle.setAttribute('stroke-dasharray',length+' '+(1-length));
+    });
+  }
   enabled=t>=2.995&&handoff===0;stage.classList.toggle('interactive',enabled);list.inert=!enabled;
   if(!enabled){selected=hover=-1}
   paint();
@@ -227,8 +242,9 @@ function update(){
 }
 addEventListener('scroll',requestUpdate,{passive:true});
 addEventListener('resize',refreshGeometry);
+addEventListener('pageshow',refreshGeometry);
 document.fonts.ready.then(refreshGeometry);
-update();
+refreshGeometry();
 
 if(new URLSearchParams(location.search).get('tradeEditor') === '1'){
   import('./trade-editor.js?v=single-line').then(({openTradeEditor})=>{

@@ -67,7 +67,7 @@ button {
 .deep-water::before {
   position: absolute;
   inset: 0;
-  background: url('/assets/deep-water.png') center 78% / cover no-repeat;
+  background: url('/assets/deep-water.webp') center 78% / cover no-repeat;
   content: "";
   filter: brightness(0.8) saturate(0.9);
   transform: scale(1.2);
@@ -885,7 +885,7 @@ button {
   align-items: center;
   background:
     linear-gradient(rgba(2, 14, 24, 0.7), rgba(2, 14, 24, 0.8)),
-    url('/assets/deep-water.png') center 78% / cover no-repeat,
+    url('/assets/deep-water.webp') center 78% / cover no-repeat,
     #041725;
 }
 
