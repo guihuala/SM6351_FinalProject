@@ -7,7 +7,7 @@ const observer = new IntersectionObserver(entries => {
 
 function loadAnnualTrade() {
   observer.disconnect();
-  import('./annual-trade.js?v=chapter-handoff').catch(error => {
+  import('./annual-trade.js?v=fin-trade-swipe').catch(error => {
     const fallback = document.createElement('p');
     fallback.className = 'opening-trade-status';
     fallback.append('The annual trade charts could not load. ');

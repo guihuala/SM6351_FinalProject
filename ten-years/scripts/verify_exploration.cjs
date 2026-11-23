@@ -39,3 +39,30 @@ t.touchstart(event(100,150));
 t.touchmove(event(100,80));
 t.touchend();
 assert.equal(calls.at(-1).direction,1,'the next swipe can enter the product chapter');
+
+const wheel=source.slice(source.indexOf('  let lastTimelineWheel='),source.indexOf('  function keydown('));
+const wheelCalls=[];
+const surface={
+  getBoundingClientRect:()=>({top:0,height:720}),
+  dispatchEvent(event){wheelCalls.push(event.detail);return false;},
+};
+const wheelSandbox={document:{activeElement:null},root:surface,global:{innerHeight:720},CustomEvent:sandbox.CustomEvent};
+vm.runInNewContext(`
+  const destroyed=false,linked=true,progressiveColumns=true,productTarget=null,chapterView=null,productTimeline=true;
+  const chapterStart=0,chapterEnd=9,view='annual',options={releaseAtBoundary:true};
+  let targetProgress=8,selected=2023,scrubDirection=1;
+  function scrub(delta){targetProgress+=delta;selected=2024;}
+  ${wheel}
+  globalThis.wheel=wheel;
+`,wheelSandbox);
+function roll(timeStamp){
+  wheelSandbox.wheel({deltaY:180,deltaX:0,target:{closest:()=>null},currentTarget:surface,timeStamp,
+    preventDefault(){wheelCalls.push('prevent');}});
+}
+roll(100);
+roll(130);
+roll(260);
+assert.deepEqual(wheelCalls,['prevent','prevent','prevent'],'wheel momentum stays on the last year');
+roll(500);
+assert.equal(wheelCalls.at(-2).origin,'wheel','the next wheel gesture can leave the chart');
+console.log('PASS: a single wheel gesture explores the last year before a later gesture changes chapters.');

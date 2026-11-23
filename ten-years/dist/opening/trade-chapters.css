@@ -58,7 +58,11 @@
   line-height: 1.6;
 }
 
-#annual-trade.opening-trade-chapter {
+#annual-trade.opening-trade-chapter.dv-trade-separated {
+  touch-action: pan-x pinch-zoom;
+}
+
+#annual-trade.opening-trade-chapter .dv-dialog {
   touch-action: pan-y pinch-zoom;
 }
 

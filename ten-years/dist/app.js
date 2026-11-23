@@ -740,6 +740,7 @@ function mount(root, options = {}) {
     renderTransport();
     startMotion();
   }
+  let lastTimelineWheel=-Infinity;
   function wheel(event){
     if(destroyed||event.ctrlKey||event.metaKey||event.target.closest('dialog,select,input')||Math.abs(event.deltaX)>Math.abs(event.deltaY)||!event.deltaY)return;
     const delta=event.deltaY*(event.deltaMode===1?18:event.deltaMode===2?400:1);
@@ -750,10 +751,19 @@ function mount(root, options = {}) {
     const alignEnd=isProduct&&bounds.height>global.innerHeight;
     const offset=bounds?(alignEnd?bounds.bottom-global.innerHeight:bounds.top):0;
     const needsAlignment=Math.abs(offset)>2;
-    if(needsAlignment&&(!(isProduct||progressiveColumns)||Math.abs(offset)>global.innerHeight/2||(offset-delta)*direction>0))return;
+    if(needsAlignment&&(!(isProduct||progressiveColumns)||(offset-delta)*direction>0))return;
+    const progressive=isProduct||progressiveColumns;
+    if(progressive&&document.activeElement===surface)surface.blur();
     const boundary=(targetProgress>=chapterEnd&&direction>0)||(targetProgress<=chapterStart&&direction<0);
     if(boundary&&options.releaseAtBoundary){
-      if((isProduct||progressiveColumns)&&selected!==(direction>0?2024:2015)){event.preventDefault();return;}
+      // A trackpad gesture that reaches the last year stays on the chart.
+      if(progressive&&(selected!==(direction>0?2024:2015)||
+        (direction===scrubDirection&&event.timeStamp-lastTimelineWheel<180))){
+        lastTimelineWheel=event.timeStamp;
+        event.preventDefault();
+        return;
+      }
+      lastTimelineWheel=-Infinity;
       const released=surface.dispatchEvent(new CustomEvent('decade:boundary',{bubbles:true,cancelable:!!chapterView||!!productTimeline,detail:{direction,year:selected,view,origin:'wheel'}}));if(!released)event.preventDefault();return;
     }
     event.preventDefault();
@@ -762,7 +772,8 @@ function mount(root, options = {}) {
       if(options.alignChapter)options.alignChapter(surface,{direction,block});
       else surface.scrollIntoView({behavior:'instant',block});
     }
-    scrub(Math.sign(delta)*Math.min(Math.abs(delta),180)/(options.wheelPixelsPerYear??180),'wheel');
+    if(progressive)lastTimelineWheel=event.timeStamp;
+    scrub(direction*Math.min(Math.abs(delta),180)/(options.wheelPixelsPerYear??180),'wheel');
   }
   function keydown(event) {
     if(event.target.closest('dialog,select,input,textarea,a')||event.ctrlKey||event.metaKey||event.altKey)return;
@@ -806,8 +817,8 @@ function mount(root, options = {}) {
   function touchstart(event){
     suppressProductClick=false;
     const product=event.target.closest('[data-action="inspect-product"]');
-    if(event.touches.length!==1||(!product&&event.target.closest('dialog,select,input,button,a'))){touchStart=null;return;}
-    if(options.alignChapter&&Math.abs(root.getBoundingClientRect().top)>32){touchStart=null;return;}
+    const onControl=options.alignChapter?'dialog,select,input,textarea':'dialog,select,input,button,a';
+    if(event.touches.length!==1||(!product&&event.target.closest(onControl))){touchStart=null;return;}
     pause();clearTimeout(settleTimer);settleTimer=null;
     touchStart={x:event.touches[0].clientX,y:event.touches[0].clientY,lastY:event.touches[0].clientY,product:!!product,startProgress:targetProgress};
   }
@@ -817,6 +828,15 @@ function mount(root, options = {}) {
     if(Math.abs(dy)<6||Math.abs(dx)>Math.abs(dy))return;
     if(options.alignChapter&&!event.cancelable){touchStart=null;return;}
     event.preventDefault();
+    if(options.alignChapter&&!touchStart.aligned){
+      touchStart.aligned=true;
+      if(document.activeElement===root)root.blur();
+      if(Math.abs(root.getBoundingClientRect().top)>2){
+        root.scrollIntoView({behavior:'instant',block:'start'});
+        // Finish arriving at the chart before a later swipe can leave it.
+        touchStart.startProgress=null;
+      }
+    }
     if(touchStart.product)suppressProductClick=true;
     const direction=Math.sign(touchStart.lastY-point.clientY);
     const beforeFirstYear=direction<0&&targetProgress<=chapterStart;
@@ -893,7 +913,7 @@ function mount(root, options = {}) {
     }catch(error){if(!destroyed)q('feedback').textContent=`Import failed: ${error.message}`;}
     event.target.value='';
   }
-  function pointerdown(event){if(event.pointerType!=='touch')suppressProductClick=false;if(!event.target.closest('button,a,select,input,dialog,[role="button"]'))root.focus({preventScroll:true});}
+  function pointerdown(event){if(event.pointerType==='touch')return;suppressProductClick=false;if(!event.target.closest('button,a,select,input,dialog,[role="button"]'))root.focus({preventScroll:true});}
   function visibility(){if(document.hidden){pause();settle();}}
   const resizeObserver=new ResizeObserver(()=>{if(resizeFrame)cancelAnimationFrame(resizeFrame);resizeFrame=requestAnimationFrame(()=>{resizeFrame=0;if(!destroyed)rebuild();});});
   if(linked)reduced.addEventListener('change',cancelLinkedYearAnimation);

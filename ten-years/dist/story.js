@@ -21,9 +21,10 @@ function followChapter(event,target){
  if(!target||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;
  event.preventDefault();
  if(target===productTarget&&api.getState().year===2024)api.setYear(2015);
- if(chapterScroll)chapterScroll.to(target,{direction:event.detail?.origin==='wheel'?event.detail.direction:0});
+ const origin=event.detail?.origin;
+ if(chapterScroll)chapterScroll.to(target,{direction:origin==='wheel'?event.detail.direction:0});
  else target.scrollIntoView({behavior:reduced.matches?'instant':'smooth'});
- target.focus({preventScroll:true});
+ if(origin!=='wheel'&&origin!=='touch')target.focus({preventScroll:true});
  const hash='#'+target.id;
  if(location.hash!==hash)history.pushState(null,'',hash);
 }
