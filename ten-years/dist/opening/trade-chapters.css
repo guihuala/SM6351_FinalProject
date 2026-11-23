@@ -71,6 +71,23 @@
   touch-action: pan-x pinch-zoom;
 }
 
+.decade-standalone.decade-story-page:has(.dv-scroll-track) {
+  overflow-x: clip;
+  overflow-y: visible;
+}
+
+.dv-scroll-track::after {
+  content: "";
+  display: block;
+  height: 500svh;
+}
+
+.dv-scroll-track > .dv-shell.opening-trade-chapter:is(#annual-trade, #product-forms) {
+  position: sticky;
+  top: var(--dv-sticky-top, 0px);
+  touch-action: pan-y pinch-zoom;
+}
+
 #annual-trade.opening-trade-chapter .dv-dialog {
   touch-action: pan-y pinch-zoom;
 }

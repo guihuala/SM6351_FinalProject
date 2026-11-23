@@ -1,54 +1,100 @@
 const assert=require('assert/strict'),fs=require('fs'),vm=require('vm'),path=require('path');
-const handlers=new Map();
-const root={id:'annual-trade',querySelector:()=>null,addEventListener:(name,fn)=>handlers.set(name,fn),scrollIntoView(){this.scrolled=true;},focus(){this.focused=true;}};
-const tradeIntro={id:'trade-intro',querySelector:()=>null,addEventListener(){},scrollIntoView(){this.scrolled=true;},focus(){this.focused=true;}};
-const products={id:'product-forms',querySelector:()=>null,addEventListener:(name,fn)=>handlers.set('forms:'+name,fn),scrollIntoView(){this.scrolled=true;},focus(){this.focused=true;}};
-const api={year:2015,getState(){return {year:this.year};},setYear(year){this.year=year;},pause(){this.paused=true;}};
-let mountOptions,observed,visibility,productRoute;
-const sandbox={
- window:{matchMedia:()=>({matches:true}),addEventListener:(name,fn)=>handlers.set(name,fn)},
- location:{hash:'#product-forms'},
- history:{replaceState(_a,_b,hash){sandbox.location.hash=hash;},pushState(_a,_b,hash){sandbox.location.hash=hash;}},
- document:{getElementById:id=>({'annual-trade':root,'trade-intro':tradeIntro,'product-forms':productRoute})[id]},
- IntersectionObserver:class{constructor(fn){visibility=fn;}observe(element){observed=element;}},
- MarineDecade:{mount(element,options){assert.equal(element,root);mountOptions=options;return api;}}
-};
-vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../dist/story.js'),'utf8'),sandbox);
+const story=fs.readFileSync(path.join(__dirname,'../dist/story.js'),'utf8');
+
+function mountStory({hasProducts=true,hash='' }={}){
+  const handlers=new Map(),frames=new Map();
+  let scrollY=0,frameId=0,mountOptions;
+  const api={
+    year:2015,changes:[],
+    getState(){return {year:this.year};},
+    setYear(year){this.year=year;this.changes.push(year);}
+  };
+  function scene(id,top){
+    return {
+      id,top,offsetHeight:800,style:{setProperty(){}},querySelector:()=>null,
+      before(track){track.top=top;},
+      contains(element){return element===this;},
+      addEventListener(name,fn){handlers.set(id+':'+name,fn);},
+      scrollIntoView(){scrollY=top;},
+      focus(){sandbox.document.activeElement=this;}
+    };
+  }
+  const intro=scene('trade-intro',0),root=scene('annual-trade',1000);
+  const products=hasProducts?scene('product-forms',5800):null,finale=scene('finale',10600);
+  const sandbox={
+    window:{
+      innerHeight:800,matchMedia:()=>({matches:true}),
+      addEventListener:(name,fn)=>handlers.set(name,fn),
+      requestAnimationFrame(fn){frames.set(++frameId,fn);return frameId;},
+      scrollBy({top}){scrollY+=top;}
+    },
+    location:{hash},
+    history:{replaceState(_a,_b,hash){sandbox.location.hash=hash;},pushState(_a,_b,hash){sandbox.location.hash=hash;}},
+    document:{
+      getElementById:id=>[intro,root,products,finale].find(element=>element?.id===id),
+      createElement:()=>({
+        append(){},
+        getBoundingClientRect(){return {top:this.top-scrollY,bottom:this.top-scrollY+4800,height:4800};},
+        scrollIntoView({block}){scrollY=this.top+(block==='end'?4000:0);}
+      })
+    },
+    ResizeObserver:class{observe(){}},
+    MarineDecade:{mount(element,options){assert.equal(element,root);mountOptions=options;return api;}}
+  };
+  vm.runInNewContext(story,sandbox);
+  function scrollTo(top=scrollY){
+    scrollY=top;
+    handlers.get('scroll')();
+    const pending=[...frames.values()];
+    frames.clear();
+    pending.forEach(fn=>fn());
+  }
+  const dispatch=(name,detail)=>handlers.get('annual-trade:'+name)({detail,preventDefault(){}});
+  return {sandbox,root,products,finale,api,mountOptions,scrollTo,dispatch};
+}
+
+const fallback=mountStory({hasProducts:false,hash:'#product-forms'});
+assert.equal(fallback.sandbox.location.hash,'#annual-trade');
+assert.equal(fallback.sandbox.document.activeElement,fallback.root);
+
+const {sandbox,root,products,finale,api,mountOptions,scrollTo,dispatch}=mountStory();
 assert.equal(mountOptions.linked,true);
 assert.equal(mountOptions.annualFinTotal,true);
-assert.equal(mountOptions.year,2015);
 assert.equal(mountOptions.progressiveColumns,true);
-assert.equal(mountOptions.releaseAtBoundary,true);
-assert.equal(sandbox.window.decadeView,api);
-assert.equal(sandbox.window.decadeChapters.annual,sandbox.window.decadeChapters.forms);
-assert.equal(observed,root);
-assert.equal(sandbox.location.hash,'#annual-trade');
-assert.equal(root.scrolled,true);
-assert.equal(root.focused,true);
-visibility([{intersectionRatio:.8}]);assert.equal(api.paused,undefined);
-visibility([{intersectionRatio:.2}]);assert.equal(api.paused,true);
-handlers.get('decade:boundary')({detail:{origin:'touch',direction:-1},preventDefault(){}});
-assert.equal(tradeIntro.scrolled,true);
-assert.equal(tradeIntro.focused,undefined,'swiping leaves the destination unfocused');
-assert.equal(sandbox.location.hash,'#trade-intro');
-productRoute=products;
-sandbox.location.hash='#product-forms';
-vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../dist/story.js'),'utf8'),sandbox);
-assert.equal(mountOptions.productTarget,products);
-assert.equal(mountOptions.year,2015);
 assert.equal(mountOptions.progressiveForms,true);
-assert.equal(sandbox.location.hash,'#product-forms');
-assert.equal(products.scrolled,true);
-assert.equal(products.focused,true);
-sandbox.location.hash='#annual-trade';
-api.year=2024;
-products.focused=false;
-handlers.get('decade:boundary')({detail:{origin:'wheel',direction:1},preventDefault(){}});
-assert.equal(sandbox.location.hash,'#product-forms');
-assert.equal(products.focused,false,'rolling into a chapter does not draw its focus outline');
-assert.equal(api.year,2015,'rolling off the final annual bar starts product playback at the first year');
-handlers.get('forms:decade:boundary')({detail:{origin:'wheel',direction:-1},preventDefault(){}});
-assert.equal(sandbox.location.hash,'#annual-trade');
+assert.equal(mountOptions.pageScrollTimeline,true);
+assert.equal(mountOptions.productTarget,products);
+assert.equal(sandbox.window.decadeChapters.annual,sandbox.window.decadeChapters.forms);
+
+const years=Array.from({length:10},(_,index)=>2015+index);
+function scrollYears(scene,sequence){
+  for(const year of sequence){
+    scrollTo(scene.top+(year-2015)*400+200);
+    assert.equal(api.year,year,scene.id+' at '+year);
+  }
+}
+scrollYears(root,years);
+scrollYears(products,years);
+scrollTo(finale.top);
+scrollYears(products,[...years].reverse());
+scrollYears(root,[...years].reverse());
+scrollTo(root.top+200);
+api.setYear(2020);
+dispatch('decade:year-change',{year:2020,origin:'click'});
+scrollTo();
+assert.equal(api.year,2020,'manual selection moves to its scroll position');
+scrollTo(root.top+2600);
+assert.equal(api.year,2021,'scrolling continues from the manually selected year');
+scrollTo(root.top+3800);
+dispatch('decade:boundary',{year:2024,direction:1,origin:'keyboard'});
+scrollTo();
+assert.equal(sandbox.document.activeElement,products);
+assert.equal(api.year,2015,'forward navigation starts the next chart from 2015');
+dispatch('decade:boundary',{year:2015,direction:-1,origin:'keyboard'});
+scrollTo();
+assert.equal(sandbox.document.activeElement,root);
+assert.equal(api.year,2024,'backward navigation returns to the last year of the previous chart');
+console.log('PASS: both charts show each year in both directions and manual year controls stay synchronized.');
 
 const app=fs.readFileSync(path.join(__dirname,'../dist/app.js'),'utf8');
 require('../dist/motion.js');
@@ -69,7 +115,7 @@ bounded.test.chooseYear(2021,'click');
 assert.equal(bounded.test.year(),2021,'direct selection commits the year immediately');
 bounded.test.scrub(99,'wheel');assert.equal(bounded.test.value(),9);
 bounded.test.scrub(-99,'wheel');assert.equal(bounded.test.value(),0);
-console.log('PASS: both chapters start in 2015; finishing the annual chart starts product playback; direct year selection and chapter navigation work.');
+console.log('PASS: direct year selection and timeline bounds.');
 
 const presentation=app.slice(app.indexOf('  function cancelLinkedYearAnimation('),app.indexOf('  function update(animate)'));
 function node(){

@@ -751,6 +751,7 @@ function mount(root, options = {}) {
   }
   let lastTimelineWheel=-Infinity;
   function wheel(event){
+    if(options.pageScrollTimeline)return;
     if(destroyed||event.ctrlKey||event.metaKey||event.target.closest('dialog,select,input')||Math.abs(event.deltaX)>Math.abs(event.deltaY)||!event.deltaY)return;
     const delta=event.deltaY*(event.deltaMode===1?18:event.deltaMode===2?400:1);
     const direction=Math.sign(event.deltaY);
@@ -824,6 +825,7 @@ function mount(root, options = {}) {
     }
   }
   function touchstart(event){
+    if(options.pageScrollTimeline)return;
     suppressProductClick=false;
     const product=event.target.closest('[data-action="inspect-product"]');
     const onControl=options.alignChapter?'dialog,select,input,textarea':'dialog,select,input,button,a';
