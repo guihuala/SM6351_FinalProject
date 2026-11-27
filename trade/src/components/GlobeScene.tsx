@@ -304,28 +304,6 @@ export default function GlobeScene({
     ];
   }, [distributionPeaks, mode, selectedRoute]);
 
-  const emissionRings = useMemo(() => {
-    if (mode === 'distribution') {
-      return distributionPeaks.slice(0, 11).map((country) => ({
-        ...country,
-        color: '#d85c55',
-      }));
-    }
-    if (!selectedRoute) return [];
-    return [
-      {
-        lat: selectedRoute.startLat,
-        lng: selectedRoute.startLng,
-        color: '#d45d55',
-      },
-      {
-        lat: selectedRoute.endLat,
-        lng: selectedRoute.endLng,
-        color: '#f4f1e9',
-      },
-    ];
-  }, [distributionPeaks, mode, selectedRoute]);
-
   const handleHover = (layer: string | undefined, payload?: object) => {
     if (!layer || !payload) {
       onHover(undefined);
@@ -425,13 +403,6 @@ export default function GlobeScene({
         arcCurveResolution={52}
         arcCircularResolution={5}
         arcsTransitionDuration={750}
-        ringsData={emissionRings}
-        ringColor="color"
-        ringMaxRadius={(object: object) =>
-          1.2 + Math.min(3.8, Math.log10((object as DistributionCountry).count ?? 1))
-        }
-        ringPropagationSpeed={0.7}
-        ringRepeatPeriod={1750}
         labelsData={endpointLabels}
         labelText="text"
         labelColor="color"
