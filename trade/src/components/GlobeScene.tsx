@@ -298,13 +298,7 @@ export default function GlobeScene({
   }, [distributionPeaks, mode, selectedRoute]);
 
   const emissionRings = useMemo(() => {
-    if (mode === 'distribution') {
-      return distributionPeaks.slice(0, 11).map((country) => ({
-        ...country,
-        color: '#d85c55',
-      }));
-    }
-    if (!selectedRoute) return [];
+    if (mode !== 'trade' || !selectedRoute) return [];
     return [
       {
         lat: selectedRoute.startLat,
@@ -317,7 +311,7 @@ export default function GlobeScene({
         color: '#f4f1e9',
       },
     ];
-  }, [distributionPeaks, mode, selectedRoute]);
+  }, [mode, selectedRoute]);
 
   const handleHover = (layer: string | undefined, payload?: object) => {
     if (!layer || !payload) {
